@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+everytime we generate tests for this project we want to store them at root test folder.
+Do not put tests anywhere else in the project structure.

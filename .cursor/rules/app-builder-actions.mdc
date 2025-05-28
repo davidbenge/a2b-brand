@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+the global openwhisk micro services are stored at src/actions folder
+
+The openwhisk services configuration lives at ./app.config.yaml and the openwhisk runtimeManifest is defined in that target yaml file under the section runtimeManifest:

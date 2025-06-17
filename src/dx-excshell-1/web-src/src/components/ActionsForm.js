@@ -20,7 +20,7 @@ import {
 import Function from '@spectrum-icons/workflow/Function'
 
 import allActions from '../config.json'
-import actionWebInvoke from '../utils'
+import actionWebInvoke from '../utils/common'
 
 // remove the deprecated key
 const actions = Object.keys(allActions).reduce((obj, key) => {

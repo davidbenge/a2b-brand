@@ -1,81 +1,306 @@
-# a2b
+# a2b Brand Application 
 
-Welcome to my Adobe I/O Application!
+The Agency to Brand solution is an active proof of concept being developed using Adobe App Builder. It’s designed to connect asset workflows between agencies and brand-owned AEM environments in a secure and auditable way—without requiring direct access to the brand’s systems.
+This POC establishes a repeatable pattern that can be shared with agencies and partners to build their own Agency-to-Brand extension using Adobe App Builder and distributing on Adobe Exchange.
+
+[Brand To Agency](https://github.com/davidbenge/a2b-brand)   
+[Adobe](https://github.com/davidbenge/a2b-adobe)   
+
+
+## Prerequisites
+
+- Node.js = 20
+- Adobe I/O CLI (`aio`)
+- Adobe Developer Console access
 
 ## Setup
 
-- Populate the `.env` file in the project root and fill it as shown [below](#env)
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Populate the `.env` file in the project root and fill it as shown [below](#environment-variables)
+4. Start the development server:
+   ```bash
+   npm run run:application
+   ```
 
-## Local Dev
+## Local Development
 
-- `aio app run` to start your local Dev server
-- App will run on `localhost:9080` by default
+- `npm run run:application` - Run the application locally
+- `npm run run:excshell` - Run the application in Experience Cloud Shell
 
-By default the UI will be served locally but actions will be deployed and served from Adobe I/O Runtime. To start a
-local serverless stack and also run your actions locally use the `aio app run --local` option.
+## Testing & Coverage
 
-## Test & Coverage
 
-- Run `aio app test` to run unit tests for ui and actions
-- Run `aio app test --e2e` to run e2e tests
-
-## Deploy & Cleanup
+## Deployment & Cleanup
 
 - `aio app deploy` to build and deploy all actions on Runtime and static files to CDN
 - `aio app undeploy` to undeploy the app
 
-## Config
+## Dependencies
 
-### `.env`
+This project uses several key Adobe and React libraries:
 
-You can generate this file using the command `aio app use`. 
+- @adobe/aio-sdk
+- @adobe/exc-app
+- @adobe/react-spectrum
+- React 16.13.1
+- TypeScript
+- Jest for testing
+
+## Configuration
+
+### Environment Variables
+
+You can generate the `.env` file using the command `aio app use`. 
 
 ```bash
 # This file must **not** be committed to source control
 
-## please provide your Adobe I/O Runtime credentials
-# AIO_RUNTIME_AUTH=
-# AIO_RUNTIME_NAMESPACE=
+# Adobe I/O Runtime
+AIO_RUNTIME_AUTH=
+AIO_RUNTIME_NAMESPACE=
+
+# Adobe I/O Events
+AIO_AGENCY_EVENTS_REGISTRATION_PROVIDER_ID=
+AIO_AGENCY_EVENTS_AEM_ASSET_SYNCH_PROVIDER_ID=
+
+# AEM Authentication
+AEM_AUTH_CLIENT_SECRET=
+AEM_AUTH_SCOPES=
+AEM_AUTH_CLIENT_ID=
+AEM_AUTH_TECH_ACCOUNT_ID=
+AEM_AUTH_PRIVATE_KEY=
+AEM_AUTH_TYPE=
+
+# Service-to-Service Authentication
+S2S_API_KEY=
+S2S_CLIENT_SECRET=
+S2S_SCOPES=
+
+# Organization
+ORG_ID=
 ```
 
-### `app.config.yaml`
+### Project Configuration
 
-- Main configuration file that defines an application's implementation. 
-- More information on this file, application configuration, and extension configuration 
-  can be found [here](https://developer.adobe.com/app-builder/docs/guides/appbuilder-configuration/#appconfigyaml)
-
-#### Action Dependencies
-
-- You have two options to resolve your actions' dependencies:
-
-  1. **Packaged action file**: Add your action's dependencies to the root
-   `package.json` and install them using `npm install`. Then set the `function`
-   field in `app.config.yaml` to point to the **entry file** of your action
-   folder. We will use `webpack` to package your code and dependencies into a
-   single minified js file. The action will then be deployed as a single file.
-   Use this method if you want to reduce the size of your actions.
-
-  2. **Zipped action folder**: In the folder containing the action code add a
-     `package.json` with the action's dependencies. Then set the `function`
-     field in `app.config.yaml` to point to the **folder** of that action. We will
-     install the required dependencies within that directory and zip the folder
-     before deploying it as a zipped action. Use this method if you want to keep
-     your action's dependencies separated.
-
-## Debugging in VS Code
-
-While running your local server (`aio app run`), both UI and actions can be debugged, to do so open the vscode debugger
-and select the debugging configuration called `WebAndActions`.
-Alternatively, there are also debug configs for only UI and each separate action.
-
-## Typescript support for UI
-
-To use typescript use `.tsx` extension for react components and add a `tsconfig.json` 
-and make sure you have the below config added
+```yaml
+benge app project in TMD dev org: 27200-brand2agency-stage
+title: brand to agency
 ```
- {
-  "compilerOptions": {
-      "jsx": "react"
-    }
-  } 
+
+## Project Structure
+
 ```
+.
+├── src/                          # Source code
+│   ├── actions/                  # Adobe I/O Runtime actions
+│   │   ├── assetsynch-event-handler/  # Asset sync event handling
+│   │   ├── get-brands/          # Brand retrieval functionality
+│   │   ├── new-brand-registration/    # Brand registration handling
+│   │   ├── classes/             # Shared classes
+│   │   ├── types/               # TypeScript type definitions
+│   │   ├── utils/               # Utility functions
+│   │   └── constants.ts         # Shared constants
+│   └── dx-excshell-1/           # Experience Cloud Shell configuration
+│       ├── web-src/             # Web application source
+│       ├── test/                # Unit tests
+│       ├── e2e/                 # End-to-end tests
+│       └── ext.config.yaml      # Extension configuration
+├── test/                        # Test files
+├── docs/                        # Documentation
+├── setup/                       # Setup scripts
+└── dist/                        # Build output
+```
+
+## API Endpoints
+
+The application exposes the following endpoints:
+
+- `GET /api/v1/web/a2b-agency/get-brands` - Retrieve list of brands
+- `POST /api/v1/web/a2b-agency/new-brand-registration` - Register a new brand
+- `POST /api/v1/web/a2b-agency/assetsynch-event-handler` - Handle asset synchronization events
+
+## Unified Shell API
+
+For more information, visit the [Unified Shell API documentation](https://github.com/AdobeDocs/exc-app).
+
+## Event Registration
+
+### Brand Registration Events
+
+1. Create event provider:
+```bash
+aio event provider create
+```
+Label: "Brand Registration"
+
+2. Create event metadata:
+```bash
+aio event eventmetadata create <id>
+```
+
+#### Event Types
+
+1. **Brand Registration Received**
+   - Label: "Brand Registration Received"
+   - Code: `com.adobe.a2b.registration.received`
+   - Description: "This contains an echo of event that was received from remote brand"
+
+```json
+{
+  "specversion": "1.0",
+  "id": "20daaf84-c938-48e6-815c-3d3dfcf8c900",
+  "source": "urn:uuid:fefcd900-66b6-4a46-9494-1b9ff1c5d0ac",
+  "type": "com.adobe.a2b.registration.received",
+  "datacontenttype": "application/json",
+  "time": "2025-06-08T05:44:51.686Z",
+  "eventid": "591c4e47-6ba1-4599-a136-5ccb43157353",
+  "event_id": "591c4e47-6ba1-4599-a136-5ccb43157353",
+  "recipient_client_id": "4ab33463139e4f96b851589286cd46e4",
+  "recipientclientid": "4ab33463139e4f96b851589286cd46e4",
+  "data": {
+    "bid": "2e59b727-4f9c-4653-a6b9-a49a602ec983",
+    "secret": "PFVZNkBLH9iquYvr8hGSctesInK4QlRh",
+    "name": "test client benge 37",
+    "endPointUrl": "https://pathtoendpoint/37",
+    "enabled": false,
+    "createdAt": "2025-06-08T05:44:51.219Z",
+    "updatedAt": "2025-06-08T05:44:51.219Z"
+  }
+}
+```
+
+2. **Brand Registration Enabled**
+   - Label: "Brand Registration Enabled"
+   - Code: `com.adobe.a2b.registration.enabled`
+   - Description: "When an admin approves a brand registration this event is thrown"
+
+```json
+{
+  "specversion": "1.0",
+  "id": "381691a0-a5c6-4c97-b1ac-662a06686856",
+  "source": "urn:uuid:fefcd900-66b6-4a46-9494-1b9ff1c5d0ac",
+  "type": "com.adobe.a2b.registration.enabled",
+  "datacontenttype": "application/json",
+  "time": "2025-06-08T05:39:47.227Z",
+  "eventid": "d72bccdb-1af0-4c01-b802-fea422383017",
+  "event_id": "d72bccdb-1af0-4c01-b802-fea422383017",
+  "recipient_client_id": "4ab33463139e4f96b851589286cd46e4",
+  "recipientclientid": "4ab33463139e4f96b851589286cd46e4",
+  "data": {
+    "bid": "f94496b9-a40c-4d7a-8c4e-e59db029f247",
+    "secret": "Uebq3tGYkoDoxonUxQizqKFHzHG703F1",
+    "name": "test client benge 36",
+    "endPointUrl": "https://pathtoendpoint/36",
+    "enabled": false,
+    "createdAt": "2025-06-08T05:39:46.778Z",
+    "updatedAt": "2025-06-08T05:39:46.778Z"
+  }
+}
+```
+
+3. **Brand Registration Disabled**
+   - Label: "Brand Registration Disabled"
+   - Code: `com.adobe.a2b.registration.disabled`
+   - Description: "When an admin disables a brand registration this event is thrown"
+
+```json
+{
+  "specversion": "1.0",
+  "id": "706c19f6-2975-49a3-9e33-39672aed756e",
+  "source": "urn:uuid:fefcd900-66b6-4a46-9494-1b9ff1c5d0ac",
+  "type": "com.adobe.a2b.registration.disabled",
+  "datacontenttype": "application/json",
+  "time": "2025-06-08T05:42:22.333Z",
+  "eventid": "175cf397-6b9f-4bb9-9aaa-943d5c42333d",
+  "event_id": "175cf397-6b9f-4bb9-9aaa-943d5c42333d",
+  "recipient_client_id": "4ab33463139e4f96b851589286cd46e4",
+  "recipientclientid": "4ab33463139e4f96b851589286cd46e4",
+  "data": {
+    "bid": "4e9976ab-95ea-47c1-a2e3-7e266aa47935",
+    "secret": "OMWwg3qNE5Mxlwye1KGXj3zYy7ORT9FC",
+    "name": "test client benge 36",
+    "endPointUrl": "https://pathtoendpoint/36",
+    "enabled": false,
+    "createdAt": "2025-06-08T05:42:21.855Z",
+    "updatedAt": "2025-06-08T05:42:21.855Z"
+  }
+}
+```
+
+### Environment Configuration
+
+Update your `.env` with the provider id returned by `aio event provider create`:
+```bash
+AIO_AGENCY_EVENTS_REGISTRATION_PROVIDER_ID=fefcd900-fake-fake-fake-1b9ff1c5d0ac
+```
+
+## Asset Synchronization Events
+
+### Event Provider Setup
+
+```bash
+aio event provider create
+```
+Label: "A2B Asset Synch"
+
+### Event Types
+
+1. **New Asset Published**
+   - Label: "New Asset Published"
+   - Code: `com.adobe.a2b.assetsynch.new`
+   - Description: "Asset that has never been synched before is coming over for the first time"
+   - Event body: TODO
+
+2. **Asset Updated**
+   - Label: "Asset Updated"
+   - Code: `com.adobe.a2b.assetsynch.update`
+   - Description: "Asset that has been synched before has changed"
+   - Event body: TODO
+
+3. **Asset Deleted**
+   - Label: "Asset Deleted"
+   - Code: `com.adobe.a2b.assetsynch.delete`
+   - Description: "Asset that has been synched before has been deleted"
+   - Event body: TODO
+
+### Asset Synchronization Setup
+
+Using the AEM Assets Author API, subscribe to the following events at:
+`https://your_adobe_developer_project.adobeioruntime.net/api/v1/web/a2b-agency/assetsynch-event-handler`
+
+This is done in the Adobe Developer Console. [See setup documentation](https://experienceleague.adobe.com/en/docs/experience-manager-learn/cloud-service/aem-apis/openapis/setup)
+
+Events to subscribe to:
+- Asset deleted event: `aem.assets.asset.deleted`
+- Asset metadata updated event: `aem.assets.asset.metadata_updated`
+
+These events will be published to the BRAND and also echoed locally for secondary in-house systems use.
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Authentication Issues**
+   - Ensure all required environment variables are set
+   - Verify Adobe I/O credentials are valid
+   - Check AEM authentication configuration
+
+2. **Asset Synchronization Issues**
+   - Verify AEM event subscriptions
+   - Check asset synchronization provider configuration
+   - Review logs for detailed error messages
+
+## Rules
+1. all event are cloud events
+
+## Contributing
+
+1. Ensure you have the required dependencies installed
+2. Follow the coding standards (ESLint configuration is provided)
+3. Write tests for new features
+4. Submit a pull request
+

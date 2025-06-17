@@ -6,20 +6,23 @@ import React from 'react'
 import { Provider, defaultTheme, Grid, View } from '@adobe/react-spectrum'
 import ErrorBoundary from 'react-error-boundary'
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
-import SideBar from './SideBar'
+import SideBar from './common/SideBar'
 import ActionsForm from './ActionsForm'
 import { Home } from './Home'
 import { About } from './About'
+import AgencyRegistrationView from './layout/AgencyRegistrationView'
 
 function App (props) {
   console.log('runtime object:', props.runtime)
-  console.log('ims object:', props.ims)
+  console.log('viewProps object:', props.viewProps)
 
   // use exc runtime event handlers
   // respond to configuration change events (e.g. user switches org)
-  props.runtime.on('configuration', ({ imsOrg, imsToken, locale }) => {
-    console.log('configuration change', { imsOrg, imsToken, locale })
+  props.runtime.on('configuration', (props) => {
+    console.log('Ready! received on configuration:', props)
+    //console.log('configuration change', { imsOrg, imsToken, locale })
   })
+
   // respond to history change events
   props.runtime.on('history', ({ type, path }) => {
     console.log('history change', { type, path })
@@ -46,7 +49,7 @@ function App (props) {
             <View gridArea='content' padding='size-200'>
               <Routes>
                 <Route path='/' element={<Home />} />
-                <Route path='/actions' element={<ActionsForm runtime={props.runtime} ims={props.ims} />}/>
+                <Route path='/agency_registration' element={<AgencyRegistrationView viewProps={props.viewProps} />}/>
                 <Route path='/about' element={<About />}/>
               </Routes>
             </View>

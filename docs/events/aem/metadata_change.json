@@ -1,0 +1,74 @@
+{
+    "specversion": "1.0",
+    "id": "9b1539e6-4e91-4b64-bf9b-5801ebcc34e4",
+    "source": "acct:aem-p142461-e1463137@adobe.com",
+    "type": "aem.assets.asset.metadata_updated",
+    "datacontenttype": "application/json",
+    "time": "2025-06-09T06:07:03.694998Z",
+    "eventid": "d15f4bee-c5a3-4d31-aeaa-243a63db723f",
+    "event_id": "d15f4bee-c5a3-4d31-aeaa-243a63db723f",
+    "recipient_client_id": "4ab33463139e4f96b851589286cd46e4",
+    "recipientclientid": "4ab33463139e4f96b851589286cd46e4",
+    "data": {
+      "user": {
+        "imsUserId": "485329D5640C26D30A495FA0@4aab2722640c26d2495fca.e",
+        "principalId": "DBENGE@ADOBE.COM",
+        "displayName": "david benge"
+      },
+      "repositoryMetadata": {
+        "repo:repositoryId": "author-p142461-e1463137.adobeaemcloud.com",
+        "dc:format": "image/webp",
+        "repo:assetClass": "file",
+        "repo:assetId": "urn:aaid:aem:e8cc4fc5-ea72-49ed-9cd2-c71d6f2fa9b1",
+        "repo:version": "1.4::ci:43fc83e3f986b10ba2e2d24cc1368e0d",
+        "repo:name": "sad_elmo.webp",
+        "repo:size": "268812",
+        "repo:path": "/content/dam/benge/sad_elmo.webp",
+        "repo:createdBy": "DBENGE@ADOBE.COM",
+        "repo:ancestors": [
+          "urn:aaid:aem:efe36f5c-ede2-4dc8-84ca-d3c69d32447a"
+        ],
+        "repo:state": "ACTIVE",
+        "repo:createDate": "2024-10-25T18:11:41.702Z",
+        "repo:modifyDate": "2024-10-25T18:11:57.778Z",
+        "repo:modifiedBy": "DBENGE@ADOBE.COM",
+        "dam:sha1": "035e7a2fdff69cb94ce651d92e7625d80a749795",
+        "tiff:imageWidth": 1024,
+        "tiff:imageLength": 1024,
+        "aem:assetState": "processed"
+      },
+      "assetMetadata": {
+        "xcm:machineKeywords": [
+          {
+            "value": "street photography",
+            "confidence": 0.945
+          },
+          {
+            "value": "stuffed toy",
+            "confidence": 0.869
+          },
+          {
+            "value": "plush",
+            "confidence": 0.82
+          },
+          {
+            "value": "mascot",
+            "confidence": 0.797
+          },
+          {
+            "value": "animated cartoon",
+            "confidence": 0.765
+          },
+          {
+            "value": "action figure",
+            "confidence": 0.755
+          }
+        ],
+        "event:updated": {
+          "dc:description": "sad elmo 1"
+        },
+        "dc:description": "sad elmo 3"
+      },
+      "assetId": "urn:aaid:aem:e8cc4fc5-ea72-49ed-9cd2-c71d6f2fa9b1"
+    }
+  }

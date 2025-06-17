@@ -9,7 +9,7 @@ import ReactDOM from 'react-dom'
 import Runtime, { init } from '@adobe/exc-app'
 
 import App from './components/App'
-import './index.css'
+import './assets/styles/index.css'
 
 window.React = require('react')
 /* Here you can bootstrap your application and configure the integration with the Adobe Experience Cloud Shell */
@@ -47,18 +47,33 @@ function bootstrapInExcShell () {
   // runtime.heroClick = () => window.alert('Did I ever tell you you\'re my hero?')
 
   // ready event brings in authentication/user info
-  runtime.on('ready', ({ imsOrg, imsToken, imsProfile, locale }) => {
+  runtime.on('ready', ({baseUrl,environment,historyType,imsEnvironment,imsOrg,imsOrgName,imsProfile,imsToken,locale,preferredLanguages,shellInfo,tenant}) => {
     // tell the exc-runtime object we are done
     runtime.done()
+    //const appContainer = runtime.appApi();
+    //console.log('Ready! received appContainer:', appContainer)
     console.log('Ready! received imsProfile:', imsProfile)
-    const ims = {
-      profile: imsProfile,
-      org: imsOrg,
-      token: imsToken
+    
+    const viewProps = {
+      baseUrl: baseUrl,
+      environment: environment,
+      historyType: historyType,
+      imsEnvironment: imsEnvironment,
+      imsOrg: imsOrg,
+      imsOrgName: imsOrgName,
+      imsProfile: imsProfile,
+      imsToken: imsToken,
+      locale: locale,
+      preferredLanguages: preferredLanguages,
+      shellInfo: shellInfo,
+      tenant: tenant,
+      aioRuntimeNamespace: process.env.AIO_runtime_namespace,
+      aioAppName: process.env.AIO_app_name,
+      agencyBaseUrl: process.env.AGENCY_BASE_URL
     }
     // render the actual react application and pass along the runtime and ims objects to make it available to the App
     ReactDOM.render(
-      <App runtime={runtime} ims={ims} />,
+      <App runtime={runtime} viewProps={viewProps} />,
       document.getElementById('root')
     )
   })
@@ -66,8 +81,8 @@ function bootstrapInExcShell () {
   // set solution info, shortTitle is used when window is too small to display full title
   runtime.solution = {
     icon: 'AdobeExperienceCloud',
-    title: 'a2b',
-    shortTitle: 'JGR'
+    title: 'Brand to Agency',
+    shortTitle: 'b2a'
   }
-  runtime.title = 'a2b'
+  runtime.title = 'b2a'
 }

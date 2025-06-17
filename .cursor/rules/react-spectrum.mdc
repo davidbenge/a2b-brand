@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+for this project we use Adobe React Spectrum components. 
+the reference for this is found at https://react-spectrum.adobe.com/react-spectrum/index.html
+Github project can be found here https://github.com/adobe/react-spectrum
+
+A React implementation of Spectrum, Adobe’s design system. Spectrum provides adaptive, accessible, and cohesive experiences for all Adobe applications.
+
+React Spectrum is an implementation of Adobe's design system. If you’re integrating with Adobe software or would like a complete component library to use in your project, look no further!

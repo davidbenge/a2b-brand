@@ -1,0 +1,16 @@
+{
+    "_links": {
+      "rel:sample_event": {
+        "href": "https://api.adobe.io/events/providers/fefcd900-66b6-4a46-9494-1b9ff1c5d0ac/eventmetadata/com.adobe.a2b.registration.received/sample_event"
+      },
+      "rel:update": {
+        "href": "https://api.adobe.io/events/27200/4566206088345432511/4566206088345455794/providers/fefcd900-66b6-4a46-9494-1b9ff1c5d0ac/eventmetadata/com.adobe.a2b.registration.received"
+      },
+      "self": {
+        "href": "https://api.adobe.io/events/providers/fefcd900-66b6-4a46-9494-1b9ff1c5d0ac/eventmetadata/com.adobe.a2b.registration.received"
+      }
+    },
+    "description": "this contains an echo of event that was recieved from remote brand",
+    "label": "Brand Registration Received",
+    "event_code": "com.adobe.a2b.registration.received"
+  }

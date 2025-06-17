@@ -4,5 +4,7 @@ globs:
 alwaysApply: true
 ---
 the global openwhisk micro services are stored at src/actions folder
+the source is in typescript and lives in src/actions_src and when we run build-actions will transpile to src/actions
+the actions are cncf cloud native functions built using Adobe App Builder which is built on the Apache OpenWhisk platform.
 
 The openwhisk services configuration lives at ./app.config.yaml and the openwhisk runtimeManifest is defined in that target yaml file under the section runtimeManifest:

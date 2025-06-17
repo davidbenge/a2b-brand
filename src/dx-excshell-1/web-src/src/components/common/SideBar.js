@@ -12,28 +12,19 @@ function SideBar () {
                 <NavLink
                     className={({ isActive }) => `SideNav-itemLink ${isActive ? 'is-selected' : ''}`}
                     aria-current="page"
+                    to="/agency_registration"
+                >
+                    Agency Registration
+                </NavLink>
+            </li>
+            <li className="SideNav-item">
+                <NavLink
+                    className={({ isActive }) => `SideNav-itemLink ${isActive ? 'is-selected' : ''}`}
+                    aria-current="page"
                     end
                     to="/"
                 >
                     Home
-                </NavLink>
-            </li>
-            <li className="SideNav-item">
-                <NavLink
-                    className={({ isActive }) => `SideNav-itemLink ${isActive ? 'is-selected' : ''}`}
-                    aria-current="page"
-                    to="/actions"
-                >
-                    Your App Actions
-                </NavLink>
-            </li>
-            <li className="SideNav-item">
-                <NavLink
-                    className={({ isActive }) => `SideNav-itemLink ${isActive ? 'is-selected' : ''}`}
-                    aria-current="page"
-                    to="/about"
-                >
-                    About App Builder
                 </NavLink>
             </li>
         </ul>

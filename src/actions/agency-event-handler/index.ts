@@ -2,6 +2,8 @@
  * Agency event handler
  *
  */
+import { EventManager } from "../classes/EventManager";
+import { AssetSynchNewEvent } from "../classes/io_events/AssetSynchNewEvent";
 import { errorResponse, checkMissingRequestInputs } from "../utils/common";
 import * as aioLogger from "@adobe/aio-lib-core-logging";
 
@@ -18,17 +20,24 @@ export async function main(params: any): Promise<any> {
       return errorResponse(400, errorMessage, logger)
     }
 
+    // check the event
+    const testEvent = {
+      "asset_id": "123",
+       "asset_path":"/content/dam/test/test.jpg",
+       "metadate":{"a":"b","lot":"123","brandId":"123"}
+    };
 
-    /*
+    const event = new AssetSynchNewEvent(testEvent);
+
     try {
-      logger.debug('new-brand-registration starting cloud event construction');
-      const ioCustomEventManager = new IoCustomEventManager(params.AIO_AGENCY_EVENTS_REGISTRATION_PROVIDER_ID,params.LOG_LEVEL, params);
-      await ioCustomEventManager.publishEvent(new NewBrandRegistrationEvent(savedBrand));
+      logger.debug('New event from agency');
+      const eventManager = new EventManager(params.LOG_LEVEL, params);
+      await eventManager.publishEvent(event);
+      logger.debug('New event from agency published');
       
     } catch (error) {
       logger.error('Error sending event', error);
     }
-    */
     
     return {
       statusCode: 200,

@@ -133,7 +133,8 @@ For more information, visit the [Unified Shell API documentation](https://github
 ```bash
 aio event provider create
 ```
-Label: "Brand Registration"
+Label: "a2b-Brand Registration"
+Description: Events from an agency into a brand
 
 2. Create event metadata:
 ```bash
@@ -244,6 +245,7 @@ AIO_AGENCY_EVENTS_REGISTRATION_PROVIDER_ID=fefcd900-fake-fake-fake-1b9ff1c5d0ac
 aio event provider create
 ```
 Label: "A2B Asset Synch"
+Description: Event from Agency to Brand about an asset update
 
 ### Event Types
 

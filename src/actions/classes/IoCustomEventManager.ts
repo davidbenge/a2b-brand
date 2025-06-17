@@ -1,11 +1,5 @@
 import * as aioLogger from "@adobe/aio-lib-core-logging";
-<<<<<<< HEAD
-import { Brand } from "./Brand";
-import { BRAND_FILE_STORE_DIR } from "../constants";
 import { IIoEvent, IS2SAuthenticationCredentials } from "../types";
-=======
-import { IIoEvent } from "../types";
->>>>>>> bd12aa9 (eod)
 import { v4 as uuidv4 } from 'uuid';
 import { getServer2ServerToken } from "../utils/adobeAuthUtils";
 

@@ -1,9 +1,9 @@
 # a2b Brand Application 
 
-The Agency to Brand solution is an active proof of concept being developed using Adobe App Builder. It’s designed to connect asset workflows between agencies and brand-owned AEM environments in a secure and auditable way—without requiring direct access to the brand’s systems.
-This POC establishes a repeatable pattern that can be shared with agencies and partners to build their own Agency-to-Brand extension using Adobe App Builder and distributing on Adobe Exchange.
+The Brand to Agency solution is an active proof of concept being developed using Adobe App Builder. It's designed to connect asset workflows between brand-owned AEM environments and agencies in a secure and auditable way—enabling brands to share assets with agencies without requiring direct access to the brand's systems.
+This POC establishes a repeatable pattern that can be shared with brands to build their own Brand-to-Agency extension using Adobe App Builder and distributing on Adobe Exchange.
 
-[Brand To Agency](https://github.com/davidbenge/a2b-brand)   
+[Agency To Brand](https://github.com/davidbenge/a2b-agency)   
 [Adobe](https://github.com/davidbenge/a2b-adobe)   
 
 
@@ -97,9 +97,8 @@ title: brand to agency
 .
 ├── src/                          # Source code
 │   ├── actions/                  # Adobe I/O Runtime actions
-│   │   ├── assetsynch-event-handler/  # Asset sync event handling
-│   │   ├── get-brands/          # Brand retrieval functionality
-│   │   ├── new-brand-registration/    # Brand registration handling
+│   │   ├── agency-assetsynch-event-handler/  # Asset sync event handling
+│   │   ├── agency-event-handler/  # Agency event handling
 │   │   ├── classes/             # Shared classes
 │   │   ├── types/               # TypeScript type definitions
 │   │   ├── utils/               # Utility functions
@@ -119,9 +118,8 @@ title: brand to agency
 
 The application exposes the following endpoints:
 
-- `GET /api/v1/web/a2b-agency/get-brands` - Retrieve list of brands
-- `POST /api/v1/web/a2b-agency/new-brand-registration` - Register a new brand
-- `POST /api/v1/web/a2b-agency/assetsynch-event-handler` - Handle asset synchronization events
+- `POST /api/v1/web/a2b-brand/agency-assetsynch-event-handler` - Handle asset synchronization events from agencies
+- `POST /api/v1/web/a2b-brand/agency-event-handler` - Handle general agency events
 
 ## Unified Shell API
 
@@ -129,7 +127,7 @@ For more information, visit the [Unified Shell API documentation](https://github
 
 ## Event Registration
 
-### Brand Registration Events
+### Agency Registration Events
 
 1. Create event provider:
 ```bash
@@ -162,9 +160,9 @@ aio event eventmetadata create <id>
   "recipient_client_id": "4ab33463139e4f96b851589286cd46e4",
   "recipientclientid": "4ab33463139e4f96b851589286cd46e4",
   "data": {
-    "bid": "2e59b727-4f9c-4653-a6b9-a49a602ec983",
+    "brandId": "2e59b727-4f9c-4653-a6b9-a49a602ec983",
     "secret": "PFVZNkBLH9iquYvr8hGSctesInK4QlRh",
-    "name": "test client benge 37",
+    "name": "test agency benge 37",
     "endPointUrl": "https://pathtoendpoint/37",
     "enabled": false,
     "createdAt": "2025-06-08T05:44:51.219Z",
@@ -173,8 +171,8 @@ aio event eventmetadata create <id>
 }
 ```
 
-2. **Brand Registration Enabled**
-   - Label: "Brand Registration Enabled"
+2. **Agency Registration Enabled**
+   - Label: "Agency Registration Enabled"
    - Code: `com.adobe.a2b.registration.enabled`
    - Description: "When an admin approves a brand registration this event is thrown"
 
@@ -191,9 +189,9 @@ aio event eventmetadata create <id>
   "recipient_client_id": "4ab33463139e4f96b851589286cd46e4",
   "recipientclientid": "4ab33463139e4f96b851589286cd46e4",
   "data": {
-    "bid": "f94496b9-a40c-4d7a-8c4e-e59db029f247",
+    "aid": "f94496b9-a40c-4d7a-8c4e-e59db029f247",
     "secret": "Uebq3tGYkoDoxonUxQizqKFHzHG703F1",
-    "name": "test client benge 36",
+    "name": "test agency benge 36",
     "endPointUrl": "https://pathtoendpoint/36",
     "enabled": false,
     "createdAt": "2025-06-08T05:39:46.778Z",

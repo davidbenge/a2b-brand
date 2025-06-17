@@ -1,6 +1,5 @@
 import { config } from "dotenv";
 import { IIoEvent, IS2SAuthenticationCredentials } from "../types";
-import { BrandManager } from "./BrandManager";
 import { IoCustomEventManager } from "./IoCustomEventManager";
 import * as aioLogger from "@adobe/aio-lib-core-logging";
 
@@ -9,7 +8,6 @@ export class EventManager {
     private logLevel: string;
     private ioCustomEventManager: IoCustomEventManager;
     private logger: any;
-    private brandManager: BrandManager;
 
     /****
      * @param logLevel - the log level to use
@@ -24,7 +22,6 @@ export class EventManager {
             throw new Error('EventManager:constructor: s2sAuthenticationCredentials missing');
         }
 
-        this.brandManager = new BrandManager(logLevel);
         this.ioCustomEventManager = new IoCustomEventManager(logLevel, this.s2sAuthenticationCredentials);
         this.logLevel = logLevel;
     }
@@ -40,19 +37,12 @@ export class EventManager {
         // TODO: all events are echoed on IO
         await this.ioCustomEventManager.publishEvent(event);
        
-        // TODO: check and see if event needs to go to brand if so send it. some day that will be in the Brand config
-        // get brand data 
-        //const brandId = event.brandId;
-        //const brand = await this.brandManager.getBrand(brandId);
-        ///this.logger.debug('EventManager:publishEvent: brand', brand);
-
-        // TODO: if external get the Brand it needs to be sent to and the end point url and auth. use brand manager
-        // TODO: route the event to the correct receivers. send the event to the correct receivers with the auth in the header
-
         //await this.ioCustomEventManager.publishEvent(event);
     }
 
     /***
+     * getS2sAuthenticationCredentials
+     * 
      * @param params - the parameters object from an action invoke
      * 
      * @returns the s2s authentication credentials

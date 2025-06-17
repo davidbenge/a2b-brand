@@ -249,8 +249,13 @@ Description: Event from Agency to Brand about an asset update
 
 ### Event Types
 
+Create event metadata:
+```bash
+aio event eventmetadata create <provider_id>
+```
+
 1. **New Asset Published**
-   - Label: "New Asset Published"
+   - Label: "New Agency Asset Published"
    - Code: `com.adobe.a2b.assetsynch.new`
    - Description: "Asset that has never been synched before is coming over for the first time"
    - Event body: TODO
@@ -295,12 +300,12 @@ These events will be published to the BRAND and also echoed locally for secondar
    - Review logs for detailed error messages
 
 ## Rules
-1. all event are cloud events
+1. all event are cloud events see (cloud events)[https://github.com/cloudevents/spec]
 
 ## Contributing
 
 1. Ensure you have the required dependencies installed
 2. Follow the coding standards (ESLint configuration is provided)
-3. Write tests for new features
+3. Write tests for new features that are actions. UI is nice to have but not wired
 4. Submit a pull request
 

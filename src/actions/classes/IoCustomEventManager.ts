@@ -8,7 +8,7 @@ export class IoCustomEventManager {
     private s2sAuthenticationCredentials: IS2SAuthenticationCredentials;
     private applicationRuntimeInfo: IApplicationRuntimeInfo | undefined;
     private registrationProviderId: string; 
-    private assetSynchProviderId: string;
+    private assetSyncProviderId: string;
     
     /*******
      * constructor - constructor for the IoCustomEventManager
@@ -32,9 +32,9 @@ export class IoCustomEventManager {
 
         this.applicationRuntimeInfo = applicationRuntimeInfo;
         this.registrationProviderId = process.env.AIO_AGENCY_EVENTS_REGISTRATION_PROVIDER_ID;
-        this.assetSynchProviderId = process.env.AIO_AGENCY_EVENTS_AEM_ASSET_SYNCH_PROVIDER_ID;
+        this.assetSyncProviderId = process.env.AIO_AGENCY_EVENTS_AEM_ASSET_SYNC_PROVIDER_ID;
         this.logger.debug('IoCustomEventManager constructor registrationProviderId', this.registrationProviderId);
-        this.logger.debug('IoCustomEventManager constructor assetSynchProviderId', this.assetSynchProviderId);
+        this.logger.debug('IoCustomEventManager constructor assetSyncProviderId', this.assetSyncProviderId);
     }
 
     /*******
@@ -54,10 +54,10 @@ export class IoCustomEventManager {
             case "com.adobe.a2b.registration.received":
                 providerId = this.registrationProviderId;
                 break;
-            case "com.adobe.a2b.assetsynch.new":
-            case "com.adobe.a2b.assetsynch.updated":
-            case "com.adobe.a2b.assetsynch.deleted":
-                providerId = this.assetSynchProviderId;
+            case "com.adobe.a2b.assetsync.new":
+            case "com.adobe.a2b.assetsync.updated":
+            case "com.adobe.a2b.assetsync.deleted":
+                providerId = this.assetSyncProviderId;
                 break;
             default:
                 this.logger.error('IoCustomEventManager:publishEvent: Event type not supported', event);

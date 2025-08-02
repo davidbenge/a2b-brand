@@ -1,8 +1,8 @@
 /**
- * assetsynch-event-handler
+ * assetsync-event-handler
  *
  * we use this to handle the asset events that are sent to the action and then we will
- * determine if the asset needs to be processed.  If it does we will then call the asset-synch-event-handler and others
+ * determine if the asset needs to be processed.  If it does we will then call the asset-sync-event-handler and others
  * 
  */
 

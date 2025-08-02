@@ -61,7 +61,7 @@ AIO_RUNTIME_NAMESPACE=
 
 # Adobe I/O Events
 AIO_AGENCY_EVENTS_REGISTRATION_PROVIDER_ID=
-AIO_AGENCY_EVENTS_AEM_ASSET_SYNCH_PROVIDER_ID=
+AIO_AGENCY_EVENTS_AEM_ASSET_SYNC_PROVIDER_ID=
 
 # AEM Authentication
 AEM_AUTH_CLIENT_SECRET=
@@ -137,7 +137,8 @@ title: brand to agency
 ├── src/                          # Source code
 │   ├── actions/                  # Adobe I/O Runtime actions
 │   │   ├── agency-assetsync-event-handler/  # Asset sync event handling
-│   │   ├── agency-event-handler/  # Agency event handling
+│   │   ├── agency-assetsync-internal-handler/  # Internal assetsync event handler
+│   │   ├── agency-event-handler/  # Agency event routing
 │   │   ├── adobe-product-event-handler/  # Adobe product event handling
 │   │   ├── classes/             # Shared classes
 │   │   ├── types/               # TypeScript type definitions
@@ -158,8 +159,10 @@ title: brand to agency
 
 The application exposes the following endpoints:
 
-- `POST /api/v1/web/a2b-brand/agency-event-handler` - Handle general agency events
-  - **Required Parameters passed in config**: `APPLICATION_RUNTIME_INFO` (JSON string with namespace and app_name)
+- `POST /api/v1/web/a2b-brand/agency-event-handler` - Route agency events to appropriate internal handlers
+  - **Required Parameters**: `APPLICATION_RUNTIME_INFO` (JSON string with namespace and app_name), `type` (event type), `data` (event data with app_runtime_info)
+  - **Event Types Handled**:
+    - `com.adobe.a2b.assetsync.*` → routes to `agency-assetsync-internal-handler`
 - `POST /api/v1/web/a2b-brand/adobe-product-event-handler` - Route events from Adobe products to appropriate internal handlers
   - **Required Parameters passed in config**: `APPLICATION_RUNTIME_INFO` (JSON string with namespace and app_name)
   - **Event Types Handled**:
@@ -173,13 +176,23 @@ The application exposes the following endpoints:
 The application also includes the following non-web actions:
 
 - `agency-assetsync-event-handler` - Handle asset synchronization events from agencies (direct action invocation only)
-  - **Required Parameters passed in config on invoke**: `APPLICATION_RUNTIME_INFO` (JSON string with namespace and app_name)
+  - **Required Parameters**: `APPLICATION_RUNTIME_INFO` (JSON string with namespace and app_name)
+- `agency-assetsync-internal-handler` - Internal handler for com.adobe.a2b.assetsync events (direct action invocation only)
+  - **Required Parameters**: `APPLICATION_RUNTIME_INFO` (JSON string with namespace and app_name), `type` (event type), `data` (event data with app_runtime_info)
 
 All actions and endpoints automatically include runtime information in all published events for environment isolation.
 
 ## Event Routing Architecture
 
+The application implements a two-tier event routing system:
+
+### Adobe Product Event Routing
+
 The `adobe-product-event-handler` serves as a central router for Adobe product events. It receives events from various Adobe products and routes them to the appropriate internal handlers based on the event type.
+
+### Agency Event Routing
+
+The `agency-event-handler` serves as a central router for agency events. It receives events from agencies and routes them to the appropriate internal handlers based on the event type.
 
 ### How Event Routing Works
 
@@ -191,12 +204,20 @@ The `adobe-product-event-handler` serves as a central router for Adobe product e
 
 ### Current Event Type Mappings
 
+#### Adobe Product Events
 | Adobe Product Event Type | Internal Handler | Description |
 |-------------------------|------------------|-------------|
 | `aem.assets.asset.created` | `agency-assetsync-event-handler` | AEM asset creation events |
 | `aem.assets.asset.updated` | `agency-assetsync-event-handler` | AEM asset update events |
 | `aem.assets.asset.deleted` | `agency-assetsync-event-handler` | AEM asset deletion events |
 | `aem.assets.asset.metadata_updated` | `agency-assetsync-event-handler` | AEM asset metadata changes |
+
+#### Agency Events
+| Agency Event Type | Internal Handler | Description |
+|------------------|------------------|-------------|
+| `com.adobe.a2b.assetsync.new` | `agency-assetsync-internal-handler` | New asset synchronization events |
+| `com.adobe.a2b.assetsync.updated` | `agency-assetsync-internal-handler` | Asset synchronization update events |
+| `com.adobe.a2b.assetsync.deleted` | `agency-assetsync-internal-handler` | Asset synchronization deletion events |
 
 ### Extending Event Routing
 
@@ -345,7 +366,7 @@ AIO_AGENCY_EVENTS_REGISTRATION_PROVIDER_ID=fefcd900-fake-fake-fake-1b9ff1c5d0ac
 ```bash
 aio event provider create
 ```
-Label: "A2B Asset Synch"
+Label: "A2B Asset Sync"
 Description: Event from Agency to Brand about an asset update
 
 ### Event Types
@@ -358,19 +379,19 @@ aio event eventmetadata create <provider_id>
 1. **New Asset Published**
    - Label: "New Agency Asset Published"
    - Code: `com.adobe.a2b.assetsync.new`
-   - Description: "Asset that has never been synched before is coming over for the first time"
+   - Description: "Asset that has never been synced before is coming over for the first time"
    - Event body: Includes `app_runtime_info` for environment isolation
 
 2. **Asset Updated**
    - Label: "Asset Updated"
    - Code: `com.adobe.a2b.assetsync.updated`
-   - Description: "Asset that has been synched before has changed"
+   - Description: "Asset that has been synced before has changed"
    - Event body: Includes `app_runtime_info` for environment isolation
 
 3. **Asset Deleted**
    - Label: "Asset Deleted"
    - Code: `com.adobe.a2b.assetsync.deleted`
-   - Description: "Asset that has been synched before has been deleted"
+   - Description: "Asset that has been synced before has been deleted"
    - Event body: Includes `app_runtime_info` for environment isolation
 
 ### Asset Synchronization Setup
@@ -399,7 +420,7 @@ These events will be published to the BRAND and also echoed locally for secondar
 
 2. **Asset Synchronization Issues**
    - Verify AEM event subscriptions
-   - Check asset synchronization provider configuration
+   - Check asset sync provider configuration
    - Review logs for detailed error messages
 
 ## Rules

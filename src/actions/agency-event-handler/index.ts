@@ -12,7 +12,7 @@ export async function main(params: any): Promise<any> {
 
   try {
     logger.debug(JSON.stringify(params, null, 2));
-    const requiredParams = []
+    const requiredParams = ['APPLICATION_RUNTIME_INFO']
     const requiredHeaders = [] // TODO: Add security required headers
     const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
     if (errorMessage) {
@@ -31,7 +31,9 @@ export async function main(params: any): Promise<any> {
 
     try {
       logger.debug('New event from agency');
-      const eventManager = new EventManager(params.LOG_LEVEL, params);
+      const currentS2sAuthenticationCredentials = EventManager.getS2sAuthenticationCredentials(params);
+      const applicationRuntimeInfo = EventManager.getApplicationRuntimeInfo(params);
+      const eventManager = new EventManager(params.LOG_LEVEL, currentS2sAuthenticationCredentials, applicationRuntimeInfo);
       await eventManager.publishEvent(event);
       logger.debug('New event from agency published');
       

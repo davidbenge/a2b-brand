@@ -34,10 +34,6 @@ This POC establishes a repeatable pattern that can be shared with brands to buil
 ## Testing & Coverage
 
 
-## Deployment & Cleanup
-
-- `aio app deploy` to build and deploy all actions on Runtime and static files to CDN
-- `aio app undeploy` to undeploy the app
 
 ## Dependencies
 
@@ -84,6 +80,49 @@ S2S_SCOPES=
 ORG_ID=
 ```
 
+### Application Runtime Information
+
+The application implements a sophisticated runtime isolation mechanism to prevent event cross-contamination between different development environments. This is particularly important when multiple developers are working simultaneously or debugging in the same IMS organization, as event providers are shared across the entire organization.
+
+#### How It Works
+
+1. **Runtime Parameter Injection**: Every action receives an `APPLICATION_RUNTIME_INFO` parameter containing:
+   ```json
+   {
+     "namespace": "${AIO_runtime_namespace}",
+     "app_name": "${AIO_APP_NAME}"
+   }
+   ```
+
+2. **Namespace Parsing**: The namespace is automatically parsed into three distinct components:
+   - `consoleId`: The Adobe Developer Console identifier
+   - `projectName`: The specific project name
+   - `workspace`: The development workspace (e.g., dev, stage, prod)
+
+3. **Event Enrichment**: Every event published through the EventManager automatically includes an `app_runtime_info` property in the event data:
+   ```json
+   {
+     "app_runtime_info": {
+       "consoleId": "console123",
+       "projectName": "a2b-brand",
+       "workspace": "dev"
+     }
+   }
+   ```
+
+#### Benefits
+
+- **Environment Isolation**: Events can be filtered by runtime information, ensuring you only process events from your specific development environment
+- **Debugging Clarity**: Eliminates confusion from seeing events from other developers' environments
+- **Multi-tenant Safety**: Prevents accidental processing of events from other projects or workspaces
+- **Audit Trail**: Provides clear traceability of which environment generated each event
+
+#### Implementation Details
+
+The runtime information is automatically handled by the EventManager and IoCustomEventManager classes. No additional code is required in your event handlers - the system transparently adds the runtime context to all outgoing events.
+
+This feature is particularly valuable in enterprise development scenarios where multiple teams may be working on similar applications within the same Adobe I/O organization, ensuring clean separation of concerns and preventing unintended event processing.
+
 ### Project Configuration
 
 ```yaml
@@ -97,8 +136,9 @@ title: brand to agency
 .
 ├── src/                          # Source code
 │   ├── actions/                  # Adobe I/O Runtime actions
-│   │   ├── agency-assetsynch-event-handler/  # Asset sync event handling
+│   │   ├── agency-assetsync-event-handler/  # Asset sync event handling
 │   │   ├── agency-event-handler/  # Agency event handling
+│   │   ├── adobe-product-event-handler/  # Adobe product event handling
 │   │   ├── classes/             # Shared classes
 │   │   ├── types/               # TypeScript type definitions
 │   │   ├── utils/               # Utility functions
@@ -118,8 +158,54 @@ title: brand to agency
 
 The application exposes the following endpoints:
 
-- `POST /api/v1/web/a2b-brand/agency-assetsynch-event-handler` - Handle asset synchronization events from agencies
 - `POST /api/v1/web/a2b-brand/agency-event-handler` - Handle general agency events
+  - **Required Parameters passed in config**: `APPLICATION_RUNTIME_INFO` (JSON string with namespace and app_name)
+- `POST /api/v1/web/a2b-brand/adobe-product-event-handler` - Route events from Adobe products to appropriate internal handlers
+  - **Required Parameters passed in config**: `APPLICATION_RUNTIME_INFO` (JSON string with namespace and app_name)
+  - **Event Types Handled**:
+    - `aem.assets.asset.created` → routes to `agency-assetsync-event-handler`
+    - `aem.assets.asset.updated` → routes to `agency-assetsync-event-handler`
+    - `aem.assets.asset.deleted` → routes to `agency-assetsync-event-handler`
+    - `aem.assets.asset.metadata_updated` → routes to `agency-assetsync-event-handler`
+
+## Actions
+
+The application also includes the following non-web actions:
+
+- `agency-assetsync-event-handler` - Handle asset synchronization events from agencies (direct action invocation only)
+  - **Required Parameters passed in config on invoke**: `APPLICATION_RUNTIME_INFO` (JSON string with namespace and app_name)
+
+All actions and endpoints automatically include runtime information in all published events for environment isolation.
+
+## Event Routing Architecture
+
+The `adobe-product-event-handler` serves as a central router for Adobe product events. It receives events from various Adobe products and routes them to the appropriate internal handlers based on the event type.
+
+### How Event Routing Works
+
+1. **Event Reception**: The `adobe-product-event-handler` receives events from Adobe products via webhook
+2. **Event Type Analysis**: The handler examines the `type` field of the incoming event
+3. **Routing Decision**: Based on the event type, it determines which internal handler should process the event
+4. **Action Invocation**: Uses OpenWhisk action invocation to call the appropriate internal handler
+5. **Result Return**: Returns the routing result along with the original event processing status
+
+### Current Event Type Mappings
+
+| Adobe Product Event Type | Internal Handler | Description |
+|-------------------------|------------------|-------------|
+| `aem.assets.asset.created` | `agency-assetsync-event-handler` | AEM asset creation events |
+| `aem.assets.asset.updated` | `agency-assetsync-event-handler` | AEM asset update events |
+| `aem.assets.asset.deleted` | `agency-assetsync-event-handler` | AEM asset deletion events |
+| `aem.assets.asset.metadata_updated` | `agency-assetsync-event-handler` | AEM asset metadata changes |
+
+### Extending Event Routing
+
+To add support for new Adobe product events:
+
+1. Add the new event type to the switch statement in `adobe-product-event-handler`
+2. Create a new routing function (e.g., `routeToCreativeCloudHandler`)
+3. Create the corresponding internal handler action
+4. Update the documentation and tests
 
 ## Unified Shell API
 
@@ -167,7 +253,12 @@ aio event eventmetadata create <id>
     "endPointUrl": "https://pathtoendpoint/37",
     "enabled": false,
     "createdAt": "2025-06-08T05:44:51.219Z",
-    "updatedAt": "2025-06-08T05:44:51.219Z"
+    "updatedAt": "2025-06-08T05:44:51.219Z",
+    "app_runtime_info": {
+      "consoleId": "console123",
+      "projectName": "a2b-brand",
+      "workspace": "dev"
+    }
   }
 }
 ```
@@ -196,7 +287,12 @@ aio event eventmetadata create <id>
     "endPointUrl": "https://pathtoendpoint/36",
     "enabled": false,
     "createdAt": "2025-06-08T05:39:46.778Z",
-    "updatedAt": "2025-06-08T05:39:46.778Z"
+    "updatedAt": "2025-06-08T05:39:46.778Z",
+    "app_runtime_info": {
+      "consoleId": "console123",
+      "projectName": "a2b-brand",
+      "workspace": "dev"
+    }
   }
 }
 ```
@@ -225,7 +321,12 @@ aio event eventmetadata create <id>
     "endPointUrl": "https://pathtoendpoint/36",
     "enabled": false,
     "createdAt": "2025-06-08T05:42:21.855Z",
-    "updatedAt": "2025-06-08T05:42:21.855Z"
+    "updatedAt": "2025-06-08T05:42:21.855Z",
+    "app_runtime_info": {
+      "consoleId": "console123",
+      "projectName": "a2b-brand",
+      "workspace": "dev"
+    }
   }
 }
 ```
@@ -256,30 +357,32 @@ aio event eventmetadata create <provider_id>
 
 1. **New Asset Published**
    - Label: "New Agency Asset Published"
-   - Code: `com.adobe.a2b.assetsynch.new`
+   - Code: `com.adobe.a2b.assetsync.new`
    - Description: "Asset that has never been synched before is coming over for the first time"
-   - Event body: TODO
+   - Event body: Includes `app_runtime_info` for environment isolation
 
 2. **Asset Updated**
    - Label: "Asset Updated"
-   - Code: `com.adobe.a2b.assetsynch.update`
+   - Code: `com.adobe.a2b.assetsync.updated`
    - Description: "Asset that has been synched before has changed"
-   - Event body: TODO
+   - Event body: Includes `app_runtime_info` for environment isolation
 
 3. **Asset Deleted**
    - Label: "Asset Deleted"
-   - Code: `com.adobe.a2b.assetsynch.delete`
+   - Code: `com.adobe.a2b.assetsync.deleted`
    - Description: "Asset that has been synched before has been deleted"
-   - Event body: TODO
+   - Event body: Includes `app_runtime_info` for environment isolation
 
 ### Asset Synchronization Setup
 
-Using the AEM Assets Author API, subscribe to the following events at:
-`https://your_adobe_developer_project.adobeioruntime.net/api/v1/web/a2b-agency/assetsynch-event-handler`
+The `agency-assetsync-event-handler` is a non-web action that can be invoked directly by other actions or services. It handles asset synchronization events and can be triggered programmatically.
 
-This is done in the Adobe Developer Console. [See setup documentation](https://experienceleague.adobe.com/en/docs/experience-manager-learn/cloud-service/aem-apis/openapis/setup)
+For AEM asset event processing, you can:
+1. Invoke the action directly from other actions using the Adobe I/O Runtime SDK
+2. Set up triggers to automatically invoke the action based on specific conditions
+3. Use the action as part of a workflow or pipeline
 
-Events to subscribe to:
+Events that can be processed:
 - Asset deleted event: `aem.assets.asset.deleted`
 - Asset metadata updated event: `aem.assets.asset.metadata_updated`
 

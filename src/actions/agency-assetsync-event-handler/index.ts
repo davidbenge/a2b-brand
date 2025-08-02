@@ -13,7 +13,7 @@ import { errorResponse } from "../utils/common";
 
 export async function main(params: any): Promise<any> {
   // config the needed items 
-  const ACTION_NAME = 'brand:agency-assetsynch-event-handler';
+  const ACTION_NAME = 'brand:agency-assetsync-event-handler';
   const logger = aioLogger(ACTION_NAME, { level: params.logLevel || "info" });
   
   // handle IO webhook challenge
@@ -26,9 +26,9 @@ export async function main(params: any): Promise<any> {
   }
 
   // CHECK for missing params  
-  logger.debug('agency-assetsynch-event-handler params',JSON.stringify(params, null, 2));
+  logger.debug('agency-assetsync-event-handler params',JSON.stringify(params, null, 2));
   
-  const requiredParams = []
+  const requiredParams = ['APPLICATION_RUNTIME_INFO']
   const requiredHeaders = [] // TODO: Add security required headers
   const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
   if (errorMessage) {
@@ -36,14 +36,16 @@ export async function main(params: any): Promise<any> {
     return errorResponse(400, errorMessage, logger)
   }
 
-  // set up the s2s authentication credentials
+  // set up the s2s authentication credentials and application runtime info
   let eventManager: EventManager;
   try {
     const currentS2sAuthenticationCredentials = EventManager.getS2sAuthenticationCredentials(params);
-    logger.debug('IoEventHandler:constructor: currentS2sAuthenticationCredentials', currentS2sAuthenticationCredentials);  
-    eventManager = new EventManager(params.logLevel, currentS2sAuthenticationCredentials);
+    const applicationRuntimeInfo = EventManager.getApplicationRuntimeInfo(params);
+    logger.debug('IoEventHandler:constructor: currentS2sAuthenticationCredentials', currentS2sAuthenticationCredentials);
+    logger.debug('IoEventHandler:constructor: applicationRuntimeInfo', applicationRuntimeInfo);
+    eventManager = new EventManager(params.logLevel, currentS2sAuthenticationCredentials, applicationRuntimeInfo);
   } catch (error) {
-    logger.error('agency-assetsynch-event-handler', error);
+    logger.error('agency-assetsync-event-handler', error);
     return errorResponse(500, 'Error Handling Event', logger)
   }
 

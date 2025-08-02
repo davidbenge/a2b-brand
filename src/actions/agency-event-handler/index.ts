@@ -2,8 +2,9 @@
  * Agency Event Handler
  *
  * This action handles all incoming events from agencies and routes them to appropriate internal handlers
- * based on the event type. It validates that events have the required type and app_runtime_info.
+ * based on the event type. It validates that events have the required type, app_runtime_info, and workspace matching.
  */
+import { EventManager } from "../classes/EventManager";
 import { errorResponse, checkMissingRequestInputs } from "../utils/common";
 import * as aioLogger from "@adobe/aio-lib-core-logging";
 const openwhisk = require("openwhisk");
@@ -27,7 +28,22 @@ export async function main(params: any): Promise<any> {
       return errorResponse(400, 'Missing app_runtime_info in event data', logger)
     }
 
-    logger.info(`Processing agency event: ${params.type}`);
+    // Validate that the incoming event's workspace matches our action's workspace
+    const actionRuntimeInfo = EventManager.getApplicationRuntimeInfo(params);
+    if (!actionRuntimeInfo) {
+      logger.error('Failed to parse APPLICATION_RUNTIME_INFO from action parameters');
+      return errorResponse(500, 'Failed to parse APPLICATION_RUNTIME_INFO from action parameters', logger)
+    }
+
+    const eventWorkspace = params.data.app_runtime_info.workspace;
+    const actionWorkspace = actionRuntimeInfo.workspace;
+
+    if (eventWorkspace !== actionWorkspace) {
+      logger.error(`Workspace mismatch: event workspace '${eventWorkspace}' does not match action workspace '${actionWorkspace}'`);
+      return errorResponse(400, `Workspace mismatch: event workspace '${eventWorkspace}' does not match action workspace '${actionWorkspace}'`, logger)
+    }
+
+    logger.info(`Processing agency event: ${params.type} in workspace: ${actionWorkspace}`);
 
     // Route events to appropriate internal handlers based on event type
     let routingResult;

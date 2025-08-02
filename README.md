@@ -161,6 +161,7 @@ The application exposes the following endpoints:
 
 - `POST /api/v1/web/a2b-brand/agency-event-handler` - Route agency events to appropriate internal handlers
   - **Required Parameters**: `APPLICATION_RUNTIME_INFO` (JSON string with namespace and app_name), `type` (event type), `data` (event data with app_runtime_info)
+  - **Validation**: Ensures event workspace matches action workspace for environment isolation
   - **Event Types Handled**:
     - `com.adobe.a2b.assetsync.*` → routes to `agency-assetsync-internal-handler`
 - `POST /api/v1/web/a2b-brand/adobe-product-event-handler` - Route events from Adobe products to appropriate internal handlers
@@ -193,6 +194,13 @@ The `adobe-product-event-handler` serves as a central router for Adobe product e
 ### Agency Event Routing
 
 The `agency-event-handler` serves as a central router for agency events. It receives events from agencies and routes them to the appropriate internal handlers based on the event type.
+
+#### Workspace Validation
+
+The agency event handler includes workspace validation to ensure environment isolation:
+- **Validation Logic**: Compares `params.data.app_runtime_info.workspace` with the workspace parsed from `APPLICATION_RUNTIME_INFO`
+- **Security**: Prevents events from different workspaces (dev, stage, prod) from being processed by the wrong environment
+- **Error Handling**: Returns 400 error with clear message when workspace mismatch is detected
 
 ### How Event Routing Works
 

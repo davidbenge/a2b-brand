@@ -50,7 +50,7 @@ This project uses several key Adobe and React libraries:
 
 ### Environment Variables
 
-You can generate the `.env` file using the command `aio app use`. 
+You can generate the `.env` file using the command `aio app use`. After generation, you'll need to update several variables with your specific Adobe Developer Console and AEM Cloud Service settings.
 
 ```bash
 # This file must **not** be committed to source control
@@ -78,7 +78,83 @@ S2S_SCOPES=
 
 # Organization
 ORG_ID=
+
+# Application Configuration
+AIO_APP_NAME=
+AGENCY_BASE_URL=
+
+# AEM Cloud Service Configuration
+AIO_ASSET_SYNCH_TARGET_PROGRAM_ENVIRONMENT=
 ```
+
+#### Required Configuration Steps
+
+**1. Adobe Developer Console Settings**
+
+Update these variables with values from your Adobe Developer Console project:
+
+- `ORG_ID` - Your Adobe organization ID
+- `S2S_API_KEY` - Service-to-service API key
+- `S2S_CLIENT_ID` - Service-to-service client ID  
+- `S2S_CLIENT_SECRET` - Service-to-service client secret
+
+**2. Application-Specific Settings**
+
+Update these variables to your own target values:
+
+- `AIO_APP_NAME` - Your application name (e.g., "a2b-brand")
+- `AGENCY_BASE_URL` - Base URL for first-time agency registration
+
+**3. AEM Cloud Service Configuration**
+
+These values must come from your AEM Cloud Service Developer Console:
+
+- `AEM_AUTH_CLIENT_ID` - AEM authentication client ID
+- `AEM_AUTH_TECH_ACCOUNT_ID` - AEM technical account ID
+- `AEM_AUTH_CLIENT_SECRET` - AEM authentication client secret
+- `AEM_AUTH_PRIVATE_KEY` - AEM private key (see special formatting below)
+- `AIO_ASSET_SYNCH_TARGET_PROGRAM_ENVIRONMENT` - Target program environment
+
+**Important: AEM Private Key Formatting**
+
+The `AEM_AUTH_PRIVATE_KEY` requires special formatting:
+1. Take the JWT token from AEM Developer Console
+2. Remove the last `\r\n`
+3. Replace all other `\r\n` with `\n`
+4. Surround the entire key with double quotes `""`
+
+**4. Event Provider Configuration**
+
+You need to configure event providers for asset synchronization and brand registration:
+
+```bash
+# List existing event providers
+aio event provider list
+```
+
+Look for providers with these labels:
+- Asset sync events: "A2B Asset Sync" or similar
+- Brand registration: "a2b-Brand Registration" or similar
+
+Update these variables with the UUIDs from your providers:
+- `AIO_AGENCY_EVENTS_AEM_ASSET_SYNC_PROVIDER_ID` - UUID for asset sync event provider
+- `AIO_AGENCY_EVENTS_REGISTRATION_PROVIDER_ID` - UUID for brand registration event provider
+
+**If no providers exist, create them:**
+
+```bash
+# Create asset sync event provider
+aio event provider create
+# Label: "A2B Asset Sync"
+# Description: "Event from Agency to Brand about an asset update"
+
+# Create brand registration event provider  
+aio event provider create
+# Label: "a2b-Brand Registration"
+# Description: "Events from an agency into a brand"
+```
+
+After creating providers, run `aio event provider list` again to get the UUIDs and update your `.env` file.
 
 ### Application Runtime Information
 

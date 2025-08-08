@@ -54,9 +54,9 @@ export async function main(params: any): Promise<any> {
       case 'aem.assets.asset.updated':
       case 'aem.assets.asset.deleted':
       case 'aem.assets.asset.metadata_updated':
-        logger.info(`Routing AEM asset event to TODO//need to handle this: ${params.type}`);
-        //routingResult = await routeToAssetSyncHandler(params, logger);
-        break;
+      logger.info(`Routing AEM asset event to TODO//need to handle this: ${params.type}`);
+      //routingResult = await routeToAssetSyncHandler(params, logger);
+      break;
       
       // TODO: Add more Adobe product event types as needed
       // case 'creativecloud.file.created':

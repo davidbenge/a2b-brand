@@ -26,12 +26,42 @@ try {
 
 function bootstrapRaw () {
   /* **here you can mock the exc runtime and ims objects** */
-  const mockRuntime = { on: () => {} }
+  const mockRuntime = { 
+    on: () => {},
+    done: () => {}
+  }
   const mockIms = {}
+
+  // Create mock viewProps for demo mode
+  const mockViewProps = {
+    baseUrl: 'https://demo.adobeioruntime.net',
+    environment: 'demo',
+    historyType: 'browser',
+    imsEnvironment: 'demo',
+    imsOrg: 'DEMO_ORG@AdobeOrg',
+    imsOrgName: 'Demo Organization',
+    imsProfile: {
+      email: 'demo.user@example.com',
+      name: 'Demo User',
+      userId: 'demo-user-123'
+    },
+    imsToken: 'demo-token-12345',
+    locale: 'en-US',
+    preferredLanguages: ['en-US'],
+    shellInfo: {
+      version: '1.0.0'
+    },
+    tenant: 'demo-tenant',
+    aioRuntimeNamespace: 'demo-namespace',
+    aioAppName: 'a2b-brand-demo',
+    agencyBaseUrl: 'https://demo-agency.adobeioruntime.net'
+  }
+
+  console.log('[DEMO MODE] Application running in fallback mode with mock runtime')
 
   // render the actual react application and pass along the runtime object to make it available to the App
   ReactDOM.render(
-    <App runtime={mockRuntime} ims={mockIms} />,
+    <App runtime={mockRuntime} ims={mockIms} viewProps={mockViewProps} />,
     document.getElementById('root')
   )
 }

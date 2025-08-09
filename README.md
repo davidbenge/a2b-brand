@@ -26,6 +26,30 @@ This POC establishes a repeatable pattern that can be shared with brands to buil
    npm run run:application
    ```
 
+## 🎮 Demo Mode
+
+Demo mode is automatically enabled for development and provides a fully functional UI with mock data.
+
+### Quick Start
+```bash
+aio app run -e dx/excshell/1
+```
+
+### What You'll Get
+- ✅ 3 mock company registrations with different statuses
+- ✅ Functional registration form with simulated API responses
+- ✅ Full CRUD operations (create, read, update, delete)
+- ✅ Search and filtering capabilities
+- ✅ Realistic 1-2 second delays for API simulation
+
+### Visual Indicators
+- Blue header with "Brand/Client (Demo Mode)" label
+- "Demo Mode Active" status indicator in header
+- Header navigation (replaced sidebar)
+- Console messages prefixed with "[DEMO MODE]"
+
+📖 **[Complete Demo Mode Documentation](docs/DEMO_MODE_USAGE.md)**
+
 ## Local Development
 
 - `npm run run:application` - Run the application locally

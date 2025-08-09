@@ -9,21 +9,21 @@ export const About = () => (
   <View maxWidth="size-6000">
     <Content>
       <Flex direction="column" gap="size-300">
-        <Heading level={1}>About Brand to Agency</Heading>
+        <Heading level={1}>About Brand/Client Portal</Heading>
         <Divider size="S" />
         
         <Text>
-          The Brand to Agency (B2A) solution is an active proof of concept built using Adobe App Builder. 
-          It's designed to connect asset workflows between brand-owned AEM environments and agencies 
-          in a secure and auditable way.
+          This is the Brand/Client side of the Brand to Agency (B2A) solution, built using Adobe App Builder. 
+          This portal allows brands to manage agency registrations, control asset workflows, and monitor 
+          synchronization status with agency partners accessing brand-owned AEM environments.
         </Text>
         
-        <Heading level={2}>Key Features</Heading>
+        <Heading level={2}>Brand/Client Features</Heading>
         <View paddingStart="size-200">
           <Text>
-            • <strong>Agency Registration</strong>: Secure registration process for agencies<br/>
-            • <strong>Asset Synchronization</strong>: Real-time asset sync between brand and agency<br/>
-            • <strong>Event-Driven Architecture</strong>: CloudEvents-based communication<br/>
+            • <strong>Agency Management</strong>: Review and approve agency registration requests<br/>
+            • <strong>Asset Control</strong>: Manage which assets are shared with agencies<br/>
+            • <strong>Sync Monitoring</strong>: Track asset synchronization status with agency partners<br/>
             • <strong>Demo Mode</strong>: Comprehensive demo functionality for development and testing
           </Text>
         </View>

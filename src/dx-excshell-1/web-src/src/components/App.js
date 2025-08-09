@@ -52,8 +52,9 @@ function App (props) {
             >
               <Routes>
                 <Route path='/' element={<Home />} />
-                <Route path='/agency_registration' element={<AgencyRegistrationView viewProps={safeViewProps} />}/>
+                <Route path='/agencies' element={<AgencyRegistrationView viewProps={safeViewProps} />}/>
                 <Route path='/registrations' element={<CompanyRegistrationList viewProps={safeViewProps} />}/>
+                <Route path='/sync' element={<div style={{padding: '20px'}}>Sync Status - Coming Soon</div>}/>
                 <Route path='/about' element={<About />}/>
               </Routes>
             </View>

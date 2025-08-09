@@ -10,14 +10,14 @@ export const Home = () => (
   <View maxWidth="size-6000">
     <Content>
       <Flex direction='column' gap='size-300'>
-        <Heading level={1}>Welcome to Brand to Agency</Heading>
+        <Heading level={1}>Welcome to Brand/Client Portal</Heading>
         
         <Divider size="S" />
         
         <Text>
-          The Brand to Agency solution is an active proof of concept designed to connect 
-          asset workflows between brand-owned AEM environments and agencies in a secure 
-          and auditable way.
+          This is the Brand/Client side of the Brand to Agency solution. Here you can manage 
+          agency registrations, control asset sharing, and monitor sync status between 
+          your brand's AEM environment and registered agency partners.
         </Text>
         
         {ENABLE_DEMO_MODE && (
@@ -31,9 +31,9 @@ export const Home = () => (
             <Flex direction="column" gap="size-100">
               <Heading level={3}>Demo Mode Features</Heading>
               <Text>
-                • Company registration form with simulated API responses<br/>
-                • Registration management with 3 sample companies<br/>
-                • Search, filter, and CRUD operations<br/>
+                • Agency registration management with simulated API responses<br/>
+                • Agency approval/rejection workflow tools<br/>
+                • Asset sync status monitoring and tracking<br/>
                 • Realistic delays and user feedback
               </Text>
             </Flex>
@@ -47,8 +47,9 @@ export const Home = () => (
           </Text>
           <View paddingStart="size-200">
             <Text>
-              • <strong>Agency Registration</strong>: Register a new company<br/>
-              • <strong>View Registrations</strong>: Manage existing registrations<br/>
+              • <strong>Brand Registration</strong>: Register with new brands<br/>
+              • <strong>Asset Management</strong>: Manage and sync assets<br/>
+              • <strong>Sync Status</strong>: Monitor synchronization status<br/>
               • <strong>About</strong>: Learn more about the application
             </Text>
           </View>

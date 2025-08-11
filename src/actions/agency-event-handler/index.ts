@@ -5,7 +5,7 @@
  * based on the event type. It validates that events have the required type, app_runtime_info, and workspace matching.
  */
 import { EventManager } from "../classes/EventManager";
-import { errorResponse, checkMissingRequestInputs } from "../utils/common";
+import { errorResponse, checkMissingRequestInputs, stripOpenWhiskParams } from "../utils/common";
 import * as aioLogger from "@adobe/aio-lib-core-logging";
 const openwhisk = require("openwhisk");
 
@@ -88,13 +88,14 @@ export async function main(params: any): Promise<any> {
 async function routeToAssetSyncHandler(params: any, logger: any): Promise<any> {
   try {
     // Initialize OpenWhisk client
-    const ow = openwhisk();
-    
+    const ow = openwhisk({
+      apihost: params.AIO_runtime_apihost || 'https://adobeioruntime.net',
+      api_key: params.AIO_runtime_auth,
+      namespace: params.AIO_runtime_namespace
+    });
+
     // Prepare the parameters for the assetsync internal handler
-    const assetsyncParams = {
-      ...params, // Pass through all original parameters
-      // Add any additional parameters specific to assetsync if needed
-    };
+    const assetsyncParams = stripOpenWhiskParams(params);
 
     logger.debug('Invoking agency-assetsync-internal-handler with params:', JSON.stringify(assetsyncParams, null, 2));
 

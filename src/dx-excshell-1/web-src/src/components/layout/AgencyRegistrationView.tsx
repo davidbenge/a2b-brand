@@ -40,7 +40,7 @@ const AgencyRegistrationView: React.FC<{ viewProps: ViewPropsBase }> = ({ viewPr
         console.log('AgencyRegistrationView props', viewProps);
         console.log('AgencyRegistrationView specific props:', {
             aioRuntimeNamespace: viewProps.aioRuntimeNamespace,
-            aioAppName: viewProps.aioAppName,
+            aioAppName: viewProps.aioActionPackageName,
             agencyBaseUrl: viewProps.agencyBaseUrl
         });
 
@@ -51,8 +51,8 @@ const AgencyRegistrationView: React.FC<{ viewProps: ViewPropsBase }> = ({ viewPr
             return;
         }
         
-        if (!viewProps.aioAppName) {
-            console.error('aioAppName is not properly configured:', viewProps.aioAppName);
+        if (!viewProps.aioActionPackageName) {
+            console.error('aioActionPackageName is not properly configured:', viewProps.aioActionPackageName);
             setError('Configuration error: Adobe I/O App name not available. Please check your environment configuration.');
             return;
         }
@@ -63,8 +63,8 @@ const AgencyRegistrationView: React.FC<{ viewProps: ViewPropsBase }> = ({ viewPr
             return;
         }
 
-        const brandBaseUrl = `https://${viewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${viewProps.aioAppName}/agency-event-handler`;
-        const agencyBaseUrl = `${viewProps.agencyBaseUrl}/api/v1/web/a2b-agency/new-brand-registration`;
+        const brandBaseUrl = `https://${viewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${viewProps.aioActionPackageName}/agency-event-handler`;
+        const agencyBaseUrl = `${viewProps.agencyBaseUrl}/new-brand-registration`;
         const imsOrg = viewProps.imsOrg;
 
         setBrandBaseUrl(brandBaseUrl);

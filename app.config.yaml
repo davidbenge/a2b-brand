@@ -16,6 +16,9 @@ application:
               S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
               S2S_SCOPES: $S2S_SCOPES
               APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+              AIO_runtime_apihost: $AIO_runtime_apihost
+              AIO_runtime_auth: $AIO_runtime_auth
+              AIO_runtime_namespace: $AIO_runtime_namespace
             annotations:
               require-adobe-auth: false
               final: true
@@ -30,6 +33,9 @@ application:
               S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
               S2S_SCOPES: $S2S_SCOPES
               APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+              AIO_runtime_apihost: $AIO_runtime_apihost
+              AIO_runtime_auth: $AIO_runtime_auth
+              AIO_runtime_namespace: $AIO_runtime_namespace
             annotations:
               require-adobe-auth: true
               final: true

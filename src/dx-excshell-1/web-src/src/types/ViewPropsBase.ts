@@ -14,7 +14,7 @@ export abstract class ViewPropsBase implements IViewPropsBase {
     shellInfo: any;
     tenant: string;
     aioRuntimeNamespace: string;
-    aioAppName: string;
+    aioActionPackageName: string;
     agencyBaseUrl: string;
 
     constructor(props: IViewPropsBase) {
@@ -31,7 +31,7 @@ export abstract class ViewPropsBase implements IViewPropsBase {
         this.shellInfo = props.shellInfo;
         this.tenant = props.tenant;
         this.aioRuntimeNamespace = props.aioRuntimeNamespace;
-        this.aioAppName = props.aioAppName;
+        this.aioActionPackageName = props.aioActionPackageName;
         this.agencyBaseUrl = props.agencyBaseUrl;
     }
 
@@ -51,7 +51,7 @@ export abstract class ViewPropsBase implements IViewPropsBase {
             this.locale &&
             this.tenant &&
             this.aioRuntimeNamespace &&
-            this.aioAppName &&
+            this.aioActionPackageName &&
             this.agencyBaseUrl
         );
     }
@@ -75,7 +75,7 @@ export abstract class ViewPropsBase implements IViewPropsBase {
             shellInfo: this.shellInfo,
             tenant: this.tenant,
             aioRuntimeNamespace: this.aioRuntimeNamespace,
-            aioAppName: this.aioAppName,
+            aioActionPackageName: this.aioActionPackageName,
             agencyBaseUrl: this.agencyBaseUrl
         };
     }

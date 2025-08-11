@@ -56,12 +56,12 @@ function bootstrapInExcShell () {
     
     // Try to get runtime info from the shell context or use fallbacks
     const aioRuntimeNamespace = process.env.AIO_runtime_namespace || shellInfo?.aio?.runtime?.namespace || undefined;
-    const aioAppName = process.env.AIO_APP_NAME || shellInfo?.aio?.app?.name || undefined;
+    const aioActionPackageName = process.env.AIO_ACTION_PACKAGE_NAME || undefined;
     const agencyBaseUrl = process.env.AGENCY_BASE_URL || undefined;
 
     console.log('Runtime configuration:', {
       aioRuntimeNamespace,
-      aioAppName,
+      aioActionPackageName,
       agencyBaseUrl,
       shellInfo: shellInfo?.aio
     });
@@ -80,7 +80,7 @@ function bootstrapInExcShell () {
       shellInfo: shellInfo,
       tenant: tenant,
       aioRuntimeNamespace,
-      aioAppName,
+      aioActionPackageName,
       agencyBaseUrl
     }
     // render the actual react application and pass along the runtime and ims objects to make it available to the App

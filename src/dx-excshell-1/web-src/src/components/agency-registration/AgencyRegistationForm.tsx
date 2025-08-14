@@ -21,12 +21,10 @@ import { ViewPropsBase } from '../../types/ViewPropsBase';
 import type { IBrand } from '../../../../../actions/types';
 import { Brand } from '../../../../../actions/classes/Brand';
 
-
 interface CompanyRegistrationForm {
   name: string;
   primaryContact: string;
   phoneNumber: string;
-  endPointUrl: string;
 }
 
 interface AgencyRegistrationFormProps {
@@ -37,8 +35,7 @@ interface AgencyRegistrationFormProps {
 const initialState: CompanyRegistrationForm = {
   name: '',
   primaryContact: '',
-  phoneNumber: '',
-  endPointUrl: ''
+  phoneNumber: ''
 };
 
 const reducer = (state, action) => {
@@ -57,13 +54,17 @@ const AgencyRegistrationForm: React.FC<AgencyRegistrationFormProps> = ({
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useReducer(reducer, initialState);
+  const endPointUrl = `https://${viewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${viewProps.aioAppName}/agency-event-handler`;
 
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await apiService.createBrand(formData);
+      const response = await apiService.createBrand({
+        ...formData,
+        endPointUrl
+      });
 
       if (response.statusCode === 200) {
         setSubmitted(true);
@@ -145,52 +146,41 @@ const AgencyRegistrationForm: React.FC<AgencyRegistrationFormProps> = ({
         <Divider size="S" />
 
         <Flex direction="column" gap="size-200" marginTop="size-200">
-          <View>
-            <TextField
-              label="Company Name"
-              value={formData.name}
-              onChange={(value) => handleInputChange('name', value)}
-              isRequired
-              placeholder="Enter your company name"
-            />
-            <TextField
-              marginStart="size-200"
-              label="Primary Contact"
-              value={formData.primaryContact}
-              onChange={(value) => handleInputChange('primaryContact', value)}
-              isRequired
-              placeholder="Enter primary contact name"
-            />
-          </View>
+          <TextField
+            label="Company Name"
+            value={formData.name}
+            onChange={(value) => handleInputChange('name', value)}
+            isRequired
+            placeholder="Enter your company name"
+          />
+          <TextField
+            label="Primary Contact"
+            value={formData.primaryContact}
+            onChange={(value) => handleInputChange('primaryContact', value)}
+            isRequired
+            placeholder="Enter primary contact name"
+          />
 
-          <View>
-            <TextField
-              label="Phone Number"
-              value={formData.phoneNumber}
-              onChange={(value) => handleInputChange('phoneNumber', value)}
-              isRequired
-              placeholder="Enter phone number"
-            />
-            <TextField
-              marginStart="size-200"
-              label="Enter endpoint url"
-              value={formData.endPointUrl}
-              onChange={(value) => handleInputChange('endPointUrl', value)}
-              isRequired
-              placeholder="Enter endpoint url"
-            />
-          </View>
+          <TextField
+            label="Phone Number"
+            value={formData.phoneNumber}
+            onChange={(value) => handleInputChange('phoneNumber', value)}
+            isRequired
+            placeholder="Enter phone number"
+          />
 
           {error && <StatusLight variant="negative">{error}</StatusLight>}
 
-          <Button
-            width={'size-2400'}
-            variant="primary"
-            onPress={handleSubmit}
-            isDisabled={loading || !isFormValid}
-          >
-            {loading ? 'Submitting...' : 'Submit Registration'}
-          </Button>
+          <View>
+            <Button
+              width={'size-2400'}
+              variant="primary"
+              onPress={handleSubmit}
+              isDisabled={loading || !isFormValid}
+            >
+              {loading ? 'Submitting...' : 'Submit Registration'}
+            </Button>
+          </View>
         </Flex>
       </Content>
     </View>

@@ -38,9 +38,33 @@ const AgencyRegistrationView: React.FC<{ viewProps: ViewPropsBase }> = ({ viewPr
 
     useEffect(() => {
         console.log('AgencyRegistrationView props', viewProps);
+        console.log('AgencyRegistrationView specific props:', {
+            aioRuntimeNamespace: viewProps.aioRuntimeNamespace,
+            aioAppName: viewProps.aioActionPackageName,
+            agencyBaseUrl: viewProps.agencyBaseUrl
+        });
 
-        const brandBaseUrl = `https://${viewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${viewProps.aioAppName}/agency-event-handler`;
-        const agencyBaseUrl = `${viewProps.agencyBaseUrl}/api/v1/web/a2b-agency/new-brand-registration`;
+        // Validate required properties with detailed error messages
+        if (!viewProps.aioRuntimeNamespace) {
+            console.error('aioRuntimeNamespace is not properly configured:', viewProps.aioRuntimeNamespace);
+            setError('Configuration error: Adobe I/O Runtime namespace not available. Please check your environment configuration.');
+            return;
+        }
+        
+        if (!viewProps.aioActionPackageName) {
+            console.error('aioActionPackageName is not properly configured:', viewProps.aioActionPackageName);
+            setError('Configuration error: Adobe I/O App name not available. Please check your environment configuration.');
+            return;
+        }
+        
+        if (!viewProps.agencyBaseUrl) {
+            console.error('agencyBaseUrl is not properly configured:', viewProps.agencyBaseUrl);
+            setError('Configuration error: Agency base URL not available. Please check your environment configuration.');
+            return;
+        }
+
+        const brandBaseUrl = `https://${viewProps.aioRuntimeNamespace}.adobeio-static.net/api/v1/web/${viewProps.aioActionPackageName}/agency-event-handler`;
+        const agencyBaseUrl = `${viewProps.agencyBaseUrl}/new-brand-registration`;
         const imsOrg = viewProps.imsOrg;
 
         setBrandBaseUrl(brandBaseUrl);

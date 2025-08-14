@@ -16,6 +16,12 @@ export interface IBrand {
     enabledAt: Date;
 }
 
+export interface IApplicationRuntimeInfo {
+    consoleId: string;
+    projectName: string;
+    workspace: string;
+}
+
 export interface IIoEvent {
     source: string;
     type: string;

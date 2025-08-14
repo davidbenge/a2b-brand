@@ -494,6 +494,8 @@ Events that can be processed:
 These events will be published to the BRAND and also echoed locally for secondary in-house systems use.
 
 ## Troubleshooting
+removing all your runtime actions 
+`aio rt actions list --json | jq -r '.[] | (.namespace + "/" + .name)' | while read -r a; do [ -n "$a" ] && aio rt action delete "$a"; done`
 
 ### Common Issues
 

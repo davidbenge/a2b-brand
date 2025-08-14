@@ -63,7 +63,7 @@ const AgencyRegistrationView: React.FC<{ viewProps: ViewPropsBase }> = ({ viewPr
             return;
         }
 
-        const brandBaseUrl = `https://${viewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${viewProps.aioActionPackageName}/agency-event-handler`;
+        const brandBaseUrl = `https://${viewProps.aioRuntimeNamespace}.adobeio-static.net/api/v1/web/${viewProps.aioActionPackageName}/agency-event-handler`;
         const agencyBaseUrl = `${viewProps.agencyBaseUrl}/new-brand-registration`;
         const imsOrg = viewProps.imsOrg;
 

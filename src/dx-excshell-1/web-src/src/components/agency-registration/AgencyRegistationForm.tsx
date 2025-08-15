@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useReducer, useState } from 'react';
+import { useCallback, useMemo, useReducer, useState, useEffect } from 'react';
 
 import axios from 'axios';
 import {
@@ -54,7 +54,36 @@ const AgencyRegistrationForm: React.FC<AgencyRegistrationFormProps> = ({
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useReducer(reducer, initialState);
-  const endPointUrl = `https://${viewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${viewProps.aioAppName}/agency-event-handler`;
+
+  useEffect(() => {
+    console.log('AgencyRegistrationView props', viewProps);
+    console.log('AgencyRegistrationView specific props:', {
+        aioRuntimeNamespace: viewProps.aioRuntimeNamespace,
+        aioAppName: viewProps.aioActionPackageName,
+        agencyBaseUrl: viewProps.agencyBaseUrl
+    });
+
+    // Validate required properties with detailed error messages
+    if (!viewProps.aioRuntimeNamespace) {
+        console.error('aioRuntimeNamespace is not properly configured:', viewProps.aioRuntimeNamespace);
+        setError('Configuration error: Adobe I/O Runtime namespace not available. Please check your environment configuration.');
+        return;
+    }
+    
+    if (!viewProps.aioActionPackageName) {
+        console.error('aioActionPackageName is not properly configured:', viewProps.aioActionPackageName);
+        setError('Configuration error: Adobe I/O App name not available. Please check your environment configuration.');
+        return;
+    }
+    
+    if (!viewProps.agencyBaseUrl) {
+        console.error('agencyBaseUrl is not properly configured:', viewProps.agencyBaseUrl);
+        setError('Configuration error: Agency base URL not available. Please check your environment configuration.');
+        return;
+    }
+}, []);
+
+  const endPointUrl = `https://${viewProps.aioRuntimeNamespace}.adobeio-static.net/api/v1/web/${viewProps.aioActionPackageName}/agency-event-handler`;
 
   const handleSubmit = async () => {
     setLoading(true);

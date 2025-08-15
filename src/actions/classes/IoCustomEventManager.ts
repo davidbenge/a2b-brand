@@ -1,21 +1,23 @@
 import * as aioLogger from "@adobe/aio-lib-core-logging";
-import { IIoEvent, IS2SAuthenticationCredentials } from "../types";
+import { IIoEvent, IS2SAuthenticationCredentials, IApplicationRuntimeInfo } from "../types";
 import { v4 as uuidv4 } from 'uuid';
 import { getServer2ServerToken } from "../utils/adobeAuthUtils";
 
 export class IoCustomEventManager {
     private logger: any;
     private s2sAuthenticationCredentials: IS2SAuthenticationCredentials;
+    private applicationRuntimeInfo: IApplicationRuntimeInfo | undefined;
     private registrationProviderId: string; 
-    private assetSynchProviderId: string;
+    private assetSyncProviderId: string;
     
     /*******
      * constructor - constructor for the IoCustomEventManager
      * 
      * @param logLevel: string
      * @param s2sAuthenticationCredentials: IS2SAuthenticationCredentials from action
+     * @param applicationRuntimeInfo: IApplicationRuntimeInfo from action (optional)
      *******/
-    constructor(logLevel: string, s2sAuthenticationCredentials: IS2SAuthenticationCredentials) {
+    constructor(logLevel: string, s2sAuthenticationCredentials: IS2SAuthenticationCredentials, applicationRuntimeInfo?: IApplicationRuntimeInfo) {
         this.logger = aioLogger("IoCustomEventManager", { level: logLevel || "info" });
         this.logger.debug('IoCustomEventManager constructor');
 
@@ -28,10 +30,11 @@ export class IoCustomEventManager {
             throw new Error('IoCustomEventManager constructor params missing. We need S2S_API_KEY, S2S_CLIENT_SECRET, S2S_SCOPES, and ORG_ID');
         }
 
+        this.applicationRuntimeInfo = applicationRuntimeInfo;
         this.registrationProviderId = process.env.AIO_AGENCY_EVENTS_REGISTRATION_PROVIDER_ID;
-        this.assetSynchProviderId = process.env.AIO_AGENCY_EVENTS_AEM_ASSET_SYNCH_PROVIDER_ID;
+        this.assetSyncProviderId = process.env.AIO_AGENCY_EVENTS_AEM_ASSET_SYNC_PROVIDER_ID;
         this.logger.debug('IoCustomEventManager constructor registrationProviderId', this.registrationProviderId);
-        this.logger.debug('IoCustomEventManager constructor assetSynchProviderId', this.assetSynchProviderId);
+        this.logger.debug('IoCustomEventManager constructor assetSyncProviderId', this.assetSyncProviderId);
     }
 
     /*******
@@ -51,10 +54,10 @@ export class IoCustomEventManager {
             case "com.adobe.a2b.registration.received":
                 providerId = this.registrationProviderId;
                 break;
-            case "com.adobe.a2b.assetsynch.new":
-            case "com.adobe.a2b.assetsynch.updated":
-            case "com.adobe.a2b.assetsynch.deleted":
-                providerId = this.assetSynchProviderId;
+            case "com.adobe.a2b.assetsync.new":
+            case "com.adobe.a2b.assetsync.updated":
+            case "com.adobe.a2b.assetsync.deleted":
+                providerId = this.assetSyncProviderId;
                 break;
             default:
                 this.logger.error('IoCustomEventManager:publishEvent: Event type not supported', event);
@@ -62,6 +65,15 @@ export class IoCustomEventManager {
 
         event.id = uuidv4(); // set the id
         event.source = `urn:uuid:${providerId}`; // set the source
+        
+        // Add application runtime info to event data if available
+        if (this.applicationRuntimeInfo) {
+            if (!event.data) {
+                event.data = {};
+            }
+            event.data.app_runtime_info = this.applicationRuntimeInfo;
+            this.logger.debug('IoCustomEventManager:publishEvent: Added app_runtime_info to event', event.data.app_runtime_info);
+        }
         
         if(event.validate()){
             this.logger.debug('Event is valid', event);

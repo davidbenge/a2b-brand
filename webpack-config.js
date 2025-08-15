@@ -1,9 +1,9 @@
 const webpack = require('webpack');
 require('dotenv').config();
 
-// Get all environment variables with AIO_ prefix
+// Get all environment variables with AIO_ prefix and other required variables
 const aioEnvVars = Object.keys(process.env)
-  .filter(key => key.startsWith('AIO_'))
+  .filter(key => key.startsWith('AIO_') || key === 'AGENCY_BASE_URL')
   .reduce((acc, key) => {
     acc[`process.env.${key}`] = JSON.stringify(process.env[key]);
     return acc;

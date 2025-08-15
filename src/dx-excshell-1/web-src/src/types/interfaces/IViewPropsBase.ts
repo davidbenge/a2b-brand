@@ -14,6 +14,6 @@ export interface IViewPropsBase {
     shellInfo: IShellInfo; //Shell-related information needed to populate the shell UI
     tenant: string; //tenant name for current ims organization
     aioRuntimeNamespace: string; //namespace for the runtime pulled in from .env
-    aioAppName: string; //app name pulled in from .env
+    aioActionPackageName: string; //aio Action PackageN ame name pulled in from .env
     agencyBaseUrl: string; //agency base url pulled in from .env
 }

@@ -58,7 +58,7 @@
       "a2d__customers": [],
       "dam:predictedColors": [],
       "dam:size": 268812,
-      "a2b__synch_on_change": true,
+      "a2b__sync_on_change": true,
       "jcr:mixinTypes": [],
       "dam:sha1": "035e7a2fdff69cb94ce651d92e7625d80a749795",
       "jcr:primaryType": "nt:unstructured",

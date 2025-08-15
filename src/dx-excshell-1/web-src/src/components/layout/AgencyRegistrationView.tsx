@@ -50,9 +50,34 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
     useEffect(() => {
         logDemoMode('AgencyRegistrationView initialized', { safeViewProps, ENABLE_DEMO_MODE });
 
-        const brandBaseUrl = `https://${safeViewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${safeViewProps.aioAppName}/agency-event-handler`;
+        const brandBaseUrl = `https://${safeViewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${safeViewProps.aioActionPackageName}/agency-event-handler`;
         const agencyBaseUrl = `${safeViewProps.agencyBaseUrl}/api/v1/web/a2b-agency/new-brand-registration`;
         const imsOrg = safeViewProps.imsOrg;
+        console.log('AgencyRegistrationView props', viewProps);
+        console.log('AgencyRegistrationView specific props:', {
+            aioRuntimeNamespace: viewProps.aioRuntimeNamespace,
+            aioAppName: viewProps.aioActionPackageName,
+            agencyBaseUrl: viewProps.agencyBaseUrl
+        });
+
+        // Validate required properties with detailed error messages
+        if (!viewProps.aioRuntimeNamespace) {
+            console.error('aioRuntimeNamespace is not properly configured:', viewProps.aioRuntimeNamespace);
+            setError('Configuration error: Adobe I/O Runtime namespace not available. Please check your environment configuration.');
+            return;
+        }
+        
+        if (!viewProps.aioActionPackageName) {
+            console.error('aioActionPackageName is not properly configured:', viewProps.aioActionPackageName);
+            setError('Configuration error: Adobe I/O App name not available. Please check your environment configuration.');
+            return;
+        }
+        
+        if (!viewProps.agencyBaseUrl) {
+            console.error('agencyBaseUrl is not properly configured:', viewProps.agencyBaseUrl);
+            setError('Configuration error: Agency base URL not available. Please check your environment configuration.');
+            return;
+        }
 
         setBrandBaseUrl(brandBaseUrl);
         setAgencyBaseUrl(agencyBaseUrl);

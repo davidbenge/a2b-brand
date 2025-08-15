@@ -84,6 +84,18 @@ function bootstrapInExcShell () {
     //console.log('Ready! received appContainer:', appContainer)
     console.log('Ready! received imsProfile:', imsProfile)
     
+    // Try to get runtime info from the shell context or use fallbacks
+    const aioRuntimeNamespace = process.env.AIO_runtime_namespace || shellInfo?.aio?.runtime?.namespace || undefined;
+    const aioActionPackageName = process.env.AIO_ACTION_PACKAGE_NAME || undefined;
+    const agencyBaseUrl = process.env.AGENCY_BASE_URL || undefined;
+
+    console.log('Runtime configuration:', {
+      aioRuntimeNamespace,
+      aioActionPackageName,
+      agencyBaseUrl,
+      shellInfo: shellInfo?.aio
+    });
+
     const viewProps = {
       baseUrl: baseUrl,
       environment: environment,
@@ -97,9 +109,9 @@ function bootstrapInExcShell () {
       preferredLanguages: preferredLanguages,
       shellInfo: shellInfo,
       tenant: tenant,
-      aioRuntimeNamespace: process.env.AIO_runtime_namespace,
-      aioAppName: process.env.AIO_app_name,
-      agencyBaseUrl: process.env.AGENCY_BASE_URL
+      aioRuntimeNamespace,
+      aioActionPackageName,
+      agencyBaseUrl
     }
     // render the actual react application and pass along the runtime and ims objects to make it available to the App
     ReactDOM.render(

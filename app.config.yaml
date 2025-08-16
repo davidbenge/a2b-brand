@@ -15,11 +15,15 @@ application:
               S2S_API_KEY: $SERVICE_API_KEY
               S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
               S2S_SCOPES: $S2S_SCOPES
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"brand","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+              AIO_runtime_apihost: $AIO_runtime_apihost
+              AIO_runtime_auth: $AIO_runtime_auth
+              AIO_runtime_namespace: $AIO_runtime_namespace
             annotations:
               require-adobe-auth: false
               final: true
-          agency-assetsynch-event-handler:
-            function: src/actions/agency-assetsynch-event-handler/index.ts
+          adobe-product-event-handler:
+            function: src/actions/adobe-product-event-handler/index.ts
             web: 'yes'
             runtime: nodejs:20
             inputs:
@@ -28,8 +32,21 @@ application:
               S2S_API_KEY: $SERVICE_API_KEY
               S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
               S2S_SCOPES: $S2S_SCOPES
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+              AIO_runtime_apihost: $AIO_runtime_apihost
+              AIO_runtime_auth: $AIO_runtime_auth
+              AIO_runtime_namespace: $AIO_runtime_namespace
             annotations:
               require-adobe-auth: true
+              final: true
+          agency-assetsync-internal-handler:
+            function: src/actions/agency-assetsync-internal-handler/index.ts
+            web: 'no'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: false
               final: true
 extensions:
   dx/excshell/1:

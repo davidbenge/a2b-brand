@@ -1,10 +1,11 @@
 import { config } from "dotenv";
-import { IIoEvent, IS2SAuthenticationCredentials } from "../types";
+import { IIoEvent, IS2SAuthenticationCredentials, IApplicationRuntimeInfo } from "../types";
 import { IoCustomEventManager } from "./IoCustomEventManager";
 import * as aioLogger from "@adobe/aio-lib-core-logging";
 
 export class EventManager {
     private s2sAuthenticationCredentials: IS2SAuthenticationCredentials;
+    private applicationRuntimeInfo: IApplicationRuntimeInfo | undefined;
     private logLevel: string;
     private ioCustomEventManager: IoCustomEventManager;
     private logger: any;
@@ -12,8 +13,9 @@ export class EventManager {
     /****
      * @param logLevel - the log level to use
      * @param s2sAuthenticationCredentials - the s2s authentication credentials 
+     * @param applicationRuntimeInfo - the application runtime information (optional)
      */
-    constructor(logLevel: string, s2sAuthenticationCredentials: IS2SAuthenticationCredentials) {
+    constructor(logLevel: string, s2sAuthenticationCredentials: IS2SAuthenticationCredentials, applicationRuntimeInfo?: IApplicationRuntimeInfo) {
         this.logger = aioLogger("EventManager", { level: logLevel || "info" });
         if(s2sAuthenticationCredentials.clientId && s2sAuthenticationCredentials.clientSecret && s2sAuthenticationCredentials.scopes && s2sAuthenticationCredentials.orgId){
             this.s2sAuthenticationCredentials = s2sAuthenticationCredentials;
@@ -22,7 +24,8 @@ export class EventManager {
             throw new Error('EventManager:constructor: s2sAuthenticationCredentials missing');
         }
 
-        this.ioCustomEventManager = new IoCustomEventManager(logLevel, this.s2sAuthenticationCredentials);
+        this.applicationRuntimeInfo = applicationRuntimeInfo;
+        this.ioCustomEventManager = new IoCustomEventManager(logLevel, this.s2sAuthenticationCredentials, this.applicationRuntimeInfo);
         this.logLevel = logLevel;
     }
 
@@ -67,5 +70,36 @@ export class EventManager {
         console.log("EventManager:getS2sAuthenticationCredentials: s2sAuthenticationCredentials", s2sAuthenticationCredentials);
 
         return s2sAuthenticationCredentials;
+    }
+
+    /***
+     * getApplicationRuntimeInfo
+     * 
+     * @param params - the parameters object from an action invoke
+     * 
+     * @returns the application runtime information or undefined
+     */
+    static getApplicationRuntimeInfo(params: any): IApplicationRuntimeInfo | undefined {
+        // Parse and process APPLICATION_RUNTIME_INFO if provided
+        if (params.APPLICATION_RUNTIME_INFO) {
+            try {
+                const runtimeInfo = JSON.parse(params.APPLICATION_RUNTIME_INFO);
+                if (runtimeInfo.namespace && runtimeInfo.app_name) {
+                    // Split namespace into consoleId, projectName, and workspace
+                    const namespaceParts = runtimeInfo.namespace.split('/');
+                    if (namespaceParts.length >= 3) {
+                        const applicationRuntimeInfo: IApplicationRuntimeInfo = {
+                            consoleId: namespaceParts[0],
+                            projectName: namespaceParts[1],
+                            workspace: namespaceParts[2]
+                        };
+                        return applicationRuntimeInfo;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to parse APPLICATION_RUNTIME_INFO:', error);
+            }
+        }
+        return undefined;
     }
 }

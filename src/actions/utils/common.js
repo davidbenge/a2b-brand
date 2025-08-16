@@ -177,10 +177,55 @@ function contentInit(params){
   return content
 }
 
+/**
+ * Check if an object contains any internal OpenWhisk parameters
+ * @param {Object} params - The object to check
+ * @returns {boolean} - True if the object contains __ow_ parameters
+ */
+function hasOpenWhiskParams(params) {
+  if (!params || typeof params !== 'object') {
+    return false;
+  }
+  
+  return Object.keys(params).some(key => key.startsWith('__ow_'));
+}
+
+/**
+ * Strip internal OpenWhisk parameters from action parameters
+ * @param {Object} params - The original action parameters
+ * @returns {Object} - Cleaned parameters without internal OpenWhisk parameters
+ */
+function stripOpenWhiskParams(params) {
+  if (!params || typeof params !== 'object') {
+    return params;
+  }
+  
+  const cleanParams = {};
+  let strippedCount = 0;
+  
+  // Iterate through all properties and exclude OpenWhisk internal ones
+  for (const [key, value] of Object.entries(params)) {
+    if (!key.startsWith('__ow_')) {
+      cleanParams[key] = value;
+    } else {
+      strippedCount++;
+    }
+  }
+  
+  // Log if we stripped any parameters (useful for debugging)
+  if (strippedCount > 0) {
+    console.log(`stripOpenWhiskParams: Stripped ${strippedCount} internal OpenWhisk parameters`);
+  }
+  
+  return cleanParams;
+}
+
 module.exports = { 
   errorResponse,
   getBearerToken,
   stringParameters,
   checkMissingRequestInputs,
-  contentInit
+  contentInit,
+  hasOpenWhiskParams,
+  stripOpenWhiskParams
 }

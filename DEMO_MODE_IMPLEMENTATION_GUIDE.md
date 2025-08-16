@@ -315,16 +315,14 @@ const validateForm = (data: Partial<DataType>): string[] => {
 ```json
 {
   "scripts": {
-    "run:excshell": "aio app run -e dx/excshell/1",
-    "run:demo": "cross-env REACT_APP_ENABLE_DEMO_MODE=true aio app run -e dx/excshell/1",
-    "run:prod": "cross-env REACT_APP_ENABLE_DEMO_MODE=false aio app run -e dx/excshell/1"
+    "run:excshell": "aio app run -e dx/excshell/1"
   }
 }
 ```
 
 **Standard Usage:**
 ```bash
-# Development with demo mode (default)
+# Development with demo mode (default) - RECOMMENDED
 aio app run -e dx/excshell/1
 
 # Alternative using npm scripts

@@ -104,6 +104,8 @@ aio app run -e dx/excshell/1
 npm run run:excshell
 ```
 
+**Note:** The recommended approach is to use `aio app run -e dx/excshell/1` directly.
+
 ### Method 3: Force Demo Mode Off (For Testing Production Mode)
 
 **Windows:**

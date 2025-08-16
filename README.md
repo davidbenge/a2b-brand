@@ -23,7 +23,7 @@ This POC establishes a repeatable pattern that can be shared with brands to buil
 3. Populate the `.env` file in the project root and fill it as shown [below](#environment-variables)
 4. Start the development server:
    ```bash
-   npm run run:application
+   aio app run -e dx/excshell/1
    ```
 
 ## 🎮 Demo Mode
@@ -52,6 +52,7 @@ aio app run -e dx/excshell/1
 
 ## Local Development
 
+- `aio app run -e dx/excshell/1` - Run the application (recommended)
 - `npm run run:application` - Run the application locally
 - `npm run run:excshell` - Run the application in Experience Cloud Shell
 

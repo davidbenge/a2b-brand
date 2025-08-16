@@ -47,8 +47,6 @@
   "scripts": {
     "run:application": "aio app run -e application",
     "run:excshell": "aio app run -e dx/excshell/1",
-    "run:demo": "cross-env REACT_APP_ENABLE_DEMO_MODE=true aio app run -e dx/excshell/1",
-    "run:prod": "cross-env REACT_APP_ENABLE_DEMO_MODE=false aio app run -e dx/excshell/1",
     "test": "jest --passWithNoTests ./test",
     "e2e": "jest --collectCoverage=false --testRegex ./e2e",
     "lint": "eslint --ignore-pattern web-src --no-error-on-unmatched-pattern test src actions",

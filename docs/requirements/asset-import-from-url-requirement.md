@@ -17,8 +17,6 @@ The incoming event contains (see also `docs/events/custom/com_adobe_a2b_assetsyn
 ```json
 {
   "source": "urn:uuid:af5c4d93-e1e0-4985-ad33-80fde3837aaa",
-  "S2S_API_KEY": "5cd2e1d50176486a8521d82da35f504c",
-  "S2S_CLIENT_SECRET": "p8e-WsYCHx1jaXJe82sH5L34A--hVJHl77ZQ",
   "data": {
     "app_runtime_info": {
       "action_package_name": "a2b-agency",
@@ -29,6 +27,7 @@ The incoming event contains (see also `docs/events/custom/com_adobe_a2b_assetsyn
     },
     "asset_id": "e8cc4fc5-ea72-49ed-9cd2-c71d6f2fa9b1",
     "asset_path": "/content/dam/benge/sad_elmo.webp",
+    "asset_presigned_url": "https://author-p142461-e1463137.adobeaemcloud.com/aem-blob-ns-team-aem-cm-prd-n136729-cm-p142461-e1463137/ecb3-e6e7-2422-4d07-871e-6d16617c2a7e-1729879900823?sig=l1RW5iyIFRWaDjdKzPw933pr9lmo6pCJFB56SC6mROM%3D&se=2025-08-17T03%3A02%3A42Z&sv=2019-02-02&rscc=private%2C%20max-age%3D43200%2C%20immutable&rsct=image%2Fwebp&rscd=attachment%3B%20filename%3D%22sad_elmo.webp%22%3B%20filename*%3DUTF-8%27%27sad_elmo.webp&sp=r&sr=b",
     "brandId": "c6409c52-9295-4d15-94e6-7bd39d04360c",
     "metadata": {
       "Iptc4xmpCore:CreatorContactInfo": {
@@ -81,36 +80,8 @@ The incoming event contains (see also `docs/events/custom/com_adobe_a2b_assetsyn
       "tiff:ImageWidth": 1024
     }
   },
-  "__ow_method": "post",
-  "AIO_runtime_namespace": "",
-  "id": "277022fd-13de-4589-8391-0f01c03e8cd7",
-  "__ow_headers": {
-    "accept-encoding": "br, gzip, deflate",
-    "connection": "close",
-    "content-type": "application/json",
-    "host": "controller-ns-team-ethos651prodva6-runtime-prod-a",
-    "perf-br-req-in": "1755147444.513",
-    "sec-fetch-mode": "cors",
-    "user-agent": "Amazon CloudFront",
-    "via": "1.1 61296aba80c2d50aaa865cf5dbceff6c.cloudfront.net (CloudFront), 1.1 4d455abe9c408ddc198b94f7ff4a91ea.cloudfront.net (CloudFront)",
-    "x-amz-cf-id": "HH9a5vFmN4xa89KQmyf_D8URBPqbZ9RAubH1SOH4lL_us8DxzzZKBw==",
-    "x-envoy-external-address": "130.176.179.210",
-    "x-forwarded-for": "44.207.149.158, 44.198.186.150, 130.176.179.210, 10.152.173.127",
-    "x-forwarded-host": "27200-brand2agency-benge.adobeioruntime.net",
-    "x-forwarded-port": "80",
-    "x-forwarded-proto": "https",
-    "x-real-ip": "10.152.173.127",
-    "x-request-id": "ZQl3q8uPlhpNjb2OjEQhUTvcPVLFpBKa"
-  },
-  "AIO_runtime_auth": "",
-  "AIO_runtime_apihost": "",
   "type": "com.adobe.a2b.assetsync.new",
-  "S2S_SCOPES": "[\"AdobeID\",\"openid\",\"read_organizations\",\"additional_info.projectedProductContext\",\"additional_info.roles\",\"adobeio_api\",\"read_client_secret\",\"manage_client_secrets\",\"event_receiver_api\"]",
-  "LOG_LEVEL": "debug",
-  "datacontenttype": "application/json",
-  "__ow_path": "",
-  "ORG_ID": "33C1401053CF76370A490D4C@AdobeOrg",
-  "APPLICATION_RUNTIME_INFO": "{\"namespace\":\"\",\"app_name\":\"brand\",\"action_package_name\":\"a2b-brand\"}"
+  "datacontenttype": "application/json"
 }
 ```
 

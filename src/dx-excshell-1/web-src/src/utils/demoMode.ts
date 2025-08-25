@@ -6,9 +6,7 @@
  */
 
 // Feature flag for demo mode - can be controlled via environment variable
-export const ENABLE_DEMO_MODE = process.env.REACT_APP_ENABLE_DEMO_MODE === 'true' || 
-                               process.env.NODE_ENV === 'development' ||
-                               process.env.NODE_ENV !== 'production';
+export const ENABLE_DEMO_MODE = (process.env.AIO_ENABLE_DEMO_MODE === 'true') 
 
 /**
  * Interface for Company Registration mock data
@@ -33,7 +31,7 @@ export const mockCompanyRegistrations: CompanyRegistrationData[] = [
         name: 'Acme Creative Agency',
         primaryContact: 'John Smith',
         phoneNumber: '+1 (555) 123-4567',
-        endPointUrl: 'https://demo.adobeioruntime.net/api/v1/web/acme/agency-event-handler',
+        endPointUrl: 'https://demo.adobeio-static.net/api/v1/web/acme/agency-event-handler',
         status: 'approved',
         createdAt: new Date('2024-01-15T10:30:00Z'),
         updatedAt: new Date('2024-01-16T14:22:00Z')
@@ -43,7 +41,7 @@ export const mockCompanyRegistrations: CompanyRegistrationData[] = [
         name: 'Digital Marketing Solutions',
         primaryContact: 'Sarah Johnson',
         phoneNumber: '+1 (555) 987-6543',
-        endPointUrl: 'https://demo.adobeioruntime.net/api/v1/web/dms/agency-event-handler',
+        endPointUrl: 'https://demo.adobeio-static.net/api/v1/web/dms/agency-event-handler',
         status: 'pending',
         createdAt: new Date('2024-01-20T09:15:00Z'),
         updatedAt: new Date('2024-01-20T09:15:00Z')
@@ -53,7 +51,7 @@ export const mockCompanyRegistrations: CompanyRegistrationData[] = [
         name: 'Brand Experience Co',
         primaryContact: 'Michael Chen',
         phoneNumber: '+1 (555) 456-7890',
-        endPointUrl: 'https://demo.adobeioruntime.net/api/v1/web/bec/agency-event-handler',
+        endPointUrl: 'https://demo.adobeio-static.net/api/v1/web/bec/agency-event-handler',
         status: 'rejected',
         createdAt: new Date('2024-01-18T16:45:00Z'),
         updatedAt: new Date('2024-01-19T11:30:00Z')
@@ -64,7 +62,7 @@ export const mockCompanyRegistrations: CompanyRegistrationData[] = [
  * Mock ViewProps for demo mode
  */
 export const mockViewProps = {
-    baseUrl: 'https://demo.adobeioruntime.net',
+    baseUrl: 'https://demo.adobeio-static.net',
     environment: 'demo',
     historyType: 'browser',
     imsEnvironment: 'demo',
@@ -84,7 +82,7 @@ export const mockViewProps = {
     tenant: 'demo-tenant',
     aioRuntimeNamespace: 'demo-namespace',
     aioAppName: 'a2b-brand-demo',
-    agencyBaseUrl: 'https://demo-agency.adobeioruntime.net'
+    agencyBaseUrl: 'https://demo-agency.adobeio-static.net/index.html'
 };
 
 /**

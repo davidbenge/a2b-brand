@@ -54,7 +54,8 @@ function bootstrapRaw () {
     tenant: 'demo-tenant',
     aioRuntimeNamespace: 'demo-namespace',
     aioAppName: 'a2b-brand-demo',
-    agencyBaseUrl: 'https://demo-agency.adobeioruntime.net'
+    agencyBaseUrl: 'https://demo-agency.adobeioruntime.net',
+    aioEnableDemoMode: (process.env.AIO_ENABLE_DEMO_MODE === 'true')
   }
 
   console.log('[DEMO MODE] Application running in fallback mode with mock runtime')
@@ -109,9 +110,11 @@ function bootstrapInExcShell () {
       preferredLanguages: preferredLanguages,
       shellInfo: shellInfo,
       tenant: tenant,
-      aioRuntimeNamespace,
-      aioActionPackageName,
-      agencyBaseUrl
+      agencyBaseUrl: process.env.AGENCY_BASE_URL,
+      aioRuntimeNamespace: process.env.AIO_runtime_namespace,
+      aioAppName: 'brand',
+      aioActionPackageName: process.env.AIO_ACTION_PACKAGE_NAME,
+      aioEnableDemoMode: (process.env.AIO_ENABLE_DEMO_MODE === 'true')
     }
     // render the actual react application and pass along the runtime and ims objects to make it available to the App
     ReactDOM.render(

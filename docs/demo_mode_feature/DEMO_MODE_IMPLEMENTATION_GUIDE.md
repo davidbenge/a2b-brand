@@ -18,9 +18,7 @@ Create a feature flag that automatically enables demo mode based on environment 
 
 ```typescript
 // Feature flag for demo mode - can be controlled via environment variable
-const ENABLE_DEMO_MODE = process.env.REACT_APP_ENABLE_DEMO_MODE === 'true' || 
-                        process.env.NODE_ENV === 'development' ||
-                        process.env.NODE_ENV !== 'production';
+const ENABLE_DEMO_MODE = (process.env.AIO_ENABLE_DEMO_MODE === 'true');
 ```
 
 **Key Benefits:**
@@ -179,14 +177,12 @@ return (
 1. **Add environment variable support:**
    ```bash
    # In your .env file (for local development)
-   REACT_APP_ENABLE_DEMO_MODE=true
+   AIO_ENABLE_DEMO_MODE=true
    ```
 
 2. **Create the feature flag:**
    ```typescript
-   const ENABLE_DEMO_MODE = process.env.REACT_APP_ENABLE_DEMO_MODE === 'true' || 
-                           process.env.NODE_ENV === 'development' ||
-                           process.env.NODE_ENV !== 'production';
+   const ENABLE_DEMO_MODE = (process.env.AIO_ENABLE_DEMO_MODE === 'true');
    ```
 
 ### Step 2: Mock Data Creation

@@ -34,7 +34,7 @@ Demo mode is automatically enabled based on environment variables:
 NODE_ENV=development
 
 # Manual control via environment variable
-REACT_APP_ENABLE_DEMO_MODE=true
+AIO_ENABLE_DEMO_MODE=true
 ```
 
 ### 2. UI Components with Demo Mode Support

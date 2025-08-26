@@ -1,8 +1,12 @@
 import axios, { AxiosResponse } from 'axios';
-import type { IBrand } from '../../../../actions/types';
-
-const runtime_namespace = process.env.AIO_runtime_namespace;
-const BASE_URL = `https://${runtime_namespace}.adobeioruntime.net/api/v1/web/a2b-agency`;
+import {
+  ENABLE_DEMO_MODE,
+  simulateApiDelay,
+  logDemoMode,
+  createMockApiResponse
+} from '../utils/demoMode';
+import { IBrand } from '../../../../actions/types';
+import { Brand } from '../../../../actions/classes/Brand';
 
 /**
  * API configuration and endpoints
@@ -59,14 +63,40 @@ export class ApiService {
    * @param baseUrl - The base URL from ViewPropsBase
    * @param imsToken - The IMS token from ViewPropsBase
    */
-  public initialize(
-    imsToken: string,
-    imsOrgId: string,
-    baseUrl = BASE_URL
-  ): void {
-    this.baseUrl = baseUrl;
-    this.imsToken = imsToken;
-    this.imsOrgId = imsOrgId;
+
+  /**
+   * Clear the IMS token and base URL
+   */
+
+  /**
+   * Register a new company
+   * @param formData - Company registration form data
+   * @returns Promise<ApiResponse<any>>
+   */
+
+  /**
+   * Generic method to call serverless functions using axios
+   */
+
+  /**
+   * Initialize the API service with base URL and IMS token
+   * @param baseUrl - The base URL from ViewPropsBase
+   * @param imsToken - The IMS token from ViewPropsBase
+   */
+  public initialize(baseUrl: string, imsToken: string, imsOrgId: string): void {
+    if (ENABLE_DEMO_MODE) {
+      logDemoMode('API Service initialized in demo mode', {
+        baseUrl,
+        imsOrgId
+      });
+      this.baseUrl = 'https://demo.adobeioruntime.net';
+      this.imsToken = 'demo-token';
+      this.imsOrgId = 'DEMO_ORG@AdobeOrg';
+    } else {
+      this.baseUrl = baseUrl;
+      this.imsToken = imsToken;
+      this.imsOrgId = imsOrgId;
+    }
   }
 
   /**
@@ -86,6 +116,25 @@ export class ApiService {
   public async registerCompany(
     formData: CompanyRegistrationForm
   ): Promise<ApiResponse<any>> {
+    if (ENABLE_DEMO_MODE) {
+      logDemoMode('API Service: registerCompany (demo mode)', formData);
+
+      await simulateApiDelay(1500);
+
+      return {
+        statusCode: 200,
+        body: {
+          message: 'Company registration successful (Demo Mode)',
+          data: {
+            id: Date.now().toString(),
+            ...formData,
+            status: 'pending',
+            createdAt: new Date().toISOString()
+          }
+        }
+      };
+    }
+
     return this.callApi(
       API_CONFIG.ENDPOINTS.COMPANY_REGISTRATION,
       'POST',
@@ -172,7 +221,10 @@ export class ApiService {
     }
   }
 
-  async createBrand(brandData: Partial<CompanyRegistrationForm>) {
+  public async createBrand(brandData: Partial<Brand>) {
+    if (ENABLE_DEMO_MODE) {
+      return createMockApiResponse(new Brand(brandData), 1500).execute();
+    }
     return this.callApi<IBrand>(
       `${API_CONFIG.ENDPOINTS.COMPANY_REGISTRATION}`,
       'POST',

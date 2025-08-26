@@ -11,14 +11,11 @@ import {
   Content,
   Divider,
   TextField,
-  StatusLight,
-  ActionButton
+  StatusLight
 } from '@adobe/react-spectrum';
-import ArrowLeft from '@spectrum-icons/workflow/ArrowLeft';
 
 import { apiService } from '../../services/api';
 import { ViewPropsBase } from '../../types/ViewPropsBase';
-import type { IBrand } from '../../../../../actions/types';
 import { Brand } from '../../../../../actions/classes/Brand';
 
 interface CompanyRegistrationForm {
@@ -28,8 +25,6 @@ interface CompanyRegistrationForm {
 }
 
 interface AgencyRegistrationFormProps {
-  updateBrands: (brand: IBrand) => void;
-  changeViewType: () => void;
   viewProps: ViewPropsBase;
 }
 const initialState: CompanyRegistrationForm = {
@@ -47,8 +42,6 @@ const reducer = (state, action) => {
 
 const AgencyRegistrationForm: React.FC<AgencyRegistrationFormProps> = ({
   viewProps,
-  updateBrands,
-  changeViewType
 }) => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -98,10 +91,9 @@ const AgencyRegistrationForm: React.FC<AgencyRegistrationFormProps> = ({
       if (response.statusCode === 200) {
         setSubmitted(true);
         setFormData(initialState);
-        updateBrands(new Brand(response.body.data));
       } else {
         setError(
-          response.body.error || 'Registration failed. Please try again.'
+          response.body?.error || 'Registration failed. Please try again.'
         );
       }
     } catch (err) {
@@ -134,9 +126,6 @@ const AgencyRegistrationForm: React.FC<AgencyRegistrationFormProps> = ({
     return (
       <View padding="size-200">
         <Content>
-          <ActionButton isQuiet onPress={changeViewType}>
-            <ArrowLeft /> <Text>Back to List</Text>
-          </ActionButton>
           <Header>
             <Heading level={1}>Company Registration</Heading>
           </Header>
@@ -166,9 +155,6 @@ const AgencyRegistrationForm: React.FC<AgencyRegistrationFormProps> = ({
     <View padding="size-200">
       <Content>
         <Header>
-          <ActionButton isQuiet onPress={changeViewType}>
-            <ArrowLeft /> <Text>Back to List</Text>
-          </ActionButton>
           <Heading level={1}>Company Registration</Heading>
           <Text>Welcome, {viewProps.imsProfile.email}</Text>
         </Header>

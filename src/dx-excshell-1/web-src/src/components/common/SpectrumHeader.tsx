@@ -16,10 +16,9 @@ const SpectrumHeader: React.FC<SpectrumHeaderProps> = ({ viewProps }) => {
     const location = useLocation();
     const navigate = useNavigate();
 
-                        const navItems = [
+    const navItems = [
         { label: 'Home', path: '/' },
         { label: 'Agency Registration', path: '/agencies' },
-        { label: 'View Registrations', path: '/registrations' },
         { label: 'Sync Status', path: '/sync' },
         { label: 'About', path: '/about' }
     ];

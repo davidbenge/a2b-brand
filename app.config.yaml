@@ -19,6 +19,9 @@ application:
               AIO_runtime_apihost: $AIO_runtime_apihost
               AIO_runtime_auth: $AIO_runtime_auth
               AIO_runtime_namespace: $AIO_runtime_namespace
+              AIO_ASSET_SYNCH_TARGET_PROGRAM_ENVIRONMENT: $AIO_ASSET_SYNCH_TARGET_PROGRAM_ENVIRONMENT
+              CONTENT_TYPE: $CONTENT_TYPE
+              DESTINATION_FOLDER_ID: $DESTINATION_FOLDER_ID
             annotations:
               require-adobe-auth: false
               final: true

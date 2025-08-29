@@ -23,11 +23,36 @@ This POC establishes a repeatable pattern that can be shared with brands to buil
 3. Populate the `.env` file in the project root and fill it as shown [below](#environment-variables)
 4. Start the development server:
    ```bash
-   npm run run:application
+   aio app run -e dx/excshell/1
    ```
+
+## 🎮 Demo Mode
+
+Demo mode is automatically enabled for development and provides a fully functional UI with mock data.
+
+### Quick Start
+```bash
+aio app run -e dx/excshell/1
+```
+
+### What You'll Get
+- ✅ 3 mock company registrations with different statuses
+- ✅ Functional registration form with simulated API responses
+- ✅ Full CRUD operations (create, read, update, delete)
+- ✅ Search and filtering capabilities
+- ✅ Realistic 1-2 second delays for API simulation
+
+### Visual Indicators
+- Blue header with "Brand/Client (Demo Mode)" label
+- "Demo Mode Active" status indicator in header
+- Header navigation (replaced sidebar)
+- Console messages prefixed with "[DEMO MODE]"
+
+📖 **[Complete Demo Mode Documentation](docs/DEMO_MODE_USAGE.md)**
 
 ## Local Development
 
+- `aio app run -e dx/excshell/1` - Run the application (recommended)
 - `npm run run:application` - Run the application locally
 - `npm run run:excshell` - Run the application in Experience Cloud Shell
 

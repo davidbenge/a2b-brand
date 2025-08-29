@@ -14,6 +14,13 @@ import {
     Divider,
     StatusLight
 } from '@adobe/react-spectrum';
+import { 
+    ENABLE_DEMO_MODE, 
+    getSafeViewProps, 
+    simulateApiDelay, 
+    logDemoMode, 
+    mockCompanyRegistrations 
+} from '../../utils/demoMode';
 
 interface CompanyRegistrationForm {
     name: string;
@@ -22,10 +29,14 @@ interface CompanyRegistrationForm {
     endPointUrl: string;
 }
 
-const AgencyRegistrationView: React.FC<{ viewProps: ViewPropsBase }> = ({ viewProps }) => {
-    const [loading, setLoading] = useState(false);
+const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewProps }) => {
+    // Use safe view props with demo mode fallbacks
+    const safeViewProps = getSafeViewProps(viewProps);
+    
+    const [loading, setLoading] = useState(!ENABLE_DEMO_MODE);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
     const [brandBaseUrl, setBrandBaseUrl] = useState('');
     const [formData, setFormData] = useState<CompanyRegistrationForm>({
         name: '',
@@ -37,6 +48,11 @@ const AgencyRegistrationView: React.FC<{ viewProps: ViewPropsBase }> = ({ viewPr
     const [imsOrg, setImsOrg] = useState('');
 
     useEffect(() => {
+        logDemoMode('AgencyRegistrationView initialized', { safeViewProps, ENABLE_DEMO_MODE });
+
+        const brandBaseUrl = `https://${safeViewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${safeViewProps.aioActionPackageName}/agency-event-handler`;
+        const agencyBaseUrl = `${safeViewProps.agencyBaseUrl}/api/v1/web/a2b-agency/new-brand-registration`;
+        const imsOrg = safeViewProps.imsOrg;
         console.log('AgencyRegistrationView props', viewProps);
         console.log('AgencyRegistrationView specific props:', {
             aioRuntimeNamespace: viewProps.aioRuntimeNamespace,
@@ -63,53 +79,90 @@ const AgencyRegistrationView: React.FC<{ viewProps: ViewPropsBase }> = ({ viewPr
             return;
         }
 
-        const brandBaseUrl = `https://${viewProps.aioRuntimeNamespace}.adobeio-static.net/api/v1/web/${viewProps.aioActionPackageName}/agency-event-handler`;
-        const agencyBaseUrl = `${viewProps.agencyBaseUrl}/new-brand-registration`;
-        const imsOrg = viewProps.imsOrg;
-
         setBrandBaseUrl(brandBaseUrl);
         setAgencyBaseUrl(agencyBaseUrl);
         setImsOrg(imsOrg);
-    }, []);
+
+        // Clear loading state in demo mode
+        if (ENABLE_DEMO_MODE) {
+            setLoading(false);
+        }
+    }, [safeViewProps]);
 
     const handleSubmit = async () => {
         setLoading(true);
         setError(null);
+        setSuccess(null);
         
-        try {
-            formData.endPointUrl = brandBaseUrl; //bolt on the brand base url to the form data
-            const response = await axios.post(
-                agencyBaseUrl,
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-gw-ims-org-id': imsOrg
-                    }
-                }
-            );
+        if (ENABLE_DEMO_MODE) {
+            // Demo mode: simulate API call
+            logDemoMode('Submitting company registration', formData);
             
-            if (response.status === 200) {
+            try {
+                await simulateApiDelay(1500); // Simulate realistic API delay
+                
+                // Create new mock registration entry
+                const newRegistration = {
+                    id: Date.now().toString(),
+                    name: formData.name,
+                    primaryContact: formData.primaryContact,
+                    phoneNumber: formData.phoneNumber,
+                    endPointUrl: brandBaseUrl,
+                    status: 'pending' as const,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+                
+                logDemoMode('Registration successful (demo)', newRegistration);
                 setSubmitted(true);
+                setSuccess('Registration submitted successfully! (Demo Mode)');
                 setFormData({
                     name: '',
                     primaryContact: '',
                     phoneNumber: '',
                     endPointUrl: ''
                 });
-            } else {
-                setError(response.data.error || 'Registration failed. Please try again.');
+            } catch (err) {
+                setError('Demo mode: Simulated error occurred');
             }
-        } catch (err) {
-            if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.error || 'Registration failed. Please try again.');
-            } else {
-                setError('An unexpected error occurred. Please try again.');
+        } else {
+            // Production mode: real API call
+            try {
+                formData.endPointUrl = brandBaseUrl; //bolt on the brand base url to the form data
+                const response = await axios.post(
+                    agencyBaseUrl,
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-gw-ims-org-id': imsOrg
+                        }
+                    }
+                );
+                
+                if (response.status === 200) {
+                    setSubmitted(true);
+                    setSuccess('Registration submitted successfully!');
+                    setFormData({
+                        name: '',
+                        primaryContact: '',
+                        phoneNumber: '',
+                        endPointUrl: ''
+                    });
+                } else {
+                    setError(response.data.error || 'Registration failed. Please try again.');
+                }
+            } catch (err) {
+                if (axios.isAxiosError(err)) {
+                    setError(err.response?.data?.error || 'Registration failed. Please try again.');
+                } else {
+                    setError('An unexpected error occurred. Please try again.');
+                }
+                console.error('Registration error:', err);
             }
-            console.error('Registration error:', err);
-        } finally {
-            setLoading(false);
         }
+        
+        setLoading(false);
     };
 
     const handleInputChange = (field: keyof CompanyRegistrationForm, value: string) => {
@@ -124,19 +177,24 @@ const AgencyRegistrationView: React.FC<{ viewProps: ViewPropsBase }> = ({ viewPr
             <View padding="size-200">
                 <Content>
                     <Header>
-                        <Heading level={1}>Company Registration</Heading>
+                        <Heading level={1}>Registration Successful!</Heading>
                     </Header>
                     <Divider size="S" />
+                    
                     <Flex direction="column" gap="size-200" marginTop="size-200">
                         <StatusLight variant="positive">
-                            Registration submitted successfully!
+                            {success || 'Registration submitted successfully!'}
                         </StatusLight>
                         <Text>
                             Thank you for registering your company. We will review your information and contact you soon.
+                            {ENABLE_DEMO_MODE && ' (This is a simulated response in demo mode)'}
                         </Text>
                         <Button 
                             variant="primary" 
-                            onPress={() => setSubmitted(false)}
+                            onPress={() => {
+                                setSubmitted(false);
+                                setSuccess(null);
+                            }}
                         >
                             Register Another Company
                         </Button>
@@ -151,7 +209,7 @@ const AgencyRegistrationView: React.FC<{ viewProps: ViewPropsBase }> = ({ viewPr
             <Content>
                 <Header>
                     <Heading level={1}>Company Registration</Heading>
-                    <Text>Welcome, {viewProps.imsProfile.email}</Text>
+                    <Text>Welcome, {safeViewProps.imsProfile.email}</Text>
                 </Header>
                 <Divider size="S" />
                 

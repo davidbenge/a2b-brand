@@ -47,3 +47,18 @@ body {
   color: var(--spectrum-alias-text-color-hover,var(--spectrum-global-color-gray-900));
   background-color: var(--spectrum-alias-highlight-hover);
 }
+
+/** Spectrum Header Navigation Styling **/
+.spectrum-header-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+.spectrum-header-nav-item:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.spectrum-header-nav-item:active {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}

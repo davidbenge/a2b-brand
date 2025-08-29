@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+import { ENABLE_DEMO_MODE, simulateApiDelay, logDemoMode } from '../utils/demoMode';
 
 /**
  * API configuration and endpoints
@@ -56,9 +57,16 @@ export class ApiService {
      * @param imsToken - The IMS token from ViewPropsBase
      */
     public initialize(baseUrl: string, imsToken: string, imsOrgId: string): void {
-        this.baseUrl = baseUrl;
-        this.imsToken = imsToken;
-        this.imsOrgId = imsOrgId;
+        if (ENABLE_DEMO_MODE) {
+            logDemoMode('API Service initialized in demo mode', { baseUrl, imsOrgId });
+            this.baseUrl = 'https://demo.adobeioruntime.net';
+            this.imsToken = 'demo-token';
+            this.imsOrgId = 'DEMO_ORG@AdobeOrg';
+        } else {
+            this.baseUrl = baseUrl;
+            this.imsToken = imsToken;
+            this.imsOrgId = imsOrgId;
+        }
     }
 
     /**
@@ -76,6 +84,25 @@ export class ApiService {
      * @returns Promise<ApiResponse<any>>
      */
     public async registerCompany(formData: CompanyRegistrationForm): Promise<ApiResponse<any>> {
+        if (ENABLE_DEMO_MODE) {
+            logDemoMode('API Service: registerCompany (demo mode)', formData);
+            
+            await simulateApiDelay(1500);
+            
+            return {
+                statusCode: 200,
+                body: {
+                    message: 'Company registration successful (Demo Mode)',
+                    data: {
+                        id: Date.now().toString(),
+                        ...formData,
+                        status: 'pending',
+                        createdAt: new Date().toISOString()
+                    }
+                }
+            };
+        }
+        
         return this.callApi(API_CONFIG.ENDPOINTS.COMPANY_REGISTRATION, 'POST', formData);
     }
 

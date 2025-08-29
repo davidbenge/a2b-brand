@@ -19,6 +19,9 @@ application:
               AIO_runtime_apihost: $AIO_runtime_apihost
               AIO_runtime_auth: $AIO_runtime_auth
               AIO_runtime_namespace: $AIO_runtime_namespace
+              AIO_ASSET_SYNCH_TARGET_PROGRAM_ENVIRONMENT: $AIO_ASSET_SYNCH_TARGET_PROGRAM_ENVIRONMENT
+              CONTENT_TYPE: $CONTENT_TYPE
+              DESTINATION_FOLDER_ID: $DESTINATION_FOLDER_ID
             annotations:
               require-adobe-auth: false
               final: true
@@ -45,6 +48,12 @@ application:
             runtime: nodejs:20
             inputs:
               LOG_LEVEL: debug
+              ORG_ID: $ORG_ID
+              S2S_API_KEY: $S2S_API_KEY
+              S2S_CLIENT_ID: $S2S_CLIENT_ID
+              S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
+              S2S_SCOPES: $S2S_SCOPES 
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
             annotations:
               require-adobe-auth: false
               final: true

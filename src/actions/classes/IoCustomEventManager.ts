@@ -63,9 +63,13 @@ export class IoCustomEventManager {
                 this.logger.error('IoCustomEventManager:publishEvent: Event type not supported', event);
         }
 
+        this.logger.debug('IoCustomEventManager:publishEvent: Provider ID', providerId);
+
         event.id = uuidv4(); // set the id
         event.source = `urn:uuid:${providerId}`; // set the source
-        
+       
+        this.logger.debug('IoCustomEventManager:publishEvent: event source', event.source);
+
         // Add application runtime info to event data if available
         if (this.applicationRuntimeInfo) {
             if (!event.data) {
@@ -73,8 +77,12 @@ export class IoCustomEventManager {
             }
             event.data.app_runtime_info = this.applicationRuntimeInfo;
             this.logger.debug('IoCustomEventManager:publishEvent: Added app_runtime_info to event', event.data.app_runtime_info);
+        }else{
+            this.logger.debug('IoCustomEventManager:publishEvent: missing applicationruntimeinfo', event.data.app_runtime_info);
         }
         
+        this.logger.debug('IoCustomEventManager:publishEvent:about to validate en', event);
+
         if(event.validate()){
             this.logger.debug('Event is valid', event);
         }else{

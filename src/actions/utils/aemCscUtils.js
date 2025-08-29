@@ -334,16 +334,17 @@ async function getAemAuth(params,logger){
       }else if(params.AEM_AUTH_TYPE === 'server2server'){
         //server2server type auth
         logger.debug("getAemAuth getServer2ServerToken",params)
-        let scopesCleaned = JSON.parse(params.AUTH_SCOPES);
+        let scopesCleaned = JSON.parse(params.S2S_SCOPES);
         let scopes = scopesCleaned.join(',');
         const orgs = params.ORG_ID;
-        const clientId = params.API_KEY;
-        const clientSecret = params.AUTH_CLIENT_SECRET;
+        const clientId = params.S2S_CLIENT_ID;
+        const clientSecret = params.S2S_CLIENT_SECRET;
         aemAuthToken = await getServer2ServerToken(clientId,clientSecret,orgs,scopes,logger);
       }else{
         logger.debug("getAemAuth get user token",params)
         aemAuthToken = await getBearerToken(params);
       }
+
 
       // cache the auth token so we don't have to get it every time
       await state.put(`aem-auth-key-${params.AEM_AUTH_TYPE}`, aemAuthToken, { ttl: 1320 });

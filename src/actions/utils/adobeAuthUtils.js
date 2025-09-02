@@ -69,11 +69,11 @@ async function getJwtToken(authOptions,logger){
  * return {object} callResult - call result
  */     
 async function getServer2ServerToken(s2sAuthenticationCredentials,logger){
-  const urlencoded = new URLSearchParams();
-  urlencoded.append('client_id', s2sAuthenticationCredentials.clientId);
-  urlencoded.append('client_secret', s2sAuthenticationCredentials.clientSecret);
+  let urlencoded = new URLSearchParams();
+  urlencoded.append('client_id', s2sAuthenticationCredentials.client_id);
   urlencoded.append('grant_type', 'client_credentials');
-  urlencoded.append('scope', s2sAuthenticationCredentials.scopes);
+  urlencoded.append('scope', s2sAuthenticationCredentials.scope);
+  urlencoded.append('client_secret', s2sAuthenticationCredentials.client_secret);
 
   logger.debug("getServer2ServerToken urlencoded",urlencoded.toString());
   logger.debug("getServer2ServerToken s2sAuthenticationCredentials",s2sAuthenticationCredentials);

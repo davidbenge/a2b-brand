@@ -190,6 +190,20 @@ function hasOpenWhiskParams(params) {
   return Object.keys(params).some(key => key.startsWith('__ow_'));
 }
 
+function mergeRouterParams(params) {
+  if (
+    params &&
+    typeof params === 'object' &&
+    params.routerParams &&
+    typeof params.routerParams === 'object' &&
+    !Array.isArray(params.routerParams)
+  ) {
+    const { routerParams, ...topLevelParams } = params;
+    return { ...routerParams, ...topLevelParams };
+  }
+  return params;
+}
+
 /**
  * Strip internal OpenWhisk parameters from action parameters
  * @param {Object} params - The original action parameters
@@ -227,5 +241,6 @@ module.exports = {
   checkMissingRequestInputs,
   contentInit,
   hasOpenWhiskParams,
-  stripOpenWhiskParams
+  stripOpenWhiskParams,
+  mergeRouterParams
 }

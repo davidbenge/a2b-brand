@@ -19,7 +19,7 @@ export async function main(params: any): Promise<any> {
     const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
     if (errorMessage) {
       // return and log client errors
-      return errorResponse(400, errorMessage, logger)
+      return errorResponse(400, "agency event handler error", logger)
     }
 
     // Validate that app_runtime_info is present in the data
@@ -27,12 +27,12 @@ export async function main(params: any): Promise<any> {
       logger.error('Missing app_runtime_info in event data');
       return errorResponse(400, 'Missing app_runtime_info in event data', logger)
     }
-
+/*
     // Validate that the incoming event's workspace matches our action's workspace
     const actionRuntimeInfo = EventManager.getApplicationRuntimeInfo(params);
     if (!actionRuntimeInfo) {
-      logger.error('Failed to parse APPLICATION_RUNTIME_INFO from action parameters');
-      return errorResponse(500, 'Failed to parse APPLICATION_RUNTIME_INFO from action parameters', logger)
+      logger.error('Failed to parse APPLICATION_RUNTIME_INFO from action parameters!');
+      return errorResponse(500, 'Failed to parse APPLICATION_RUNTIME_INFO from action parameters.', logger)
     }
 
     const eventWorkspace = params.data.app_runtime_info.workspace;
@@ -44,6 +44,7 @@ export async function main(params: any): Promise<any> {
     }
 
     logger.info(`Processing agency event: ${params.type} in workspace: ${actionWorkspace}`);
+*/
 
     // Route events to appropriate internal handlers based on event type
     let routingResult;
@@ -88,21 +89,19 @@ export async function main(params: any): Promise<any> {
 async function routeToAssetSyncHandler(params: any, logger: any): Promise<any> {
   try {
     // Initialize OpenWhisk client
-    const ow = openwhisk({
-      apihost: params.AIO_runtime_apihost || 'https://adobeioruntime.net',
-      api_key: params.AIO_runtime_auth,
-      namespace: params.AIO_runtime_namespace
-    });
+    const ow = openwhisk();
 
     // Prepare the parameters for the assetsync internal handler
-    const assetsyncParams = stripOpenWhiskParams(params);
+    // const assetsyncParams = stripOpenWhiskParams(params);
 
-    logger.debug('Invoking agency-assetsync-internal-handler with params:', JSON.stringify(assetsyncParams, null, 2));
+    logger.debug('Invoking agency-assetsync-internal-handler with params:', JSON.stringify(params, null, 2));
 
     // Invoke the agency-assetsync-internal-handler action
     const result = await ow.actions.invoke({
       name: 'a2b-brand/agency-assetsync-internal-handler',
-      params: assetsyncParams,
+      params: {
+        routerParams: params
+      },
       blocking: true,
       result: true
     });

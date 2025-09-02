@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import type { IBrand } from '../../../../actions/types';
 
 const runtime_namespace = process.env.AIO_runtime_namespace;
-const BASE_URL = `https://${runtime_namespace}.adobeioruntime.net/api/v1/web/a2b-agency`;
+const BASE_URL = `https://${runtime_namespace}.adobeio-static.net/api/v1/web/a2b-agency`;
 
 /**
  * API configuration and endpoints

@@ -1,0 +1,43 @@
+# Cursor Rules for a2b-brand Project
+
+## Application Startup
+
+**Standard Command for Running the Application:**
+```bash
+aio app run -e dx/excshell/1
+```
+
+This is the recommended approach for running the application. It:
+- Automatically enables demo mode in development
+- Works with the existing environment configuration
+- Avoids dependency issues with cross-env
+- Is the primary method documented in all project documentation
+
+## Project Structure
+
+- **Global OpenWhisk micro services**: Stored at `src/actions` folder
+- **Source code**: TypeScript in `src/actions_src`, transpiled to `src/actions` when running `build-actions`
+- **Actions**: CNCF cloud native functions built using Adobe App Builder on Apache OpenWhisk platform
+- **OpenWhisk configuration**: Lives at `./app.config.yaml` under `runtimeManifest` section
+- **UI Components**: Adobe React Spectrum components (reference: https://react-spectrum.adobe.com/react-spectrum/index.html)
+- **Tests**: Store at root `test` folder only
+
+## Demo Mode
+
+- Demo mode is automatically enabled when running `aio app run -e dx/excshell/1`
+- Environment variable `REACT_APP_ENABLE_DEMO_MODE=true` is set in `_dot.env`
+- Provides mock data and simulated API responses for development and testing
+- Visual indicators show "(Demo Mode)" in UI when active
+
+## Development Workflow
+
+1. Use `aio app run -e dx/excshell/1` to start the application
+2. Demo mode will be automatically enabled
+3. All UI interactions work with mock data
+4. No additional configuration required for development
+
+## Testing
+
+- Run tests with: `npm test`
+- Tests are stored in the root `test` folder
+- E2E tests: `npm run e2e`

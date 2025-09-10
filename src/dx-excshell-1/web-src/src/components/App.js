@@ -3,56 +3,61 @@
 */
 
 import React from 'react'
-import { Provider, defaultTheme, Grid, View } from '@adobe/react-spectrum'
+import { Provider, defaultTheme, View, Flex } from '@adobe/react-spectrum'
 import ErrorBoundary from 'react-error-boundary'
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
-import SideBar from './common/SideBar'
+import SpectrumHeader from './common/SpectrumHeader'
 import { Home } from './Home'
 import { About } from './About'
 import AgencyRegistrationView from './layout/AgencyRegistrationView'
+import CompanyRegistrationList from './layout/CompanyRegistrationList'
+import { ENABLE_DEMO_MODE, getSafeViewProps, logDemoMode } from '../utils/demoMode'
 
 function App (props) {
-  console.log('runtime object:', props.runtime)
-  console.log('viewProps object:', props.viewProps)
+  logDemoMode('App component initialized', { 
+    runtime: !!props.runtime, 
+    viewProps: !!props.viewProps,
+    ENABLE_DEMO_MODE 
+  })
+
+  // Get safe view props with demo mode fallbacks
+  const safeViewProps = getSafeViewProps(props.viewProps)
 
   // use exc runtime event handlers
   // respond to configuration change events (e.g. user switches org)
-  props.runtime.on('configuration', (props) => {
-    console.log('Ready! received on configuration:', props)
-    //console.log('configuration change', { imsOrg, imsToken, locale })
+  props.runtime?.on('configuration', (configProps) => {
+    logDemoMode('Runtime configuration change', configProps)
   })
 
   // respond to history change events
-  props.runtime.on('history', ({ type, path }) => {
-    console.log('history change', { type, path })
+  props.runtime?.on('history', ({ type, path }) => {
+    logDemoMode('History change', { type, path })
   })
 
   return (
     <ErrorBoundary onError={onError} FallbackComponent={fallbackComponent}>
       <Router>
         <Provider theme={defaultTheme} colorScheme={'light'}>
-          <Grid
-            areas={['sidebar content']}
-            columns={['256px', '3fr']}
-            rows={['auto']}
-            height='100vh'
-            gap='size-100'
-          >
-            <View
-              gridArea='sidebar'
-              backgroundColor='gray-200'
-              padding='size-200'
+          <Flex direction="column" height="100vh">
+            {/* Spectrum Header with Navigation */}
+            <SpectrumHeader viewProps={safeViewProps} />
+            
+            {/* Main Content Area */}
+            <View 
+              flex="1" 
+              padding="size-300"
+              overflow="auto"
+              backgroundColor="gray-50"
             >
-              <SideBar></SideBar>
-            </View>
-            <View gridArea='content' padding='size-200'>
               <Routes>
                 <Route path='/' element={<Home />} />
-                <Route path='/agency_registration' element={<AgencyRegistrationView viewProps={props.viewProps} />}/>
+                <Route path='/agencies' element={<AgencyRegistrationView viewProps={safeViewProps} />}/>
+                <Route path='/registrations' element={<CompanyRegistrationList viewProps={safeViewProps} />}/>
+                <Route path='/sync' element={<div style={{padding: '20px'}}>Sync Status - Coming Soon</div>}/>
                 <Route path='/about' element={<About />}/>
               </Routes>
             </View>
-          </Grid>
+          </Flex>
         </Provider>
       </Router>
     </ErrorBoundary>

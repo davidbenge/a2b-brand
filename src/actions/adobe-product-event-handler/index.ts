@@ -109,11 +109,7 @@ export async function main(params: any): Promise<any> {
 async function routeToAssetSyncHandler(params: any, logger: any): Promise<any> {
   try {
     // Initialize OpenWhisk client
-    const ow = openwhisk({
-      apihost: params.AIO_runtime_apihost || 'https://adobeioruntime.net',
-      api_key: params.AIO_runtime_auth,
-      namespace: params.AIO_runtime_namespace
-    });
+    const ow = openwhisk();
     
     // Prepare the parameters for the asset sync handler
     const assetSyncParams = stripOpenWhiskParams(params);

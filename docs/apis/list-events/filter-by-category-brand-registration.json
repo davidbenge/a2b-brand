@@ -1,0 +1,65 @@
+{
+  "statusCode": 200,
+  "body": {
+    "success": true,
+    "data": {
+      "category": "brand-registration",
+      "count": 3,
+      "events": [
+        {
+          "code": "com.adobe.a2b.registration.disabled",
+          "category": "brand-registration",
+          "name": "Brand Registration Disabled",
+          "description": "Emitted when a brand registration is disabled",
+          "eventClass": "NewBrandRegistrationEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "brandId",
+            "enabled"
+          ],
+          "optionalFields": [
+            "name",
+            "endPointUrl",
+            "secret"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.registration.received",
+          "category": "brand-registration",
+          "name": "Brand Registration Received",
+          "description": "Emitted when a new brand registration is received",
+          "eventClass": "NewBrandRegistrationEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "brandId",
+            "name",
+            "endPointUrl",
+            "enabled"
+          ],
+          "optionalFields": [
+            "secret"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.registration.enabled",
+          "category": "brand-registration",
+          "name": "Brand Registration Enabled",
+          "description": "Emitted when a brand registration is enabled",
+          "eventClass": "NewBrandRegistrationEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "brandId",
+            "enabled"
+          ],
+          "optionalFields": [
+            "name",
+            "endPointUrl",
+            "secret"
+          ]
+        }
+      ],
+      "timestamp": "2024-10-14T17:58:23.456Z"
+    }
+  }
+}
+

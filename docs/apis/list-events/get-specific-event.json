@@ -1,0 +1,28 @@
+{
+  "statusCode": 200,
+  "body": {
+    "success": true,
+    "data": {
+      "event": {
+        "code": "com.adobe.a2b.assetsync.new",
+        "category": "asset-sync",
+        "name": "Asset Sync New",
+        "description": "Emitted when a new asset is synced from AEM",
+        "eventClass": "AssetSyncNewEvent",
+        "version": "1.0.0",
+        "requiredFields": [
+          "asset_id",
+          "asset_path",
+          "metadata",
+          "brandId",
+          "asset_presigned_url"
+        ],
+        "optionalFields": [
+          "app_runtime_info"
+        ]
+      },
+      "timestamp": "2024-10-14T17:58:23.456Z"
+    }
+  }
+}
+

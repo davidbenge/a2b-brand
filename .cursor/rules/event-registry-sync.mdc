@@ -1,0 +1,118 @@
+---
+description: Enforce synchronization of event registry files between a2b-agency and a2b-brand
+globs:
+  - "src/shared/event-registry.ts"
+  - "src/shared/README.md"
+  - "src/actions/list-events/**"
+  - "src/actions/test/list-events.test.ts"
+  - "docs/apis/list-events/**"
+alwaysApply: true
+---
+
+# Event Registry Synchronization Rule
+
+**🔄 CRITICAL**: The event registry files MUST be synchronized between `a2b-agency` and `a2b-brand` projects.
+
+## Files That Must Stay in Sync
+
+The following files must be identical in both projects:
+
+1. `src/shared/event-registry.ts` - Event definitions and metadata
+2. `src/shared/README.md` - Shared code documentation
+3. `src/actions/list-events/index.ts` - List events API action
+4. `src/actions/test/list-events.test.ts` - Event registry tests
+5. `docs/apis/list-events/*.json` - All JSON sample responses (8 files)
+6. `docs/apis/list-events/README.md` - API documentation
+7. `docs/apis/list-events/TESTING.md` - Test documentation
+
+## Why This Matters
+
+Both a2b-agency and a2b-brand:
+- Share the same event codes and event types
+- Must respond consistently to event queries
+- Need identical event metadata for integration
+- Should provide the same API responses
+
+**If files get out of sync:**
+- ❌ One project may emit events the other doesn't recognize
+- ❌ Inconsistent event metadata causes integration issues  
+- ❌ Different API responses confuse consumers
+- ❌ Tests pass in one project but fail in the other
+
+## Synchronization Process
+
+When modifying ANY of these files:
+
+1. **Make changes in a2b-brand** (or a2b-agency)
+2. **Immediately copy to the other project**:
+   ```bash
+   # If in a2b-brand, copy to a2b-agency:
+   cp src/shared/event-registry.ts ../a2b-agency/src/shared/
+   cp src/actions/list-events/index.ts ../a2b-agency/src/actions/list-events/
+   # ... copy all other files
+   
+   # If in a2b-agency, copy to a2b-brand:
+   cp src/shared/event-registry.ts ../a2b-brand/src/shared/
+   # ... etc
+   ```
+3. **Run tests in BOTH projects**
+4. **Commit to BOTH projects**
+5. **Create PRs for BOTH projects**
+
+## Quick Sync Script
+
+Create this script in the repo root if syncing frequently:
+
+```bash
+#!/bin/bash
+# sync-event-registry.sh
+# Usage: ./sync-event-registry.sh [agency|brand]
+
+SOURCE=$1
+if [ "$SOURCE" = "agency" ]; then
+  FROM="../a2b-agency"
+  TO="../a2b-brand"
+elif [ "$SOURCE" = "brand" ]; then
+  FROM="../a2b-brand"
+  TO="../a2b-agency"
+else
+  echo "Usage: ./sync-event-registry.sh [agency|brand]"
+  exit 1
+fi
+
+cp $FROM/src/shared/event-registry.ts $TO/src/shared/
+cp $FROM/src/shared/README.md $TO/src/shared/
+cp $FROM/src/actions/list-events/index.ts $TO/src/actions/list-events/
+cp $FROM/src/actions/test/list-events.test.ts $TO/src/actions/test/
+cp -r $FROM/docs/apis/list-events/* $TO/docs/apis/list-events/
+
+echo "✅ Synced event registry from $SOURCE to target project"
+```
+
+## Adding New Events
+
+When adding a new event:
+
+1. **Update `src/shared/event-registry.ts` in BOTH projects**
+2. **Update `src/actions/constants.ts` in BOTH projects** (if adding new category)
+3. **Create event class** in the appropriate project
+4. **Update sample JSONs** in `docs/apis/list-events/` in BOTH projects
+5. **Run tests** in BOTH projects
+6. **Commit and push** BOTH projects
+
+## Validation
+
+Before committing changes to event registry files:
+
+- [ ] Files copied to other project
+- [ ] Tests pass in a2b-agency: `npm test -- list-events.test.ts`
+- [ ] Tests pass in a2b-brand: `npm test -- list-events.test.ts`
+- [ ] Event counts match (currently 9 events total)
+- [ ] All 3 categories present (brand-registration, asset-sync, workfront)
+- [ ] Sample JSONs updated if event definitions changed
+
+## Related Documentation
+
+- `docs/cursor/EVENT_REGISTRY_IMPLEMENTATION.md` - Full implementation guide
+- `docs/apis/list-events/README.md` - API usage documentation
+- `docs/apis/list-events/TESTING.md` - Test coverage details

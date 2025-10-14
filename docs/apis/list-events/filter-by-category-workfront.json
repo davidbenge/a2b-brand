@@ -1,0 +1,65 @@
+{
+  "statusCode": 200,
+  "body": {
+    "success": true,
+    "data": {
+      "category": "workfront",
+      "count": 3,
+      "events": [
+        {
+          "code": "com.adobe.a2b.workfront.task.created",
+          "category": "workfront",
+          "name": "Workfront Task Created",
+          "description": "Emitted when a task is created in Workfront",
+          "eventClass": "WorkfrontTaskCreatedEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "taskId"
+          ],
+          "optionalFields": [
+            "projectId",
+            "assigneeId",
+            "taskName",
+            "dueDate"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.workfront.task.updated",
+          "category": "workfront",
+          "name": "Workfront Task Updated",
+          "description": "Emitted when a task is updated in Workfront",
+          "eventClass": "WorkfrontTaskUpdatedEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "taskId"
+          ],
+          "optionalFields": [
+            "projectId",
+            "assigneeId",
+            "taskName",
+            "dueDate",
+            "status"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.workfront.task.completed",
+          "category": "workfront",
+          "name": "Workfront Task Completed",
+          "description": "Emitted when a task is completed in Workfront",
+          "eventClass": "WorkfrontTaskCompletedEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "taskId"
+          ],
+          "optionalFields": [
+            "projectId",
+            "completedDate",
+            "completedBy"
+          ]
+        }
+      ],
+      "timestamp": "2024-10-14T17:58:23.456Z"
+    }
+  }
+}
+

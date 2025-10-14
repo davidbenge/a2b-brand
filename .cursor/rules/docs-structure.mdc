@@ -1,0 +1,11 @@
+---
+description: Enforce documentation and Cursor-generated markdown structure
+globs:
+  - "**/*.md"
+alwaysApply: true
+---
+- Documentation location:
+  - Place all project documentation under `docs/`.
+  - Cursor-generated summaries and notes should live under `docs/cursor/`.
+- Do not create markdown files at the repository root. If creating ad-hoc notes, store them in `docs/cursor/` (or a suitable subfolder under `docs/`).
+- When moving existing root-level markdowns, organize them under `docs/` (e.g., `docs/cursor/GITHUB_COMMIT_SUMMARY.md`, `docs/cursor/TODAYS_SUMMARY.md`).

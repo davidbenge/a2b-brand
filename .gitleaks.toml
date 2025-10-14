@@ -1,18 +1,29 @@
 # Gitleaks configuration for Adobe A2B Brand
 title = "Adobe A2B Brand Secret Detection"
 
+# Custom rules for Adobe-specific credentials
+[[rules]]
+id = "adobe-openwhisk-auth"
+description = "Adobe OpenWhisk/I/O Runtime Authentication Token"
+regex = '''["']?auth["']?\s*:\s*["']?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}:[A-Za-z0-9+/]{40,}={0,2}["']?'''
+tags = ["adobe", "openwhisk", "auth"]
+
+[[rules]]
+id = "adobe-auth-base64"
+description = "Adobe Base64 Authentication String"
+regex = '''["']?(auth|authorization|token|api[_-]?key)["']?\s*[:=]\s*["']?[A-Za-z0-9+/]{40,}={0,2}["']?'''
+tags = ["adobe", "auth", "api-key"]
+[rules.allowlist]
+stopwords = ["FAKE", "TEST", "EXAMPLE", "SAMPLE", "PLACEHOLDER", "MOCK", "XXX"]
+
 [allowlist]
 description = "Allow FAKE values and test files for Adobe A2B Brand"
+# Only allow specific documentation paths, not all JSON files
 paths = [
-    "docs/.*",
-    ".*\\.md$",
-    ".*\\.json$",
-    ".*\\.env.*",
-    ".*\\.ya?ml$",
-    ".*\\.config\\..*",
-    ".*test.*",
-    ".*example.*",
-    ".*sample.*"
+    "docs/apis/list-events/.*\\.json$",  # API documentation samples only
+    "docs/events/.*\\.json$",             # Event documentation samples only
+    ".*\\.md$",                           # Markdown documentation
+    "README.*",                           # README files
 ]
 
 regexes = [

@@ -7,7 +7,8 @@
       "jsx": "react-jsx",                    // or "react" for older versions
       "allowJs": true,                       /* Allow javascript files to be compiled. */
       "checkJs": false,                      /* Report errors in .js files. */
-      "moduleResolution": "node",            /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
+      "moduleResolution": "node",    
+      "allowSyntheticDefaultImports": true,        /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
       "typeRoots": [
         "./node_modules/@types",
         "./src/utils",

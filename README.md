@@ -128,7 +128,12 @@ Update these variables with values from your Adobe Developer Console project:
 Update these variables to your own target values:
 
 - `AIO_APP_NAME` - Your application name (e.g., "a2b-brand")
-- `AGENCY_BASE_URL` - Base URL for first-time agency registration
+- `AGENCY_BASE_URL` - Base domain URL for the agency application
+  - **Format**: `https://{namespace}.{domain}` (without any paths)
+  - **Example**: `https://27200-a2b-benge.adobeio-static.net`
+  - **Important**: Do NOT include any paths like `/api/v1/web/a2b-agency`
+  - The application will construct the full endpoint URL:
+    - `{AGENCY_BASE_URL}/api/v1/web/a2b-agency/new-brand-registration`
 
 **3. AEM Cloud Service Configuration**
 

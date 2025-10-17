@@ -32,6 +32,10 @@ export const LOG_LEVELS = {
 export const BRAND_STATE_PREFIX = 'BRAND_';
 export const BRAND_FILE_STORE_DIR = 'brand';
 
+export const AGENCY_STATE_PREFIX = 'AGENCY_';
+export const AGENCY_FILE_STORE_DIR = 'agency';
+export const AGENCY_SECRET_INDEX_PREFIX = 'AGENCY_SECRET_INDEX_';
+
 /**
  * Event codes - maintained for backward compatibility
  * Source of truth is now in src/shared/event-registry.ts

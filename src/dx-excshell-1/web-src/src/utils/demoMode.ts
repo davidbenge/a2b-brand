@@ -82,7 +82,7 @@ export const mockViewProps = {
     tenant: 'demo-tenant',
     aioRuntimeNamespace: 'demo-namespace',
     aioAppName: 'a2b-brand-demo',
-    agencyBaseUrl: 'https://demo-agency.adobeio-static.net/index.html'
+    agencyBaseUrl: 'https://demo-agency.adobeio-static.net'
 };
 
 /**

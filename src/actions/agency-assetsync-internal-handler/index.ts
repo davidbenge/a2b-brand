@@ -4,15 +4,9 @@
  * This internal action handles com.adobe.a2b.assetsync events from agencies.
  * It processes asset synchronization events and manages the asset sync workflow.
  */
-import { EventManager } from "../classes/EventManager";
-import { AssetSyncNewEvent } from "../classes/io_events/AssetSyncNewEvent";
-import { AssetSyncUpdateEvent } from "../classes/io_events/AssetSyncUpdateEvent";
-import { AssetSyncDeleteEvent } from "../classes/io_events/AssetSyncDeleteEvent";
 import { errorResponse, checkMissingRequestInputs, mergeRouterParams } from "../utils/common";
 import { fetchAssetFromPreassigned } from "../utils/aemOpenAPIUtils";
-
-
-import * as aioLogger from "@adobe/aio-lib-core-logging";
+import aioLogger from "@adobe/aio-lib-core-logging";
 
 export async function main(params: any): Promise<any> {
   const logger = aioLogger("agency-assetsync-internal-handler", { level: params.LOG_LEVEL || "info" });

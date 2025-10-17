@@ -53,29 +53,36 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
         const brandBaseUrl = `https://${safeViewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${safeViewProps.aioActionPackageName}/agency-event-handler`;
         const agencyBaseUrl = `${safeViewProps.agencyBaseUrl}/api/v1/web/a2b-agency/new-brand-registration`;
         const imsOrg = safeViewProps.imsOrg;
+        
         console.log('AgencyRegistrationView props', viewProps);
         console.log('AgencyRegistrationView specific props:', {
             aioRuntimeNamespace: viewProps.aioRuntimeNamespace,
             aioAppName: viewProps.aioActionPackageName,
             agencyBaseUrl: viewProps.agencyBaseUrl
         });
+        console.log('Constructed URLs:');
+        console.log('  Brand callback URL (endPointUrl):', brandBaseUrl);
+        console.log('  Agency registration endpoint:', agencyBaseUrl);
 
         // Validate required properties with detailed error messages
         if (!viewProps.aioRuntimeNamespace) {
             console.error('aioRuntimeNamespace is not properly configured:', viewProps.aioRuntimeNamespace);
             setError('Configuration error: Adobe I/O Runtime namespace not available. Please check your environment configuration.');
+            setLoading(false);
             return;
         }
         
         if (!viewProps.aioActionPackageName) {
             console.error('aioActionPackageName is not properly configured:', viewProps.aioActionPackageName);
             setError('Configuration error: Adobe I/O App name not available. Please check your environment configuration.');
+            setLoading(false);
             return;
         }
         
         if (!viewProps.agencyBaseUrl) {
             console.error('agencyBaseUrl is not properly configured:', viewProps.agencyBaseUrl);
             setError('Configuration error: Agency base URL not available. Please check your environment configuration.');
+            setLoading(false);
             return;
         }
 
@@ -83,10 +90,8 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
         setAgencyBaseUrl(agencyBaseUrl);
         setImsOrg(imsOrg);
 
-        // Clear loading state in demo mode
-        if (ENABLE_DEMO_MODE) {
-            setLoading(false);
-        }
+        // Clear loading state after initialization
+        setLoading(false);
     }, [safeViewProps]);
 
     const handleSubmit = async () => {
@@ -96,7 +101,20 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
         
         if (ENABLE_DEMO_MODE) {
             // Demo mode: simulate API call
-            logDemoMode('Submitting company registration', formData);
+            // Parse namespace: "27200-brand2agency-benge" -> consoleId: 27200, projectName: brand2agency, workspace: benge
+            const namespaceParts = safeViewProps.aioRuntimeNamespace.split('-');
+            const applicationRuntimeInfo = {
+                actionPackageName: safeViewProps.aioActionPackageName,
+                appName: "brand",
+                consoleId: namespaceParts[0] || "",
+                projectName: namespaceParts.slice(1, -1).join('-') || "",
+                workspace: namespaceParts[namespaceParts.length - 1] || ""
+            };
+            
+            logDemoMode('Submitting company registration', { 
+                ...formData, 
+                APPLICATION_RUNTIME_INFO: applicationRuntimeInfo 
+            });
             
             try {
                 await simulateApiDelay(1500); // Simulate realistic API delay
@@ -129,9 +147,33 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
             // Production mode: real API call
             try {
                 formData.endPointUrl = brandBaseUrl; //bolt on the brand base url to the form data
+                
+                // Construct APPLICATION_RUNTIME_INFO for the agency action
+                // Parse namespace: "27200-brand2agency-benge" -> consoleId: 27200, projectName: brand2agency, workspace: benge
+                const namespaceParts = safeViewProps.aioRuntimeNamespace.split('-');
+                const applicationRuntimeInfo = {
+                    actionPackageName: safeViewProps.aioActionPackageName,
+                    appName: "brand",
+                    consoleId: namespaceParts[0] || "",
+                    projectName: namespaceParts.slice(1, -1).join('-') || "",
+                    workspace: namespaceParts[namespaceParts.length - 1] || ""
+                };
+                
+                const payload = {
+                    data: {
+                        ...formData,
+                        app_runtime_info: applicationRuntimeInfo
+                    }
+                };
+                
+                console.log('Submitting brand registration:');
+                console.log('  POST to agency endpoint:', agencyBaseUrl);
+                console.log('  Brand callback URL (in data.endPointUrl):', brandBaseUrl);
+                console.log('  Full payload:', JSON.stringify(payload, null, 2));
+                
                 const response = await axios.post(
                     agencyBaseUrl,
-                    formData,
+                    payload,
                     {
                         headers: {
                             'Content-Type': 'application/json',
@@ -152,13 +194,27 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
                 } else {
                     setError(response.data.error || 'Registration failed. Please try again.');
                 }
-            } catch (err) {
-                if (axios.isAxiosError(err)) {
-                    setError(err.response?.data?.error || 'Registration failed. Please try again.');
-                } else {
-                    setError('An unexpected error occurred. Please try again.');
-                }
+            } catch (err: unknown) {
                 console.error('Registration error:', err);
+                
+                if (axios.isAxiosError(err)) {
+                    const errorMessage = err.response?.data?.body?.error 
+                        || err.response?.data?.error 
+                        || err.response?.data?.message
+                        || err.message
+                        || 'Registration failed. Please try again.';
+                    
+                    console.error('API Error Response:', {
+                        status: err.response?.status,
+                        statusText: err.response?.statusText,
+                        data: err.response?.data
+                    });
+                    
+                    setError(errorMessage);
+                } else {
+                    const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
+                    setError(errorMessage);
+                }
             }
         }
         

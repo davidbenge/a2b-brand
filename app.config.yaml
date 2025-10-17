@@ -66,6 +66,56 @@ application:
             annotations:
               require-adobe-auth: false
               final: true
+          agency-registration-internal-handler:
+            function: src/actions/agency-registration-internal-handler/index.ts
+            web: 'no'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+            annotations:
+              require-adobe-auth: false
+              final: true
+          get-agencies:
+            function: src/actions/get-agencies/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
+          get-agency:
+            function: src/actions/get-agency/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
+          update-agency:
+            function: src/actions/update-agency/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
+          delete-agency:
+            function: src/actions/delete-agency/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
 extensions:
   dx/excshell/1:
     $include: src/dx-excshell-1/ext.config.yaml

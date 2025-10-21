@@ -19,7 +19,7 @@ export async function main(params: any): Promise<any> {
     // Extract routerParams (which contains the actual event data)
     const eventParams = params.routerParams || params;
     
-    const requiredParams = ['type', 'data', 'AGENCY_BASE_URL'];
+    const requiredParams = ['type', 'data'];
     const requiredHeaders: string[] = [];
     const errorMessage = checkMissingRequestInputs(eventParams, requiredParams, requiredHeaders);
     if (errorMessage) {

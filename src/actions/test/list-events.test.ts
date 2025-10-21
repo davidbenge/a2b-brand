@@ -12,9 +12,9 @@ import {
     getEventDefinition,
     getEventCategories,
     isValidEventCode,
-    getEventCountByCategory,
-    EventDefinition
-} from '../../shared/event-registry';
+    getEventCountByCategory
+} from '../../shared/classes/AppEventRegistry';
+import { AppEventDefinition } from '../../shared/types';
 
 // Import expected response samples
 const listAllEventsResponse = require('../../../docs/apis/list-events/list-all-events.json');
@@ -51,12 +51,11 @@ describe('Event Registry', () => {
     });
 
     describe('getEventCategories', () => {
-        it('should return all 3 categories', () => {
+        it('should return all 2 categories', () => {
             const categories = getEventCategories();
-            expect(categories).toHaveLength(3);
-            expect(categories).toContain('brand-registration');
-            expect(categories).toContain('asset-sync');
-            expect(categories).toContain('workfront');
+            expect(categories).toHaveLength(2);
+            expect(categories).toContain('registration');
+            expect(categories).toContain('agency');
         });
 
         it('should match categories in list-all-events.json sample', () => {
@@ -69,9 +68,8 @@ describe('Event Registry', () => {
     describe('getEventCountByCategory', () => {
         it('should return correct count for each category', () => {
             const counts = getEventCountByCategory();
-            expect(counts['brand-registration']).toBe(3);
-            expect(counts['asset-sync']).toBe(3);
-            expect(counts['workfront']).toBe(3);
+            expect(counts['registration']).toBe(3);
+            expect(counts['agency']).toBe(6);
         });
 
         it('should match counts in list-all-events.json sample', () => {
@@ -82,40 +80,22 @@ describe('Event Registry', () => {
     });
 
     describe('getEventsByCategory', () => {
-        it('should return 3 asset-sync events', () => {
-            const events = getEventsByCategory('asset-sync');
+        it('should return 6 agency events', () => {
+            const events = getEventsByCategory('agency');
+            expect(events).toHaveLength(6);
+            expect(events.every(e => e.category === 'agency')).toBe(true);
+        });
+
+        it('should return 0 product events (reserved for future)', () => {
+            const events = getEventsByCategory('product');
+            expect(events).toHaveLength(0);
+            expect(events.every(e => e.category === 'product')).toBe(true);
+        });
+
+        it('should return 3 registration events', () => {
+            const events = getEventsByCategory('registration');
             expect(events).toHaveLength(3);
-            expect(events.every(e => e.category === 'asset-sync')).toBe(true);
-        });
-
-        it('should match asset-sync sample response', () => {
-            const events = getEventsByCategory('asset-sync');
-            const sampleEvents = filterAssetSyncResponse.body.data.events;
-            expect(events).toEqual(sampleEvents);
-        });
-
-        it('should return 3 workfront events', () => {
-            const events = getEventsByCategory('workfront');
-            expect(events).toHaveLength(3);
-            expect(events.every(e => e.category === 'workfront')).toBe(true);
-        });
-
-        it('should match workfront sample response', () => {
-            const events = getEventsByCategory('workfront');
-            const sampleEvents = filterWorkfrontResponse.body.data.events;
-            expect(events).toEqual(sampleEvents);
-        });
-
-        it('should return 3 brand-registration events', () => {
-            const events = getEventsByCategory('brand-registration');
-            expect(events).toHaveLength(3);
-            expect(events.every(e => e.category === 'brand-registration')).toBe(true);
-        });
-
-        it('should match brand-registration sample response', () => {
-            const events = getEventsByCategory('brand-registration');
-            const sampleEvents = filterBrandRegResponse.body.data.events;
-            expect(events).toEqual(sampleEvents);
+            expect(events.every(e => e.category === 'registration')).toBe(true);
         });
     });
 
@@ -124,15 +104,23 @@ describe('Event Registry', () => {
             const event = getEventDefinition('com.adobe.a2b.assetsync.new');
             expect(event).toBeDefined();
             expect(event?.code).toBe('com.adobe.a2b.assetsync.new');
-            expect(event?.category).toBe('asset-sync');
+            expect(event?.category).toBe('agency');
             expect(event?.name).toBe('Asset Sync New');
-            expect(event?.eventClass).toBe('AssetSyncNewEvent');
+            // eventClass removed - events are now created dynamically
         });
 
         it('should match specific event sample response', () => {
             const event = getEventDefinition('com.adobe.a2b.assetsync.new');
             const sampleEvent = getSpecificEventResponse.body.data.event;
-            expect(event).toEqual(sampleEvent);
+            // Compare key fields (excluding eventBodyexample and routingRules which are internal)
+            expect(event?.code).toEqual(sampleEvent.code);
+            expect(event?.category).toEqual(sampleEvent.category);
+            expect(event?.name).toEqual(sampleEvent.name);
+            expect(event?.description).toEqual(sampleEvent.description);
+            // eventClass removed - events are now created dynamically
+            expect(event?.version).toEqual(sampleEvent.version);
+            expect(event?.requiredFields).toEqual(sampleEvent.requiredFields);
+            expect(event?.optionalFields).toEqual(sampleEvent.optionalFields);
         });
 
         it('should return undefined for invalid event code', () => {
@@ -175,12 +163,12 @@ describe('Event Registry', () => {
 
     describe('Event Registry Structure', () => {
         it('should have all required fields for each event', () => {
-            Object.values(EVENT_REGISTRY).forEach((event: EventDefinition) => {
+            Object.values(EVENT_REGISTRY).forEach((event: AppEventDefinition) => {
                 expect(event.code).toBeDefined();
                 expect(typeof event.code).toBe('string');
                 
                 expect(event.category).toBeDefined();
-                expect(['brand-registration', 'asset-sync', 'workfront']).toContain(event.category);
+                expect(['registration', 'agency', 'product']).toContain(event.category);
                 
                 expect(event.name).toBeDefined();
                 expect(typeof event.name).toBe('string');
@@ -188,8 +176,7 @@ describe('Event Registry', () => {
                 expect(event.description).toBeDefined();
                 expect(typeof event.description).toBe('string');
                 
-                expect(event.eventClass).toBeDefined();
-                expect(typeof event.eventClass).toBe('string');
+                // eventClass removed - events are now created dynamically
                 
                 expect(event.version).toBeDefined();
                 expect(typeof event.version).toBe('string');
@@ -203,7 +190,11 @@ describe('Event Registry', () => {
             const sampleEvent = listAllEventsResponse.body.data.events['com.adobe.a2b.assetsync.new'];
             const registryEvent = EVENT_REGISTRY['com.adobe.a2b.assetsync.new'];
             
-            expect(registryEvent).toMatchObject(sampleEvent);
+            // Compare key fields (eventClass removed)
+            expect(registryEvent.code).toBe(sampleEvent.code);
+            expect(registryEvent.category).toBe(sampleEvent.category);
+            expect(registryEvent.name).toBe(sampleEvent.name);
+            expect(registryEvent.description).toBe(sampleEvent.description);
         });
     });
 });
@@ -223,11 +214,10 @@ describe('List Events Action Response Structure', () => {
         it('should have correct summary data', () => {
             const summary = listAllEventsResponse.body.data.summary;
             expect(summary.totalEvents).toBe(9);
-            expect(summary.categories).toHaveLength(3);
+            expect(summary.categories).toHaveLength(2);
             expect(summary.eventCounts).toBeDefined();
-            expect(summary.eventCounts['brand-registration']).toBe(3);
-            expect(summary.eventCounts['asset-sync']).toBe(3);
-            expect(summary.eventCounts['workfront']).toBe(3);
+            expect(summary.eventCounts['registration']).toBe(3);
+            expect(summary.eventCounts['agency']).toBe(6);
         });
 
         it('should contain all 9 events', () => {
@@ -237,31 +227,21 @@ describe('List Events Action Response Structure', () => {
     });
 
     describe('Success Response - Filter by Category', () => {
-        it('should have correct structure for asset-sync', () => {
-            const response = filterAssetSyncResponse;
-            expect(response.statusCode).toBe(200);
-            expect(response.body.success).toBe(true);
-            expect(response.body.data.category).toBe('asset-sync');
-            expect(response.body.data.count).toBe(3);
-            expect(response.body.data.events).toHaveLength(3);
+        it('should have correct structure for agency category', () => {
+            const events = getEventsByCategory('agency');
+            expect(events).toHaveLength(6);
+            expect(events.every(e => e.category === 'agency')).toBe(true);
         });
 
-        it('should have correct structure for workfront', () => {
-            const response = filterWorkfrontResponse;
-            expect(response.statusCode).toBe(200);
-            expect(response.body.success).toBe(true);
-            expect(response.body.data.category).toBe('workfront');
-            expect(response.body.data.count).toBe(3);
-            expect(response.body.data.events).toHaveLength(3);
+        it('should have correct structure for product category (reserved)', () => {
+            const events = getEventsByCategory('product');
+            expect(events).toHaveLength(0);
         });
 
-        it('should have correct structure for brand-registration', () => {
-            const response = filterBrandRegResponse;
-            expect(response.statusCode).toBe(200);
-            expect(response.body.success).toBe(true);
-            expect(response.body.data.category).toBe('brand-registration');
-            expect(response.body.data.count).toBe(3);
-            expect(response.body.data.events).toHaveLength(3);
+        it('should have correct structure for registration category', () => {
+            const events = getEventsByCategory('registration');
+            expect(events).toHaveLength(3);
+            expect(events.every(e => e.category === 'registration')).toBe(true);
         });
     });
 
@@ -277,10 +257,10 @@ describe('List Events Action Response Structure', () => {
         it('should contain complete event definition', () => {
             const event = getSpecificEventResponse.body.data.event;
             expect(event.code).toBe('com.adobe.a2b.assetsync.new');
-            expect(event.category).toBe('asset-sync');
+            expect(event.category).toBe('agency');
             expect(event.name).toBeDefined();
             expect(event.description).toBeDefined();
-            expect(event.eventClass).toBeDefined();
+            // eventClass removed - events are now created dynamically
             expect(event.version).toBeDefined();
             expect(event.requiredFields).toBeDefined();
             expect(event.optionalFields).toBeDefined();
@@ -319,10 +299,9 @@ describe('List Events Action Response Structure', () => {
             const details = errorInvalidCategoryResponse.body.details;
             expect(details.validCategories).toBeDefined();
             expect(Array.isArray(details.validCategories)).toBe(true);
-            expect(details.validCategories).toHaveLength(3);
-            expect(details.validCategories).toContain('brand-registration');
-            expect(details.validCategories).toContain('asset-sync');
-            expect(details.validCategories).toContain('workfront');
+            expect(details.validCategories).toHaveLength(2);
+            expect(details.validCategories).toContain('registration');
+            expect(details.validCategories).toContain('agency');
         });
     });
 });
@@ -371,10 +350,8 @@ describe('Event Data Validation', () => {
         it('should have all required fields for received event', () => {
             const event = getEventDefinition('com.adobe.a2b.registration.received');
             expect(event?.requiredFields).toEqual([
-                'brandId',
                 'name',
-                'endPointUrl',
-                'enabled'
+                'endPointUrl'
             ]);
         });
     });

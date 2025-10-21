@@ -1,7 +1,7 @@
 {
     "id": "urn:uuid:12345678-1234-1234-1234-123456789abc",
     "source": "urn:uuid:5c3431a2-bd91-4eff-a356-26b747d0aad4",
-    "type": "com.adobe.a2b.registration.received",
+    "type": "com.adobe.a2b.registration.enabled",
     "datacontenttype": "application/json",
     "time": "2025-08-28T07:29:29.728Z",
     "specversion": "1.0",
@@ -18,8 +18,10 @@
           "orgId": "33C1401053CF76370A490D4C@AdobeOrg"
         },
         "brandId": "c6409c52-9295-4d15-94e6-7bd39d04360c",
+        "secret": "aB3dEf7GhI9jKlMnOpQrStUvWxYz1234",
         "name": "Brand Name",
-        "endPointUrl": "https://example.com/webhook"
+        "endPointUrl": "https://example.com/webhook",
+        "enabled": true,
+        "enabledAt": "2025-08-28T07:29:29.728Z"
     }
 }
-

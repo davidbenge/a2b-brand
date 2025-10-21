@@ -3,9 +3,13 @@ import { IAgency } from '../types';
 /**
  * Agency class represents a brand's registration with an agency
  * Stores the brand's identity at the agency and authentication credentials
+ * 
+ * Supports 1-to-many relationship: One brand can work with multiple agencies
+ * Each agency is identified by agencyId and orgId from agency_identification
  */
 export class Agency implements IAgency {
-    readonly agencyId: string; // Agency identifier (from app_runtime_info)
+    readonly agencyId: string; // Agency identifier (from agency_identification)
+    readonly orgId: string; // Agency's organization ID (from agency_identification)
     readonly brandId: string; // This brand's ID at the agency
     readonly secret: string; // Secret to use when calling this agency
     readonly name: string; // This brand's name as registered with the agency
@@ -19,12 +23,14 @@ export class Agency implements IAgency {
     constructor(params: IAgency) {
         // Validate required fields
         if (!params.agencyId) throw new Error('agencyId is required');
+        if (!params.orgId) throw new Error('orgId is required');
         if (!params.brandId) throw new Error('brandId is required');
         if (!params.name) throw new Error('name is required');
         if (!params.endPointUrl) throw new Error('endPointUrl is required');
         // Note: secret is NOT required initially (only provided on registration.enabled)
 
         this.agencyId = params.agencyId;
+        this.orgId = params.orgId;
         this.brandId = params.brandId;
         this.secret = params.secret || ''; // Empty until registration.enabled
         this.name = params.name;
@@ -43,6 +49,7 @@ export class Agency implements IAgency {
     toJSON(): IAgency {
         return {
             agencyId: this.agencyId,
+            orgId: this.orgId,
             brandId: this.brandId,
             secret: this.secret,
             name: this.name,
@@ -70,6 +77,7 @@ export class Agency implements IAgency {
     isValid(): boolean {
         return Boolean(
             this.agencyId &&
+            this.orgId &&
             this.brandId &&
             this.name &&
             this.endPointUrl
@@ -108,6 +116,7 @@ export class Agency implements IAgency {
     toSafeJSON(): Partial<IAgency> {
         return {
             agencyId: this.agencyId,
+            orgId: this.orgId,
             brandId: this.brandId,
             name: this.name,
             endPointUrl: this.endPointUrl,

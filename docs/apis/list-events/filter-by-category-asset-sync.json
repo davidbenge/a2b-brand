@@ -3,12 +3,12 @@
   "body": {
     "success": true,
     "data": {
-      "category": "asset-sync",
-      "count": 3,
+      "category": "agency",
+      "count": 6,
       "events": [
         {
           "code": "com.adobe.a2b.assetsync.new",
-          "category": "asset-sync",
+          "category": "agency",
           "name": "Asset Sync New",
           "description": "Emitted when a new asset is synced from AEM",
           "eventClass": "AssetSyncNewEvent",
@@ -26,7 +26,7 @@
         },
         {
           "code": "com.adobe.a2b.assetsync.update",
-          "category": "asset-sync",
+          "category": "agency",
           "name": "Asset Sync Update",
           "description": "Emitted when an asset is updated in AEM",
           "eventClass": "AssetSyncUpdateEvent",
@@ -43,7 +43,7 @@
         },
         {
           "code": "com.adobe.a2b.assetsync.delete",
-          "category": "asset-sync",
+          "category": "agency",
           "name": "Asset Sync Delete",
           "description": "Emitted when an asset is deleted in AEM",
           "eventClass": "AssetSyncDeleteEvent",
@@ -54,6 +54,54 @@
           ],
           "optionalFields": [
             "asset_path",
+            "app_runtime_info"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.workfront.task.created",
+          "category": "agency",
+          "name": "Workfront Task Created",
+          "description": "Emitted when a new task is created in Workfront",
+          "eventClass": "WorkfrontTaskCreatedEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "taskId",
+            "taskName",
+            "projectId"
+          ],
+          "optionalFields": [
+            "app_runtime_info"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.workfront.task.updated",
+          "category": "agency",
+          "name": "Workfront Task Updated",
+          "description": "Emitted when a task is updated in Workfront",
+          "eventClass": "WorkfrontTaskUpdatedEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "taskId"
+          ],
+          "optionalFields": [
+            "taskName",
+            "projectId",
+            "app_runtime_info"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.workfront.task.completed",
+          "category": "agency",
+          "name": "Workfront Task Completed",
+          "description": "Emitted when a task is completed in Workfront",
+          "eventClass": "WorkfrontTaskCompletedEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "taskId"
+          ],
+          "optionalFields": [
+            "taskName",
+            "projectId",
             "app_runtime_info"
           ]
         }

@@ -82,7 +82,7 @@ application:
             runtime: nodejs:20
             inputs:
               LOG_LEVEL: debug
-              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"brand","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
             annotations:
               require-adobe-auth: true
               final: true
@@ -92,7 +92,20 @@ application:
             runtime: nodejs:20
             inputs:
               LOG_LEVEL: debug
-              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"agency","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
+          new-agency-registration:
+            function: src/actions/new-agency-registration/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"agency","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+              AIO_runtime_namespace: $AIO_runtime_namespace
+              AIO_ACTION_PACKAGE_NAME: $AIO_ACTION_PACKAGE_NAME
+              AGENCY_BASE_URL: $AGENCY_BASE_URL
             annotations:
               require-adobe-auth: true
               final: true
@@ -102,7 +115,7 @@ application:
             runtime: nodejs:20
             inputs:
               LOG_LEVEL: debug
-              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"agency","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
             annotations:
               require-adobe-auth: true
               final: true
@@ -112,7 +125,7 @@ application:
             runtime: nodejs:20
             inputs:
               LOG_LEVEL: debug
-              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"agency","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
             annotations:
               require-adobe-auth: true
               final: true

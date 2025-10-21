@@ -1,0 +1,25 @@
+{
+    "id": "urn:uuid:12345678-1234-1234-1234-123456789abc",
+    "source": "urn:uuid:5c3431a2-bd91-4eff-a356-26b747d0aad4",
+    "type": "com.adobe.a2b.workfront.task.completed",
+    "datacontenttype": "application/json",
+    "time": "2025-08-28T07:29:29.728Z",
+    "specversion": "1.0",
+    "data": {
+        "app_runtime_info": {
+            "actionPackageName": "a2b-agency",
+            "appName": "agency",
+            "consoleId": "27200",
+            "projectName": "a2b",
+            "workspace": "benge"
+        },
+        "agency_identification": {
+            "agencyId": "2ff22120-d393-4743-afdd-0d4b2038d2be",
+            "orgId": "33C1401053CF76370A490D4C@AdobeOrg"
+        },
+        "taskId": "task123",
+        "completedDate": "2024-10-15T10:00:00Z",
+        "completedBy": "user@example.com",
+        "projectId": "proj456"
+    }
+}

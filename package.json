@@ -1,6 +1,6 @@
 {
   "name": "a2b",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@adobe/aio-lib-events": "^4.0.1",

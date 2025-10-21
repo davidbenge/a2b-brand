@@ -26,7 +26,6 @@ interface CompanyRegistrationForm {
     name: string;
     primaryContact: string;
     phoneNumber: string;
-    endPointUrl: string;
 }
 
 const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewProps }) => {
@@ -37,62 +36,65 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    const [brandBaseUrl, setBrandBaseUrl] = useState('');
     const [formData, setFormData] = useState<CompanyRegistrationForm>({
         name: '',
         primaryContact: '',
-        phoneNumber: '',
-        endPointUrl:''
+        phoneNumber: ''
     });
-    const [agencyBaseUrl, setAgencyBaseUrl] = useState('');
-    const [imsOrg, setImsOrg] = useState('');
+    const [localActionUrl, setLocalActionUrl] = useState('');
 
     useEffect(() => {
         logDemoMode('AgencyRegistrationView initialized', { safeViewProps, ENABLE_DEMO_MODE });
 
-        const brandBaseUrl = `https://${safeViewProps.aioRuntimeNamespace}.adobeioruntime.net/api/v1/web/${safeViewProps.aioActionPackageName}/agency-event-handler`;
-        const agencyBaseUrl = `${safeViewProps.agencyBaseUrl}/api/v1/web/a2b-agency/new-brand-registration`;
-        const imsOrg = safeViewProps.imsOrg;
+        // Build local action URL
+        const localActionUrl = `https://${safeViewProps.aioRuntimeNamespace}.adobeio-static.net/api/v1/web/${safeViewProps.aioActionPackageName}/new-agency-registration`;
         
         console.log('AgencyRegistrationView props', viewProps);
         console.log('AgencyRegistrationView specific props:', {
-            aioRuntimeNamespace: viewProps.aioRuntimeNamespace,
-            aioAppName: viewProps.aioActionPackageName,
-            agencyBaseUrl: viewProps.agencyBaseUrl
+            aioRuntimeNamespace: viewProps?.aioRuntimeNamespace,
+            aioAppName: viewProps?.aioActionPackageName,
+            imsProfile: viewProps?.imsProfile
         });
-        console.log('Constructed URLs:');
-        console.log('  Brand callback URL (endPointUrl):', brandBaseUrl);
-        console.log('  Agency registration endpoint:', agencyBaseUrl);
+        console.log('Local action URL:', localActionUrl);
 
         // Validate required properties with detailed error messages
-        if (!viewProps.aioRuntimeNamespace) {
-            console.error('aioRuntimeNamespace is not properly configured:', viewProps.aioRuntimeNamespace);
+        if (!viewProps?.aioRuntimeNamespace) {
+            console.error('aioRuntimeNamespace is not properly configured:', viewProps?.aioRuntimeNamespace);
             setError('Configuration error: Adobe I/O Runtime namespace not available. Please check your environment configuration.');
             setLoading(false);
             return;
         }
         
-        if (!viewProps.aioActionPackageName) {
-            console.error('aioActionPackageName is not properly configured:', viewProps.aioActionPackageName);
+        if (!viewProps?.aioActionPackageName) {
+            console.error('aioActionPackageName is not properly configured:', viewProps?.aioActionPackageName);
             setError('Configuration error: Adobe I/O App name not available. Please check your environment configuration.');
             setLoading(false);
             return;
         }
-        
-        if (!viewProps.agencyBaseUrl) {
-            console.error('agencyBaseUrl is not properly configured:', viewProps.agencyBaseUrl);
-            setError('Configuration error: Agency base URL not available. Please check your environment configuration.');
-            setLoading(false);
-            return;
-        }
 
-        setBrandBaseUrl(brandBaseUrl);
-        setAgencyBaseUrl(agencyBaseUrl);
-        setImsOrg(imsOrg);
+        setLocalActionUrl(localActionUrl);
+
+        // Auto-fill form with user information from IMS profile
+        if (viewProps?.imsProfile) {
+            const displayName = viewProps.imsProfile.displayName 
+                || viewProps.imsProfile.name 
+                || viewProps.imsProfile.email 
+                || '';
+            
+            const phoneNumber = viewProps.imsProfile.phoneNumber 
+                || viewProps.imsProfile.phone 
+                || '';
+
+            setFormData(prev => ({
+                ...prev,
+                primaryContact: displayName,
+                phoneNumber: phoneNumber
+            }));
+        }
 
         // Clear loading state after initialization
         setLoading(false);
-    }, [safeViewProps]);
+    }, [viewProps]);
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -101,83 +103,49 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
         
         if (ENABLE_DEMO_MODE) {
             // Demo mode: simulate API call
-            // Parse namespace: "27200-brand2agency-benge" -> consoleId: 27200, projectName: brand2agency, workspace: benge
-            const namespaceParts = safeViewProps.aioRuntimeNamespace.split('-');
-            const applicationRuntimeInfo = {
-                actionPackageName: safeViewProps.aioActionPackageName,
-                appName: "brand",
-                consoleId: namespaceParts[0] || "",
-                projectName: namespaceParts.slice(1, -1).join('-') || "",
-                workspace: namespaceParts[namespaceParts.length - 1] || ""
-            };
-            
             logDemoMode('Submitting company registration', { 
-                ...formData, 
-                APPLICATION_RUNTIME_INFO: applicationRuntimeInfo 
+                ...formData,
+                imsOrgName: safeViewProps.imsOrgName,
+                imsOrgId: safeViewProps.imsOrg
             });
             
             try {
                 await simulateApiDelay(1500); // Simulate realistic API delay
                 
-                // Create new mock registration entry
-                const newRegistration = {
-                    id: Date.now().toString(),
-                    name: formData.name,
-                    primaryContact: formData.primaryContact,
-                    phoneNumber: formData.phoneNumber,
-                    endPointUrl: brandBaseUrl,
-                    status: 'pending' as const,
-                    createdAt: new Date(),
-                    updatedAt: new Date()
-                };
-                
-                logDemoMode('Registration successful (demo)', newRegistration);
+                logDemoMode('Registration successful (demo)');
                 setSubmitted(true);
                 setSuccess('Registration submitted successfully! (Demo Mode)');
                 setFormData({
                     name: '',
                     primaryContact: '',
-                    phoneNumber: '',
-                    endPointUrl: ''
+                    phoneNumber: ''
                 });
             } catch (err) {
                 setError('Demo mode: Simulated error occurred');
             }
         } else {
-            // Production mode: real API call
+            // Production mode: Submit to local action
             try {
-                formData.endPointUrl = brandBaseUrl; //bolt on the brand base url to the form data
-                
-                // Construct APPLICATION_RUNTIME_INFO for the agency action
-                // Parse namespace: "27200-brand2agency-benge" -> consoleId: 27200, projectName: brand2agency, workspace: benge
-                const namespaceParts = safeViewProps.aioRuntimeNamespace.split('-');
-                const applicationRuntimeInfo = {
-                    actionPackageName: safeViewProps.aioActionPackageName,
-                    appName: "brand",
-                    consoleId: namespaceParts[0] || "",
-                    projectName: namespaceParts.slice(1, -1).join('-') || "",
-                    workspace: namespaceParts[namespaceParts.length - 1] || ""
-                };
-                
                 const payload = {
                     data: {
                         ...formData,
-                        app_runtime_info: applicationRuntimeInfo
+                        imsOrgName: safeViewProps.imsOrgName,
+                        imsOrgId: safeViewProps.imsOrg
                     }
                 };
                 
-                console.log('Submitting brand registration:');
-                console.log('  POST to agency endpoint:', agencyBaseUrl);
-                console.log('  Brand callback URL (in data.endPointUrl):', brandBaseUrl);
+                console.log('Submitting brand registration to local action:');
+                console.log('  POST to:', localActionUrl);
                 console.log('  Full payload:', JSON.stringify(payload, null, 2));
                 
                 const response = await axios.post(
-                    agencyBaseUrl,
+                    localActionUrl,
                     payload,
                     {
                         headers: {
                             'Content-Type': 'application/json',
-                            'x-gw-ims-org-id': imsOrg
+                            'x-gw-ims-org-id': safeViewProps.imsOrg,
+                            'Authorization': `Bearer ${safeViewProps.imsToken}`
                         }
                     }
                 );
@@ -188,8 +156,7 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
                     setFormData({
                         name: '',
                         primaryContact: '',
-                        phoneNumber: '',
-                        endPointUrl: ''
+                        phoneNumber: ''
                     });
                 } else {
                     setError(response.data.error || 'Registration failed. Please try again.');
@@ -275,7 +242,7 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
                         value={formData.name}
                         onChange={(value) => handleInputChange('name', value)}
                         isRequired
-                        placeholder="Enter your company name"
+                        description="Enter your company name"
                     />
                     
                     <TextField
@@ -283,7 +250,7 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
                         value={formData.primaryContact}
                         onChange={(value) => handleInputChange('primaryContact', value)}
                         isRequired
-                        placeholder="Enter primary contact name"
+                        description="Enter primary contact name"
                     />
                     
                     <TextField
@@ -291,7 +258,7 @@ const AgencyRegistrationView: React.FC<{ viewProps?: ViewPropsBase }> = ({ viewP
                         value={formData.phoneNumber}
                         onChange={(value) => handleInputChange('phoneNumber', value)}
                         isRequired
-                        placeholder="Enter phone number"
+                        description="Enter phone number"
                     />
 
                     {error && (

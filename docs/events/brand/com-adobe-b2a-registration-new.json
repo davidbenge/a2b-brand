@@ -13,13 +13,7 @@
           "projectName": "a2b",
           "workspace": "benge"
         },
-        "agency_identification": {
-          "agencyId": "2ff22120-d393-4743-afdd-0d4b2038d2be",
-          "orgId": "33C1401053CF76370A490D4C@AdobeOrg"
-        },
-        "brandId": "c6409c52-9295-4d15-94e6-7bd39d04360c",
         "name": "Brand Name",
         "endPointUrl": "https://example.com/webhook"
     }
 }
-

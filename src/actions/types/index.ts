@@ -17,7 +17,8 @@ export interface IBrand {
 }
 
 export interface IAgency {
-    agencyId: string; // Agency identifier (from app_runtime_info)
+    agencyId: string; // Agency identifier (from agency_identification)
+    orgId: string; // Agency's organization ID (from agency_identification)
     brandId: string; // This brand's ID at the agency
     secret: string; // Secret to use when calling this agency
     name: string; // This brand's name as registered with the agency

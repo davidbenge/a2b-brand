@@ -35,6 +35,7 @@ describe('agency-event-handler (Brand App)', () => {
     agencyManager = new AgencyManager('debug');
     const testAgency = new Agency({
       agencyId: 'test-agency-id',
+      orgId: 'test-org-id@AdobeOrg',
       brandId: 'test-brand-id',
       secret: 'valid-secret-32chars-long-xxxxxx',
       name: 'Test Agency',

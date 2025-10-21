@@ -1,0 +1,73 @@
+{
+    "source": "acct:aem-p142461-e1463137@adobe.com",
+    "S2S_API_KEY": "FAKE_API_KEY_FOR_TESTING_ONLY",
+    "S2S_CLIENT_SECRET": "FAKE_CLIENT_SECRET_FOR_TESTING_ONLY",
+    "data": {
+        "assetId": "urn:aaid:aem:20fec14a-b5b8-4c7d-85f4-e619d66281dc",
+        "assetMetadata": {
+            "xcm:machineKeywords": [
+                {
+                    "confidence": 0.896,
+                    "value": "editorial photography"
+                },
+                {
+                    "confidence": 0.764,
+                    "value": "graphic design"
+                },
+                {
+                    "confidence": 0.759,
+                    "value": "graphics"
+                }
+            ]
+        },
+        "repositoryMetadata": {
+            "aem:assetState": "processed",
+            "dam:sha1": "bfba1fa5db8755f3deefbf62b8c212ea6396fafc",
+            "dc:format": "image/png",
+            "repo:ancestors": [
+                "urn:aaid:aem:33e65aa7-1368-4da1-8871-23919222bd3e",
+                "urn:aaid:aem:8ef34109-608e-475c-a62c-3d04c4f58cfe"
+            ],
+            "repo:assetClass": "file",
+            "repo:assetId": "urn:aaid:aem:20fec14a-b5b8-4c7d-85f4-e619d66281dc",
+            "repo:createDate": "2025-08-29T06:57:15.912Z",
+            "repo:createdBy": "DBENGE@ADOBE.COM",
+            "repo:modifiedBy": "DBENGE@ADOBE.COM",
+            "repo:modifyDate": "2025-08-29T06:57:54.141Z",
+            "repo:name": "Screenshot 2025-05-28 at 5.05.48 PM.png",
+            "repo:path": "/content/dam/agency_work_for_BRAND_A/Screenshot 2025-05-28 at 5.05.48 PM.png",
+            "repo:repositoryId": "author-p142461-e1463137.adobeaemcloud.com",
+            "repo:size": "669044",
+            "repo:state": "ACTIVE",
+            "repo:version": "oak:1.0::ci:ef60ede228dbef257ec147ae0e252ec8",
+            "tiff:imageLength": 816,
+            "tiff:imageWidth": 1465
+        }
+    },
+    "AIO_AGENCY_EVENTS_BRAND_REGISTRATION_PROVIDER_ID": "5c3431a2-bd91-4eff-a356-26b747d0aad4",
+    "recipientclientid": "4ab33463139e4f96b851589286cd46e4",
+    "AEM_AUTH_TECH_ACCOUNT_ID": "B150222D684839A20A49fake@techacct.adobe.com",
+    "id": "712375d8-0464-489b-ac3e-6b0eb77d2932",
+    "AIO_AGENCY_EVENTS_AEM_ASSET_SYNC_PROVIDER_ID": "af5c4d93-e1e0-4985-ad33-80fde3837aaa",
+    "AIO_RUNTIME_AUTH": "97d7c0f6-fake-fake-bbe3-41a76dd8395b:M4J1kmJLyJjj84KOD5IjvI35ev3LwqKEhg0n7uxYN5f8S7nHnT8hUiQtsD44fake",
+    "type": "aem.assets.asset.processing_completed",
+    "LOG_LEVEL": "debug",
+    "datacontenttype": "application/json",
+    "recipient_client_id": "4ab33463139e4f96b851589286cd46e4",
+    "AIO_RUNTIME_APIHOST": "https://adobeioruntime.net",
+    "AEM_AUTH_CLIENT_SECRET": "FAKE_AEM_CLIENT_SECRET_FOR_TESTING_ONLY",
+    "ORG_ID": "33C1401053CF76370A490D4C@AdobeOrg",
+    "APPLICATION_RUNTIME_INFO": "{\"namespace\":\"27200-a2b-benge\",\"app_name\":\"agency\",\"action_package_name\":\"a2b-agency\"}",
+    "AEM_AUTH_CLIENT_ID": "cm-p142461-e1463137-integration-1",
+    "time": "2025-08-29T06:57:54.151358579Z",
+    "AIO_RUNTIME_NAMESPACE": "27200-a2b-benge",
+    "event_id": "ebea9720-e2a6-40b0-9f18-f765bd982706",
+    "S2S_SCOPES": "[\"AdobeID\",\"openid\",\"read_organizations\",\"additional_info.projectedProductContext\",\"additional_info.roles\",\"adobeio_api\",\"read_client_secret\",\"manage_client_secrets\"]",
+    "ADOBE_INTERNAL_URL_ENDPOINT": "https://27200-609silverstork-stage.adobeioruntime.net/api/v1/web/a2b-agency",
+    "specversion": "1.0",
+    "AEM_AUTH_PRIVATE_KEY": "-----BEGIN RSA PRIVATE KEY-----\nFAKE\n-----END RSA PRIVATE KEY-----",
+    "AEM_AUTH_SCOPES": "ent_aem_cloud_api",
+    "S2S_CLIENT_ID": "4ab33463139e4f96b851589286cdfake",
+    "eventid": "ebea9720-fake-40b0-9f18-f765bd982706",
+    "AEM_AUTH_TYPE": "jwt"
+}

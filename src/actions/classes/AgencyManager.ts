@@ -40,6 +40,7 @@ export class AgencyManager {
 
         return new Agency({
             agencyId: json.agencyId,
+            orgId: json.orgId || '', // May not be present in older data
             brandId: json.brandId,
             secret: json.secret || '',
             name: json.name,
@@ -61,6 +62,7 @@ export class AgencyManager {
         const now = new Date();
         return new Agency({
             agencyId: data.agencyId || this.generateAgencyId(),
+            orgId: data.orgId || '', // Will be populated from agency_identification
             brandId: data.brandId || this.generateBrandId(),
             secret: data.secret || '', // Empty until registration.enabled
             name: data.name || '',

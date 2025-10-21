@@ -48,6 +48,10 @@ describe('agency-registration-internal-handler (Brand App)', () => {
               app_name: 'agency',
               workspace: 'production'
             },
+            agency_identification: {
+              agencyId: 'test-agency-id',
+              orgId: 'test-org-id@AdobeOrg'
+            },
             brandId: 'test-brand-id-12345678',
             name: 'Test Brand',
             endPointUrl: 'https://brand.example.com/webhook'
@@ -98,6 +102,10 @@ describe('agency-registration-internal-handler (Brand App)', () => {
               namespace: 'agency-namespace',
               app_name: 'agency'
             },
+            agency_identification: {
+              agencyId: 'test-agency-id',
+              orgId: 'test-org-id@AdobeOrg'
+            },
             brandId: 'test-brand-id',
             name: 'Test Brand',
             endPointUrl: 'https://brand.example.com/webhook'
@@ -135,7 +143,9 @@ describe('agency-registration-internal-handler (Brand App)', () => {
       expect(response.body).toContain('name');
     });
 
-    it('should reject registration.received without endPointUrl', async () => {
+    it('should derive agency endPointUrl from app_runtime_info (not from event data)', async () => {
+      // Note: endPointUrl is no longer passed in event data - it's derived from app_runtime_info
+      // The handler constructs the URL as: https://{consoleId}-{projectName}-{workspace}.adobeio-static.net
       const params = {
         LOG_LEVEL: 'debug',
         routerParams: {
@@ -143,20 +153,30 @@ describe('agency-registration-internal-handler (Brand App)', () => {
           data: {
             app_runtime_info: {
               consoleId: '27200',
-              namespace: 'agency-namespace',
+              projectName: 'a2b',
+              workspace: 'benge',
               app_name: 'agency'
             },
+            agency_identification: {
+              agencyId: 'agency-123',
+              orgId: 'org-456'
+            },
             brandId: 'test-brand-id',
-            secret: 'test-secret',
             name: 'Test Brand'
+            // NOTE: NO endPointUrl in event data - it's derived from app_runtime_info
           }
         }
       };
 
       const response = await main(params);
       
-      expect(response.statusCode).toBe(400);
-      expect(response.body).toContain('endPointUrl');
+      // Should succeed because endPointUrl is derived from app_runtime_info
+      expect(response.statusCode).toBe(200);
+      expect(response.body.message).toContain('Registration received successfully');
+      expect(response.body.agencyId).toBe('27200');
+      
+      // The agency should be stored with endPointUrl: https://27200-a2b-benge.adobeio-static.net
+      // (derived from app_runtime_info, not from event data)
     });
 
     it('should process registration.received event from example file', async () => {
@@ -189,6 +209,10 @@ describe('agency-registration-internal-handler (Brand App)', () => {
               namespace: 'agency-namespace',
               app_name: 'agency'
             },
+            agency_identification: {
+              agencyId: 'test-agency-id',
+              orgId: 'test-org-id@AdobeOrg'
+            },
             brandId: 'existing-brand-id',
             name: 'Test Brand',
             endPointUrl: 'https://brand.example.com/webhook',
@@ -216,6 +240,10 @@ describe('agency-registration-internal-handler (Brand App)', () => {
               consoleId: '27200',
               namespace: 'agency-namespace',
               app_name: 'agency'
+            },
+            agency_identification: {
+              agencyId: 'test-agency-id',
+              orgId: 'test-org-id@AdobeOrg'
             },
             brandId: 'existing-brand-id',
             name: 'Test Brand',

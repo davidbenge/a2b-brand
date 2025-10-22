@@ -14,33 +14,7 @@ const aemAssetsProcessingCompletedBody = require('../../../docs/events/product/a
 /**
  * Central registry of all A2B events with metadata
  */
-export const EVENT_REGISTRY: Record<string, ProductEventDefinition> = {
-    // Product Events
-    'aem.assets.asset.metadata_updated': {
-        code: 'aem.assets.asset.metadata_updated',
-        category: EventCategory.PRODUCT,
-        name: 'AEM Asset Metadata Updated',
-        description: 'Emitted when the metadata of an AEM asset is updated',
-        version: '1.0.0',
-        eventBodyexample: aemAssetsMetadataUpdatedBody,
-        routingRules: [],
-        requiredFields: ['assetId,repositoryMetadata'],
-        handlerActionName: 'a2b-agency/agency-assetsync-internal-handler-metadata-updated',
-        callBlocking: true
-    },
-    'aem.assets.asset.processing_completed': {
-        code: 'aem.assets.asset.processing_completed',
-        category: EventCategory.PRODUCT,
-        name: 'AEM Assets Processing Completed',
-        description: 'Emitted when the processing of an AEM asset is completed',
-        version: '1.0.0',
-        eventBodyexample: aemAssetsProcessingCompletedBody,
-        routingRules: [],
-        requiredFields: ['assetId,repositoryMetadata'],
-        handlerActionName: 'a2b-agency/agency-assetsync-internal-handler-process-complete',
-        callBlocking: true
-    }
-};
+export const EVENT_REGISTRY: Record<string, ProductEventDefinition> = {};
 
 /**
  * Get all events for a specific category

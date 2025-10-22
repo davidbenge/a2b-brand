@@ -38,7 +38,9 @@ export const EVENT_REGISTRY: Record<string, AppEventDefinition> = {
         requiredFields: ['brandId', 'enabled','endPointUrl'],
         optionalFields: [],
         injectedObjects: ['app_runtime_info','agency_identification'],
-        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_BRAND_REGISTRATION_PROVIDER_ID'
+        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_BRAND_REGISTRATION_PROVIDER_ID',    
+        handlerActionName: 'a2b-brand/agency-registration-internal-handler',
+        callBlocking: true
     },
     'com.adobe.a2b.registration.received': {
         code: 'com.adobe.a2b.registration.received',
@@ -53,7 +55,9 @@ export const EVENT_REGISTRY: Record<string, AppEventDefinition> = {
         requiredFields: ['name', 'endPointUrl'],
         optionalFields: [],
         injectedObjects: ['app_runtime_info','agency_identification'],
-        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_BRAND_REGISTRATION_PROVIDER_ID'
+        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_BRAND_REGISTRATION_PROVIDER_ID',
+        handlerActionName: 'a2b-brand/agency-registration-internal-handler',
+        callBlocking: true
     },
     'com.adobe.a2b.registration.enabled': {
         code: 'com.adobe.a2b.registration.enabled',
@@ -68,7 +72,9 @@ export const EVENT_REGISTRY: Record<string, AppEventDefinition> = {
         requiredFields: ['brandId', 'secret', 'enabled'],
         optionalFields: ['name', 'endPointUrl', 'enabledAt'],
         injectedObjects: ['app_runtime_info','agency_identification'],
-        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_BRAND_REGISTRATION_PROVIDER_ID'
+        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_BRAND_REGISTRATION_PROVIDER_ID',
+        handlerActionName: 'a2b-brand/agency-registration-internal-handler',
+        callBlocking: true
     },
 
     // Asset Sync Events
@@ -85,7 +91,9 @@ export const EVENT_REGISTRY: Record<string, AppEventDefinition> = {
         requiredFields: ['asset_id', 'asset_path', 'metadata', 'brandId', 'asset_presigned_url'],
         optionalFields: [],
         injectedObjects: ['app_runtime_info','agency_identification'],
-        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_AEM_ASSET_SYNC_PROVIDER_ID'
+        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_AEM_ASSET_SYNC_PROVIDER_ID',
+        handlerActionName: 'a2b-brand/agency-assetsync-internal-handler',
+        callBlocking: true
     },
     'com.adobe.a2b.assetsync.update': {
         code: 'com.adobe.a2b.assetsync.update',
@@ -100,69 +108,9 @@ export const EVENT_REGISTRY: Record<string, AppEventDefinition> = {
         requiredFields: ['asset_id', 'brandId'],
         optionalFields: ['asset_path', 'metadata'],
         injectedObjects: ['app_runtime_info','agency_identification'],
-        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_AEM_ASSET_SYNC_PROVIDER_ID'   
-    },
-    'com.adobe.a2b.assetsync.delete': {
-        code: 'com.adobe.a2b.assetsync.delete',
-        category: EventCategory.AGENCY,
-        name: 'Asset Sync Delete',
-        description: 'Emitted when an asset is deleted in AEM',
-        version: '1.0.0',
-        sendSecretHeader: true,
-        sendSignedKey: true,
-        eventBodyexample: assetsyncDeleteBody,
-        routingRules: [],
-        requiredFields: ['asset_id', 'brandId'],
-        optionalFields: ['asset_path'],
-        injectedObjects: ['app_runtime_info','agency_identification'],
-        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_AEM_ASSET_SYNC_PROVIDER_ID'
-    },
-
-    // Workfront Events (Agency events - com.adobe.a2b.* = agency-published)
-    'com.adobe.a2b.workfront.task.created': {
-        code: 'com.adobe.a2b.workfront.task.created',
-        category: EventCategory.AGENCY,
-        name: 'Workfront Task Created',
-        description: 'Emitted when a task is created in Workfront',
-        version: '1.0.0',
-        sendSecretHeader: true,
-        sendSignedKey: true,
-        eventBodyexample: workfrontTaskCreatedBody,
-        routingRules: [],
-        requiredFields: ['taskId'],
-        optionalFields: ['projectId', 'assigneeId', 'taskName', 'dueDate'],
-        injectedObjects: ['app_runtime_info','agency_identification'],
-        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_WORKFRONT_SYNC_PROVIDER_ID'
-    },
-    'com.adobe.a2b.workfront.task.updated': {
-        code: 'com.adobe.a2b.workfront.task.updated',
-        category: EventCategory.AGENCY,
-        name: 'Workfront Task Updated',
-        description: 'Emitted when a task is updated in Workfront',
-        version: '1.0.0',
-        sendSecretHeader: true,
-        sendSignedKey: true,
-        eventBodyexample: workfrontTaskUpdatedBody,
-        routingRules: [],
-        requiredFields: ['taskId'],
-        optionalFields: ['projectId', 'assigneeId', 'taskName', 'dueDate', 'status'],
-        injectedObjects: ['app_runtime_info','agency_identification'],
-        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_WORKFRONT_SYNC_PROVIDER_ID'
-    },
-    'com.adobe.a2b.workfront.task.completed': {
-        code: 'com.adobe.a2b.workfront.task.completed',
-        category: EventCategory.AGENCY,
-        name: 'Workfront Task Completed',
-        description: 'Emitted when a task is completed in Workfront',
-        version: '1.0.0',
-        sendSecretHeader: true,
-        sendSignedKey: true,
-        eventBodyexample: workfrontTaskCompletedBody,
-        routingRules: [],
-        requiredFields: ['taskId'],
-        optionalFields: ['projectId', 'completedDate', 'completedBy'],
-        injectedObjects: ['app_runtime_info','agency_identification'],
-        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_WORKFRONT_SYNC_PROVIDER_ID'
+        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_AEM_ASSET_SYNC_PROVIDER_ID',    
+        handlerActionName: 'a2b-brand/agency-assetsync-internal-handler',
+        callBlocking: true
     }
 };
 

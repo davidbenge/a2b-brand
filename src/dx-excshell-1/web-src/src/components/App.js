@@ -10,7 +10,7 @@ import SpectrumHeader from './common/SpectrumHeader'
 import { Home } from './Home'
 import { About } from './About'
 import AgencyRegistrationView from './layout/AgencyRegistrationView'
-import CompanyRegistrationList from './layout/CompanyRegistrationList'
+import AgencyListView from './layout/AgencyListView'
 import { ENABLE_DEMO_MODE, getSafeViewProps, logDemoMode } from '../utils/demoMode'
 
 function App (props) {
@@ -52,7 +52,7 @@ function App (props) {
               <Routes>
                 <Route path='/' element={<Home />} />
                 <Route path='/agencies' element={<AgencyRegistrationView viewProps={safeViewProps} />}/>
-                <Route path='/registrations' element={<CompanyRegistrationList viewProps={safeViewProps} />}/>
+                <Route path='/registrations' element={<AgencyListView viewProps={safeViewProps} />}/>
                 <Route path='/sync' element={<div style={{padding: '20px'}}>Sync Status - Coming Soon</div>}/>
                 <Route path='/about' element={<About />}/>
               </Routes>

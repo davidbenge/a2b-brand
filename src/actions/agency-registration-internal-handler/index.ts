@@ -88,7 +88,7 @@ export async function main(params: any): Promise<any> {
           // Update existing agency
           agency = await agencyManager.updateAgency(agencyId, {
             brandId: eventData.brandId,
-            name: eventData.name,
+            name: agencyId,
             endPointUrl: agencyEndpointUrl, // Derived from app_runtime_info
             enabled: false,
             enabledAt: null,
@@ -106,7 +106,7 @@ export async function main(params: any): Promise<any> {
             orgId: orgIdFromEvent || '', // From agency_identification
             brandId: eventData.brandId,
             secret: '', // No secret yet
-            name: eventData.name,
+            name: agencyId,
             endPointUrl: agencyEndpointUrl, // Derived from app_runtime_info
             enabled: false,
             createdAt: new Date(),
@@ -151,6 +151,9 @@ export async function main(params: any): Promise<any> {
       }
 
       // Extract agency identification from event data
+      // Build agency endpoint URL from app_runtime_info
+      const agencyRuntimeInfo = new ApplicationRuntimeInfo(eventData.app_runtime_info);
+      const agencyEndpointUrl = agencyRuntimeInfo.buildEndpointUrl();
       const agencyId = eventData.agency_identification?.agencyId;
       const orgId = eventData.agency_identification?.orgId;
       
@@ -186,8 +189,8 @@ export async function main(params: any): Promise<any> {
             orgId: orgId, // From agency_identification
             brandId: eventData.brandId,
             secret: eventData.secret,
-            name: eventData.name,
-            endPointUrl: eventData.endPointUrl,
+            name: agencyId,
+            endPointUrl: agencyEndpointUrl,
             enabled: eventData.enabled,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -202,8 +205,8 @@ export async function main(params: any): Promise<any> {
             secret: eventData.secret,
             enabled: eventData.enabled,
             enabledAt: eventData.enabledAt ? new Date(eventData.enabledAt) : new Date(),
-            name: eventData.name || agency.name,
-            endPointUrl: eventData.endPointUrl || agency.endPointUrl
+            name: agencyId,
+            endPointUrl: agencyEndpointUrl
           });
         }
 

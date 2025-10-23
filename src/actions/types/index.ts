@@ -1,4 +1,5 @@
 import { CloudEvent } from "cloudevents";
+import type { IRoutingRule } from '../../shared/types';
 
 // ============================================================================
 // Re-export shared types for backward compatibility
@@ -8,6 +9,8 @@ export {
     // Event registry types
     IAppEventDefinition,
     IProductEventDefinition,
+    // Routing rules types
+    IRoutingRule,
 } from '../../shared/types';
 
 export interface IIoEventHandler {
@@ -35,6 +38,19 @@ export interface IAgency {
     endPointUrl: string; // This brand's endpoint URL
     enabled: boolean; // Whether this brand is enabled at the agency
     logo?: string;
+    /**
+     * Agency-specific routing rules for app events
+     * Stored as a map of event codes to arrays of routing rules
+     * Example: { "com.adobe.a2b.registration.enabled": [rule1, rule2] }
+     * 
+     * OPTIMIZATION: Embedded in agency object to reduce state store reads
+     * - Single read gets agency + all routing rules (vs. N+1 reads)
+     * - Reduces cost (state store charges per read)
+     * - Reduces latency (no sequential reads)
+     */
+    routingRules?: {
+        [eventCode: string]: IRoutingRule[];
+    };
     createdAt: Date;
     updatedAt: Date;
     enabledAt: Date | null;

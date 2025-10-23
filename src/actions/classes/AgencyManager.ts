@@ -471,68 +471,180 @@ export class AgencyManager {
     // Agency-Specific Event Definition Management
     // ============================================================================
 
+    // ============================================================================
+    // AGENCY-SPECIFIC ROUTING RULES (App Events Only)
+    // OPTIMIZED: Embedded in agency object to reduce state store reads/writes
+    // ============================================================================
+
     /**
-     * Get an agency-specific event definition
+     * Get routing rules for an agency-specific app event
+     * OPTIMIZED: Rules are embedded in agency object (single read vs. N+1 reads)
      * @param agencyId - The agency ID
-     * @param eventCode - The event code
-     * @returns Promise<IAppEventDefinition | null> - The event definition or null
+     * @param eventCode - The app event code
+     * @returns Promise<IRoutingRule[]>
      */
-    async getAgencyEventDefinition(agencyId: string, eventCode: string): Promise<any> {
-        const { EventRegistryManager } = require('./EventRegistryManager');
-        const registryManager = new EventRegistryManager(this.logger.level);
-        return await registryManager.getAgencyAppEventDefinition(agencyId, eventCode);
+    async getAgencyRoutingRules(agencyId: string, eventCode: string): Promise<any[]> {
+        try {
+            const agency = await this.getAgency(agencyId);
+            if (!agency) {
+                this.logger.debug(`Agency ${agencyId} not found`);
+                return [];
+            }
+
+            const rules = agency.routingRules?.[eventCode] || [];
+            this.logger.debug(`Retrieved ${rules.length} routing rules for agency ${agencyId}, event: ${eventCode}`);
+            return rules;
+        } catch (error: unknown) {
+            this.logger.error(`Error getting agency routing rules for ${agencyId}, event ${eventCode}:`, error as any);
+            return [];
+        }
     }
 
     /**
-     * Get all agency-specific event definitions for an agency
+     * Add a single routing rule to an agency-specific app event
+     * OPTIMIZED: Updates agency object (single write vs. separate write)
      * @param agencyId - The agency ID
-     * @returns Promise<IAppEventDefinition[]> - Array of event definitions
-     */
-    async getAllAgencyEventDefinitions(agencyId: string): Promise<any[]> {
-        const { EventRegistryManager } = require('./EventRegistryManager');
-        const registryManager = new EventRegistryManager(this.logger.level);
-        return await registryManager.getAllAgencyAppEventDefinitions(agencyId);
-    }
-
-    /**
-     * Save an agency-specific event definition
-     * @param agencyId - The agency ID
-     * @param definition - The event definition to save
+     * @param eventCode - The app event code
+     * @param rule - The routing rule to add
      * @returns Promise<void>
      */
-    async saveAgencyEventDefinition(agencyId: string, definition: any): Promise<void> {
-        const { EventRegistryManager } = require('./EventRegistryManager');
-        const registryManager = new EventRegistryManager(this.logger.level);
-        await registryManager.saveAgencyAppEventDefinition(agencyId, definition);
-        this.logger.info(`Agency event definition saved for agency ${agencyId}: ${definition.code}`);
+    async addAgencyRoutingRule(agencyId: string, eventCode: string, rule: any): Promise<void> {
+        const agency = await this.getAgency(agencyId);
+        if (!agency) {
+            throw new Error(`Agency with ID ${agencyId} not found`);
+        }
+
+        const routingRules = { ...agency.routingRules };
+        const existingRules = routingRules[eventCode] || [];
+        
+        // Check if rule with same ID already exists
+        const existingIndex = existingRules.findIndex((r: any) => r.id === rule.id);
+        if (existingIndex >= 0) {
+            throw new Error(`Rule with ID ${rule.id} already exists for agency ${agencyId}, event ${eventCode}`);
+        }
+
+        existingRules.push(rule);
+        routingRules[eventCode] = existingRules;
+
+        // Update agency with new routing rules
+        const updatedAgency = AgencyManager.createAgency({
+            ...agency.toJSON(),
+            routingRules,
+            updatedAt: new Date()
+        });
+
+        await this.saveAgency(updatedAgency);
+        
+        this.logger.info(`Added routing rule ${rule.id} for agency ${agencyId}, event: ${eventCode}`);
     }
 
     /**
-     * Update an agency-specific event definition
+     * Update a routing rule for an agency-specific app event
+     * OPTIMIZED: Updates agency object (single write vs. separate write)
      * @param agencyId - The agency ID
-     * @param eventCode - The event code
+     * @param eventCode - The app event code
+     * @param ruleId - The rule ID to update
      * @param updates - Partial updates to apply
-     * @returns Promise<IAppEventDefinition> - The updated event definition
+     * @returns Promise<void>
      */
-    async updateAgencyEventDefinition(agencyId: string, eventCode: string, updates: any): Promise<any> {
-        const { EventRegistryManager } = require('./EventRegistryManager');
-        const registryManager = new EventRegistryManager(this.logger.level);
-        const updated = await registryManager.updateAgencyAppEventDefinition(agencyId, eventCode, updates);
-        this.logger.info(`Agency event definition updated for agency ${agencyId}: ${eventCode}`);
-        return updated;
+    async updateAgencyRoutingRule(agencyId: string, eventCode: string, ruleId: string, updates: any): Promise<void> {
+        const agency = await this.getAgency(agencyId);
+        if (!agency) {
+            throw new Error(`Agency with ID ${agencyId} not found`);
+        }
+
+        const routingRules = { ...agency.routingRules };
+        const existingRules = [...(routingRules[eventCode] || [])];
+        
+        const ruleIndex = existingRules.findIndex((r: any) => r.id === ruleId);
+        if (ruleIndex < 0) {
+            throw new Error(`Rule with ID ${ruleId} not found for agency ${agencyId}, event ${eventCode}`);
+        }
+
+        existingRules[ruleIndex] = {
+            ...existingRules[ruleIndex],
+            ...updates,
+            id: ruleId, // Ensure ID doesn't change
+            updatedAt: new Date()
+        };
+
+        routingRules[eventCode] = existingRules;
+
+        // Update agency with modified routing rules
+        const updatedAgency = AgencyManager.createAgency({
+            ...agency.toJSON(),
+            routingRules,
+            updatedAt: new Date()
+        });
+
+        await this.saveAgency(updatedAgency);
+        
+        this.logger.info(`Updated routing rule ${ruleId} for agency ${agencyId}, event: ${eventCode}`);
     }
 
     /**
-     * Delete an agency-specific event definition
+     * Delete a routing rule from an agency-specific app event
+     * OPTIMIZED: Updates agency object (single write vs. separate write)
      * @param agencyId - The agency ID
-     * @param eventCode - The event code
+     * @param eventCode - The app event code
+     * @param ruleId - The rule ID to delete
      * @returns Promise<void>
      */
-    async deleteAgencyEventDefinition(agencyId: string, eventCode: string): Promise<void> {
-        const { EventRegistryManager } = require('./EventRegistryManager');
-        const registryManager = new EventRegistryManager(this.logger.level);
-        await registryManager.deleteAgencyAppEventDefinition(agencyId, eventCode);
-        this.logger.info(`Agency event definition deleted for agency ${agencyId}: ${eventCode}`);
+    async deleteAgencyRoutingRule(agencyId: string, eventCode: string, ruleId: string): Promise<void> {
+        const agency = await this.getAgency(agencyId);
+        if (!agency) {
+            throw new Error(`Agency with ID ${agencyId} not found`);
+        }
+
+        const routingRules = { ...agency.routingRules };
+        const existingRules = routingRules[eventCode] || [];
+        
+        const filteredRules = existingRules.filter((r: any) => r.id !== ruleId);
+
+        if (filteredRules.length === existingRules.length) {
+            throw new Error(`Rule with ID ${ruleId} not found for agency ${agencyId}, event ${eventCode}`);
+        }
+
+        if (filteredRules.length === 0) {
+            // Remove the event code key if no rules left
+            delete routingRules[eventCode];
+        } else {
+            routingRules[eventCode] = filteredRules;
+        }
+
+        // Update agency with modified routing rules
+        const updatedAgency = AgencyManager.createAgency({
+            ...agency.toJSON(),
+            routingRules,
+            updatedAt: new Date()
+        });
+
+        await this.saveAgency(updatedAgency);
+        
+        this.logger.info(`Deleted routing rule ${ruleId} for agency ${agencyId}, event: ${eventCode}`);
+    }
+
+    /**
+     * Get all app event codes that have agency-specific routing rules
+     * OPTIMIZED: Reads from agency object (single read vs. listing all keys)
+     * @param agencyId - The agency ID
+     * @returns Promise<string[]>
+     */
+    async getAgencyEventCodesWithRoutingRules(agencyId: string): Promise<string[]> {
+        try {
+            const agency = await this.getAgency(agencyId);
+            if (!agency) {
+                this.logger.debug(`Agency ${agencyId} not found`);
+                return [];
+            }
+
+            const eventCodes = Object.keys(agency.routingRules || {});
+            this.logger.debug(`Found ${eventCodes.length} app events with routing rules for agency ${agencyId}`);
+            return eventCodes;
+        } catch (error: unknown) {
+            this.logger.error(`Error listing agency event codes with routing rules for ${agencyId}:`, error as any);
+            return [];
+        }
     }
 }
 

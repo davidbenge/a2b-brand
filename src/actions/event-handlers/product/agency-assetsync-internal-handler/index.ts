@@ -4,8 +4,8 @@
  * This internal action handles com.adobe.a2b.assetsync events from agencies.
  * It processes asset synchronization events and manages the asset sync workflow.
  */
-import { errorResponse, checkMissingRequestInputs, mergeRouterParams } from "../utils/common";
-import { fetchAssetFromPreassigned } from "../utils/aemOpenAPIUtils";
+import { errorResponse, checkMissingRequestInputs, mergeRouterParams } from "../../../utils/common";
+import { fetchAssetFromPreassigned } from "../../../utils/aemOpenAPIUtils";
 import aioLogger from "@adobe/aio-lib-core-logging";
 
 export async function main(params: any): Promise<any> {

@@ -33,6 +33,9 @@ export * from './api';
 // Runtime and environment types
 export * from './runtime';
 
+// Routing rules types
+export * from './rules-types';
+
 // ============================================================================
 // Event Registry Types (Backend-specific but need to be here for web display)
 // ============================================================================

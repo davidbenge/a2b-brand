@@ -27,46 +27,11 @@ export const consoleLogger: Logger = {
     debug: console.debug.bind(console)
 };
 
-export interface RoutingRule {
-    id: string;
-    name: string;
-    description: string;
-    eventType: string;
-    direction: 'inbound' | 'outbound' | 'both';
-    targetBrands: string[]; // Array of brand IDs this rule applies to
-    conditions: RuleCondition[];
-    actions: RuleAction[];
-    enabled: boolean;
-    priority: number;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-export interface RuleCondition {
-    field: string;
-    operator: 'equals' | 'contains' | 'startsWith' | 'endsWith' | 'regex' | 'exists' | 'notExists';
-    value: any;
-    logicalOperator?: 'AND' | 'OR';
-}
-
-export interface RuleAction {
-    type: 'route' | 'transform' | 'filter' | 'log';
-    target?: string;
-    parameters?: Record<string, any>;
-}
-
-export interface RuleEvaluationResult {
-    ruleId: string;
-    matched: boolean;
-    actions: RuleAction[];
-    executionTime: number;
-}
-
 /**
  * Generic event type metadata interface
  * Can be satisfied by EventDefinition or EventTypeMetadata from different systems
  */
-export interface EventTypeMetadata {
+export interface IEventTypeMetadata {
     type?: string;          // Event type identifier (e.g., 'aem.assets.asset.created')
     code?: string;          // Event code (e.g., 'com.adobe.a2b.registration.disabled')
     category: string;       // Event category
@@ -76,3 +41,38 @@ export interface EventTypeMetadata {
     [key: string]: any;     // Allow additional properties
 }
 
+
+export interface IRoutingRule {
+    id: string;
+    name: string;
+    description: string;
+    eventType: string;
+    direction: 'inbound' | 'outbound' | 'both';
+    targetBrands: string[]; // Array of brand IDs this rule applies to
+    conditions: IRuleCondition[];
+    actions: IRuleAction[];
+    enabled: boolean;
+    priority: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IRuleCondition {
+    field: string;
+    operator: 'equals' | 'contains' | 'startsWith' | 'endsWith' | 'regex' | 'exists' | 'notExists';
+    value: any;
+    logicalOperator?: 'AND' | 'OR';
+}
+
+export interface IRuleAction {
+    type: 'route' | 'transform' | 'filter' | 'log';
+    target?: string;
+    parameters?: Record<string, any>;
+}
+
+export interface IRuleEvaluationResult {
+    ruleId: string;
+    matched: boolean;
+    actions: IRuleAction[];
+    executionTime: number;
+}

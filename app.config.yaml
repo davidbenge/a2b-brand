@@ -52,7 +52,7 @@ application:
               S2S_API_KEY: $S2S_API_KEY
               S2S_CLIENT_ID: $S2S_CLIENT_ID
               S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
-              S2S_SCOPES: $S2S_SCOPES 
+              S2S_SCOPES: $S2S_SCOPES
               APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
             annotations:
               require-adobe-auth: false
@@ -120,49 +120,8 @@ application:
             annotations:
               require-adobe-auth: true
               final: true
-          # ============================================================================
-          # Event Registry Management APIs
-          # ============================================================================
-          # Agency-Specific App Event Definitions
-          list-agency-app-events:
-            function: src/actions/services/agency/list-agency-app-events/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          create-agency-app-event:
-            function: src/actions/services/agency/create-agency-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          update-agency-app-event:
-            function: src/actions/services/agency/update-agency-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          delete-agency-app-event:
-            function: src/actions/services/agency/delete-agency-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          # Global App Event APIs
           list-app-events:
-            function: src/actions/services/events/app/list-app-events/index.ts
+            function: src/actions/services/event-registry/app/list-app-events/index.ts
             web: 'yes'
             runtime: nodejs:20
             inputs:
@@ -171,7 +130,7 @@ application:
               require-adobe-auth: true
               final: true
           get-app-event:
-            function: src/actions/services/events/app/get-app-event/index.ts
+            function: src/actions/services/event-registry/app/get-app-event/index.ts
             web: 'yes'
             runtime: nodejs:20
             inputs:
@@ -179,36 +138,8 @@ application:
             annotations:
               require-adobe-auth: true
               final: true
-          create-app-event:
-            function: src/actions/services/events/app/create-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          update-app-event:
-            function: src/actions/services/events/app/update-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          delete-app-event:
-            function: src/actions/services/events/app/delete-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          # Product Event APIs
           list-product-events:
-            function: src/actions/services/events/product/list-product-events/index.ts
+            function: src/actions/services/event-registry/product/list-product-events/index.ts
             web: 'yes'
             runtime: nodejs:20
             inputs:
@@ -217,7 +148,7 @@ application:
               require-adobe-auth: true
               final: true
           get-product-event:
-            function: src/actions/services/events/product/get-product-event/index.ts
+            function: src/actions/services/event-registry/product/get-product-event/index.ts
             web: 'yes'
             runtime: nodejs:20
             inputs:
@@ -225,28 +156,136 @@ application:
             annotations:
               require-adobe-auth: true
               final: true
-          create-product-event:
-            function: src/actions/services/events/product/create-product-event/index.ts
+          list-product-routing-rules:
+            function: src/actions/services/routing-rules/global/product/list-product-routing-rules/index.ts
             web: 'yes'
-            runtime: nodejs:20
+            runtime: nodejs:22
             inputs:
               LOG_LEVEL: debug
             annotations:
               require-adobe-auth: true
               final: true
-          update-product-event:
-            function: src/actions/services/events/product/update-product-event/index.ts
+          get-product-routing-rules:
+            function: src/actions/services/routing-rules/global/product/get-product-routing-rules/index.ts
             web: 'yes'
-            runtime: nodejs:20
+            runtime: nodejs:22
             inputs:
               LOG_LEVEL: debug
             annotations:
               require-adobe-auth: true
               final: true
-          delete-product-event:
-            function: src/actions/services/events/product/delete-product-event/index.ts
+          create-product-routing-rule:
+            function: src/actions/services/routing-rules/global/product/create-product-routing-rule/index.ts
             web: 'yes'
-            runtime: nodejs:20
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          update-product-routing-rule:
+            function: src/actions/services/routing-rules/global/product/update-product-routing-rule/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          delete-product-routing-rule:
+            function: src/actions/services/routing-rules/global/product/delete-product-routing-rule/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          list-app-routing-rules:
+            function: src/actions/services/routing-rules/global/app/list-app-routing-rules/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          get-app-routing-rules:
+            function: src/actions/services/routing-rules/global/app/get-app-routing-rules/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          create-app-routing-rule:
+            function: src/actions/services/routing-rules/global/app/create-app-routing-rule/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          update-app-routing-rule:
+            function: src/actions/services/routing-rules/global/app/update-app-routing-rule/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          delete-app-routing-rule:
+            function: src/actions/services/routing-rules/global/app/delete-app-routing-rule/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          list-agency-routing-rules:
+            function: src/actions/services/routing-rules/agency/list-agency-routing-rules/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          get-agency-routing-rules:
+            function: src/actions/services/routing-rules/agency/get-agency-routing-rules/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          create-agency-routing-rule:
+            function: src/actions/services/routing-rules/agency/create-agency-routing-rule/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          update-agency-routing-rule:
+            function: src/actions/services/routing-rules/agency/update-agency-routing-rule/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          delete-agency-routing-rule:
+            function: src/actions/services/routing-rules/agency/delete-agency-routing-rule/index.ts
+            web: 'yes'
+            runtime: nodejs:22
             inputs:
               LOG_LEVEL: debug
             annotations:

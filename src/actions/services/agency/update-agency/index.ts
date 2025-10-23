@@ -3,9 +3,9 @@
  * This action updates agency registration details
  * Protected by Adobe authentication
  */
-import { errorResponse, checkMissingRequestInputs } from "../utils/common";
+import { errorResponse, checkMissingRequestInputs } from "../../../utils/common";
 import aioLogger from "@adobe/aio-lib-core-logging";
-import { AgencyManager } from "../classes/AgencyManager";
+import { AgencyManager } from "../../../classes/AgencyManager";
 
 export async function main(params: any): Promise<any> {
   const logger = aioLogger("update-agency", { level: params.LOG_LEVEL || "info" });

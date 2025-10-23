@@ -16,6 +16,7 @@ export class Agency implements IAgency {
     readonly endPointUrl: string; // This brand's endpoint URL
     readonly enabled: boolean; // Whether this brand is enabled at the agency
     readonly logo?: string;
+    readonly routingRules?: { [eventCode: string]: any[] };
     readonly createdAt: Date;
     readonly updatedAt: Date;
     readonly enabledAt: Date | null;
@@ -37,6 +38,7 @@ export class Agency implements IAgency {
         this.endPointUrl = params.endPointUrl;
         this.enabled = params.enabled ?? false;
         this.logo = params.logo;
+        this.routingRules = params.routingRules || {};
         this.createdAt = params.createdAt ?? new Date();
         this.updatedAt = params.updatedAt ?? new Date();
         this.enabledAt = params.enabledAt ?? null;
@@ -56,6 +58,7 @@ export class Agency implements IAgency {
             endPointUrl: this.endPointUrl,
             enabled: this.enabled,
             logo: this.logo,
+            routingRules: this.routingRules,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
             enabledAt: this.enabledAt
@@ -122,6 +125,7 @@ export class Agency implements IAgency {
             endPointUrl: this.endPointUrl,
             enabled: this.enabled,
             logo: this.logo,
+            routingRules: this.routingRules,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
             enabledAt: this.enabledAt

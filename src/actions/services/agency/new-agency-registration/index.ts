@@ -12,10 +12,10 @@
  * 
  * Protected by Adobe authentication - only authenticated users can submit registrations.
  */
-import { errorResponse, checkMissingRequestInputs } from "../utils/common";
+import { errorResponse, checkMissingRequestInputs } from "../../../utils/common";
 import aioLogger from "@adobe/aio-lib-core-logging";
-import { AgencyManager } from "../classes/AgencyManager";
-import { ApplicationRuntimeInfo } from "../classes/ApplicationRuntimeInfo";
+import { AgencyManager } from "../../../classes/AgencyManager";
+import { ApplicationRuntimeInfo } from "../../../classes/ApplicationRuntimeInfo";
 import axios from 'axios';
 
 /**

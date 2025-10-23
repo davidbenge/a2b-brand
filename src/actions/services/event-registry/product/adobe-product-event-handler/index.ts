@@ -4,8 +4,8 @@
  * This action handles events from Adobe products (AEM, Creative Cloud, etc.)
  * and routes them to the appropriate internal event handlers based on event type.
  */
-import { getProductEventDefinition } from "../../../classes/ProductEventRegistry";
-import { errorResponse, checkMissingRequestInputs } from "../../../utils/common";
+import { getProductEventDefinition } from "../../../../classes/ProductEventRegistry";
+import { errorResponse, checkMissingRequestInputs } from "../../../../utils/common";
 import aioLogger from "@adobe/aio-lib-core-logging";
 
 export async function main(params: any, openwhiskClient?: any): Promise<any> {

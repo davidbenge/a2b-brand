@@ -3,9 +3,9 @@
  * This action retrieves all agency registrations for the brand
  * Protected by Adobe authentication
  */
-import { errorResponse, checkMissingRequestInputs } from "../utils/common";
+import { errorResponse, checkMissingRequestInputs } from "../../../utils/common";
 import aioLogger from "@adobe/aio-lib-core-logging";
-import { AgencyManager } from "../classes/AgencyManager";
+import { AgencyManager } from "../../../classes/AgencyManager";
 
 export async function main(params: any): Promise<any> {
   const logger = aioLogger("get-agencies", { level: params.LOG_LEVEL || "info" });

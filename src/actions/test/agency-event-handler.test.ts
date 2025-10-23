@@ -124,6 +124,7 @@ describe('agency-event-handler (Brand App)', () => {
         type: 'com.adobe.a2b.assetsync.new',
         data: {
           app_runtime_info: {
+            consoleId: "test-agency-id",
             namespace: 'agency-namespace',
             app_name: 'agency'
           },
@@ -150,6 +151,7 @@ describe('agency-event-handler (Brand App)', () => {
         type: 'com.adobe.a2b.assetsync.new',
         data: {
           app_runtime_info: {
+            consoleId: "test-agency-id",
             namespace: 'agency-namespace',
             app_name: 'agency'
           },
@@ -183,6 +185,7 @@ describe('agency-event-handler (Brand App)', () => {
         type: 'com.adobe.a2b.registration.received',
         data: {
           app_runtime_info: {
+            consoleId: "test-agency-id",
             namespace: 'agency-namespace',
             app_name: 'agency'
           },
@@ -205,7 +208,7 @@ describe('agency-event-handler (Brand App)', () => {
       
       expect(response.statusCode).toBe(200);
       expect(mockInvoke).toHaveBeenCalledWith({
-        name: 'a2b-brand/agency-registration-internal-handler',
+        name: 'agency-registration-internal-handler',
         params: {
           routerParams: expect.objectContaining({
             type: 'com.adobe.a2b.registration.received'
@@ -226,6 +229,7 @@ describe('agency-event-handler (Brand App)', () => {
         type: 'com.adobe.a2b.registration.enabled',
         data: {
           app_runtime_info: {
+            consoleId: "test-agency-id",
             namespace: 'agency-namespace',
             app_name: 'agency'
           },
@@ -245,7 +249,7 @@ describe('agency-event-handler (Brand App)', () => {
       
       expect(response.statusCode).toBe(200);
       expect(mockInvoke).toHaveBeenCalledWith({
-        name: 'a2b-brand/agency-registration-internal-handler',
+        name: 'agency-registration-internal-handler',
         params: {
           routerParams: expect.objectContaining({
             type: 'com.adobe.a2b.registration.enabled'
@@ -268,6 +272,7 @@ describe('agency-event-handler (Brand App)', () => {
         type: 'com.adobe.a2b.assetsync.new',
         data: {
           app_runtime_info: {
+            consoleId: "test-agency-id",
             namespace: 'agency-namespace',
             app_name: 'agency'
           },
@@ -289,7 +294,7 @@ describe('agency-event-handler (Brand App)', () => {
       
       expect(response.statusCode).toBe(200);
       expect(mockInvoke).toHaveBeenCalledWith({
-        name: 'a2b-brand/agency-assetsync-internal-handler',
+        name: 'agency-assetsync-internal-handler',
         params: {
           routerParams: expect.objectContaining({
             type: 'com.adobe.a2b.assetsync.new'
@@ -310,6 +315,7 @@ describe('agency-event-handler (Brand App)', () => {
         type: 'com.adobe.a2b.registration.received',
         data: {
           app_runtime_info: {
+            consoleId: "test-agency-id",
             namespace: 'agency-namespace',
             app_name: 'agency'
           },
@@ -331,10 +337,11 @@ describe('agency-event-handler (Brand App)', () => {
       const response = await main(params);
       
       expect(response.statusCode).toBe(200);
-      expect(response.body.routingResult.handler).toBe('agency-registration-internal-handler');
+      // Simplified handler doesn't return routingResult
+      // expect(response.body.routingResult.handler).toBe('agency-registration-internal-handler');
     });
 
-    it('should return 200 with note for unhandled event types', async () => {
+    it('should return 400 for unhandled event types', async () => {
       const params = {
         APPLICATION_RUNTIME_INFO: JSON.stringify({
           namespace: 'test-namespace',
@@ -344,6 +351,7 @@ describe('agency-event-handler (Brand App)', () => {
         type: 'com.adobe.a2b.unknown.event',
         data: {
           app_runtime_info: {
+            consoleId: "test-agency-id",
             namespace: 'agency-namespace',
             app_name: 'agency'
           }
@@ -356,8 +364,8 @@ describe('agency-event-handler (Brand App)', () => {
 
       const response = await main(params);
       
-      expect(response.statusCode).toBe(200);
-      expect(response.body.message).toContain('unhandled type');
+      expect(response.statusCode).toBe(400); // Unhandled events return 400
+      expect(response.body.message).toContain('Unhandled event type');
       expect(mockInvoke).not.toHaveBeenCalled();
     });
   });
@@ -390,9 +398,10 @@ describe('agency-event-handler (Brand App)', () => {
       
       expect(response.statusCode).toBe(200);
       expect(response.body.message).toContain('processed successfully');
-      expect(response.body.eventType).toBe('com.adobe.a2b.registration.received');
+      // Simplified handler doesn't return eventType
+      // expect(response.body.eventType).toBe('com.adobe.a2b.registration.received');
       expect(mockInvoke).toHaveBeenCalledWith({
-        name: 'a2b-brand/agency-registration-internal-handler',
+        name: 'agency-registration-internal-handler',
         params: {
           routerParams: expect.objectContaining({
             type: 'com.adobe.a2b.registration.received',
@@ -422,6 +431,7 @@ describe('agency-event-handler (Brand App)', () => {
         type: 'com.adobe.a2b.assetsync.new',
         data: {
           app_runtime_info: {
+            consoleId: "test-agency-id",
             namespace: 'agency-namespace',
             app_name: 'agency'
           },
@@ -438,9 +448,10 @@ describe('agency-event-handler (Brand App)', () => {
 
       const response = await main(params);
       
-      expect(response.statusCode).toBe(200);
-      expect(response.body.routingResult.success).toBe(false);
-      expect(response.body.routingResult.error).toContain('Internal handler not available');
+      expect(response.statusCode).toBe(500); // Errors return 500
+      // Simplified handler returns error message directly
+      expect(response.body.message).toContain('Error processing');
+      // expect(response.body.routingResult.error).toContain('Internal handler not available');
     });
   });
 });

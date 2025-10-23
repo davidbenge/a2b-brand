@@ -41,7 +41,7 @@ export * from './runtime';
  * Application event definition
  * Defines events that the application can publish
  */
-export interface AppEventDefinition {
+export interface IAppEventDefinition {
     code: string;
     category: EventCategoryValue;
     name: string;
@@ -55,15 +55,13 @@ export interface AppEventDefinition {
     optionalFields?: string[];
     injectedObjects?: string[];
     ioProviderIdEnvVariable: string;
-    handlerActionName: string;
-    callBlocking: boolean;
 }
 
 /**
  * Product event definition
  * Defines events from Adobe products that the application handles
  */
-export interface ProductEventDefinition {
+export interface IProductEventDefinition {
     code: string;
     category: EventCategoryValue;
     name: string;

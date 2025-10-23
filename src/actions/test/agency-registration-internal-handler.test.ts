@@ -8,7 +8,7 @@
  * - Handles errors gracefully
  */
 
-import { main } from '../agency-registration-internal-handler/index';
+import { main } from '../event-handlers/agency-registration-internal-handler/index';
 
 const registrationReceivedEvent = require('../../../docs/events/registration/com-adobe-a2b-registration-received.json');
 

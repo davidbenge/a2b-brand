@@ -1,5 +1,15 @@
 import { CloudEvent } from "cloudevents";
 
+// ============================================================================
+// Re-export shared types for backward compatibility
+// ============================================================================
+
+export {
+    // Event registry types
+    IAppEventDefinition,
+    IProductEventDefinition,
+} from '../../shared/types';
+
 export interface IIoEventHandler {
     logger: any;
     handleEvent(event: any): Promise<any>;

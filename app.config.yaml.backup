@@ -25,6 +25,15 @@ application:
             annotations:
               require-adobe-auth: false
               final: true
+          list-events:
+            function: src/actions/list-events/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: false
+              final: true
           adobe-product-event-handler:
             function: src/actions/event-handlers/product/adobe-product-event-handler/index.ts
             web: 'yes'
@@ -153,98 +162,6 @@ application:
               final: true
           delete-agency-app-event:
             function: src/actions/services/agency/delete-agency-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          # Global App Event APIs
-          list-app-events:
-            function: src/actions/services/events/app/list-app-events/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          get-app-event:
-            function: src/actions/services/events/app/get-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          create-app-event:
-            function: src/actions/services/events/app/create-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          update-app-event:
-            function: src/actions/services/events/app/update-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          delete-app-event:
-            function: src/actions/services/events/app/delete-app-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          # Product Event APIs
-          list-product-events:
-            function: src/actions/services/events/product/list-product-events/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          get-product-event:
-            function: src/actions/services/events/product/get-product-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          create-product-event:
-            function: src/actions/services/events/product/create-product-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          update-product-event:
-            function: src/actions/services/events/product/update-product-event/index.ts
-            web: 'yes'
-            runtime: nodejs:20
-            inputs:
-              LOG_LEVEL: debug
-            annotations:
-              require-adobe-auth: true
-              final: true
-          delete-product-event:
-            function: src/actions/services/events/product/delete-product-event/index.ts
             web: 'yes'
             runtime: nodejs:20
             inputs:

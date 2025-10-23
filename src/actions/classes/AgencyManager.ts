@@ -466,5 +466,73 @@ export class AgencyManager {
 
         return agency;
     }
+
+    // ============================================================================
+    // Agency-Specific Event Definition Management
+    // ============================================================================
+
+    /**
+     * Get an agency-specific event definition
+     * @param agencyId - The agency ID
+     * @param eventCode - The event code
+     * @returns Promise<IAppEventDefinition | null> - The event definition or null
+     */
+    async getAgencyEventDefinition(agencyId: string, eventCode: string): Promise<any> {
+        const { EventRegistryManager } = require('./EventRegistryManager');
+        const registryManager = new EventRegistryManager(this.logger.level);
+        return await registryManager.getAgencyAppEventDefinition(agencyId, eventCode);
+    }
+
+    /**
+     * Get all agency-specific event definitions for an agency
+     * @param agencyId - The agency ID
+     * @returns Promise<IAppEventDefinition[]> - Array of event definitions
+     */
+    async getAllAgencyEventDefinitions(agencyId: string): Promise<any[]> {
+        const { EventRegistryManager } = require('./EventRegistryManager');
+        const registryManager = new EventRegistryManager(this.logger.level);
+        return await registryManager.getAllAgencyAppEventDefinitions(agencyId);
+    }
+
+    /**
+     * Save an agency-specific event definition
+     * @param agencyId - The agency ID
+     * @param definition - The event definition to save
+     * @returns Promise<void>
+     */
+    async saveAgencyEventDefinition(agencyId: string, definition: any): Promise<void> {
+        const { EventRegistryManager } = require('./EventRegistryManager');
+        const registryManager = new EventRegistryManager(this.logger.level);
+        await registryManager.saveAgencyAppEventDefinition(agencyId, definition);
+        this.logger.info(`Agency event definition saved for agency ${agencyId}: ${definition.code}`);
+    }
+
+    /**
+     * Update an agency-specific event definition
+     * @param agencyId - The agency ID
+     * @param eventCode - The event code
+     * @param updates - Partial updates to apply
+     * @returns Promise<IAppEventDefinition> - The updated event definition
+     */
+    async updateAgencyEventDefinition(agencyId: string, eventCode: string, updates: any): Promise<any> {
+        const { EventRegistryManager } = require('./EventRegistryManager');
+        const registryManager = new EventRegistryManager(this.logger.level);
+        const updated = await registryManager.updateAgencyAppEventDefinition(agencyId, eventCode, updates);
+        this.logger.info(`Agency event definition updated for agency ${agencyId}: ${eventCode}`);
+        return updated;
+    }
+
+    /**
+     * Delete an agency-specific event definition
+     * @param agencyId - The agency ID
+     * @param eventCode - The event code
+     * @returns Promise<void>
+     */
+    async deleteAgencyEventDefinition(agencyId: string, eventCode: string): Promise<void> {
+        const { EventRegistryManager } = require('./EventRegistryManager');
+        const registryManager = new EventRegistryManager(this.logger.level);
+        await registryManager.deleteAgencyAppEventDefinition(agencyId, eventCode);
+        this.logger.info(`Agency event definition deleted for agency ${agencyId}: ${eventCode}`);
+    }
 }
 

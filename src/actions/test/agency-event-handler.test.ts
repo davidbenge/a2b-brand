@@ -8,7 +8,7 @@
  * - Routes events to appropriate internal handlers
  */
 
-import { main } from '../agency-event-handler/index';
+import { main } from '../event-handlers/agency-event-handler/index';
 import { AgencyManager } from '../classes/AgencyManager';
 import { Agency } from '../classes/Agency';
 

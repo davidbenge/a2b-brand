@@ -51,7 +51,8 @@ export class AgencyManager {
             logo: json.logo,
             createdAt: json.createdAt ? new Date(json.createdAt) : new Date(),
             updatedAt: json.updatedAt ? new Date(json.updatedAt) : new Date(),
-            enabledAt: json.enabledAt ? new Date(json.enabledAt) : null
+            enabledAt: json.enabledAt ? new Date(json.enabledAt) : null,
+            disabledAt: json.disabledAt ? new Date(json.disabledAt) : null
         });
     }
 

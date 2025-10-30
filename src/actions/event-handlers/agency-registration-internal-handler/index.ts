@@ -1,7 +1,11 @@
 /**
  * Agency Registration Internal Handler
  *
- * This action handles registration events from the agency (registration.received and registration.enabled).
+ * This action handles registration events from the agency:
+ * - registration.received: Initial registration acknowledgment
+ * - registration.enabled: Brand enabled with secret
+ * - registration.disabled: Brand registration disabled
+ * 
  * It stores the brand's registration with the agency including the secret for future authenticated communication.
  */
 import { errorResponse, checkMissingRequestInputs } from "../../utils/common";
@@ -247,6 +251,86 @@ export async function main(params: any): Promise<any> {
         return {
           statusCode: 500,
           body: 'Error updating agency registration'
+        };
+      }
+    }
+
+    // Handle registration.disabled event
+    if (eventType === 'com.adobe.a2b.registration.disabled') {
+      logger.info('Handling registration.disabled event');
+      
+      // Validate required fields for registration.disabled
+      if (!eventData.brandId || eventData.enabled === undefined) {
+        logger.error('Missing required fields in registration.disabled event');
+        return {
+          statusCode: 400,
+          body: 'Missing required fields: brandId, enabled'
+        };
+      }
+
+      // Extract agency identification from event data
+      const agencyId = eventData.agency_identification?.agencyId;
+      const orgId = eventData.agency_identification?.orgId;
+      const agencyName = eventData.agencyName;
+      
+      if (!agencyId || !orgId) {
+        logger.error('Missing agency_identification (agencyId or orgId) in event data');
+        return {
+          statusCode: 400,
+          body: 'Missing agency_identification (agencyId or orgId)'
+        };
+      }
+      
+      // Build agency endpoint URL from app_runtime_info
+      const agencyRuntimeInfo = new ApplicationRuntimeInfo(eventData.app_runtime_info);
+      const agencyEndpointUrl = eventData.agencyEndPointUrl || agencyRuntimeInfo.buildEndpointUrl();
+      
+      // Create AgencyManager and update the agency
+      const agencyManager = new AgencyManager(params.LOG_LEVEL || "info");
+      
+      try {
+        let agency = await agencyManager.getAgency(agencyId);
+        
+        if (!agency) {
+          logger.error(`Agency ${agencyId} not found - cannot disable non-existent agency`);
+          return {
+            statusCode: 404,
+            body: 'Agency not found - cannot disable'
+          };
+        }
+        
+        logger.info(`Disabling agency ${agencyId}`);
+        // Update existing agency with disabled status
+        // Keep the secret so it can be re-enabled later if needed
+        agency = await agencyManager.updateAgency(agencyId, {
+          enabled: false,
+          disabledAt: eventData.disabledAt ? new Date(eventData.disabledAt) : new Date(),
+          name: eventData.name || agency.name,
+          endPointUrl: agencyEndpointUrl,
+          agencyEndPointUrl: agencyEndpointUrl,
+          agencyName: agencyName || agency.agencyName
+        });
+
+        logger.info('Updated agency registration to disabled status:', {
+          agencyId: agencyId,
+          brandId: eventData.brandId,
+          enabled: false
+        });
+
+        return {
+          statusCode: 200,
+          body: {
+            message: 'Registration disabled successfully',
+            brandId: eventData.brandId,
+            enabled: false,
+            agencyId: agencyId
+          }
+        };
+      } catch (error) {
+        logger.error('Error disabling agency registration:', error);
+        return {
+          statusCode: 500,
+          body: 'Error disabling agency registration'
         };
       }
     }

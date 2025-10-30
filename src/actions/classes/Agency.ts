@@ -22,6 +22,7 @@ export class Agency implements IAgency {
     readonly createdAt: Date;
     readonly updatedAt: Date;
     readonly enabledAt: Date | null;
+    readonly disabledAt?: Date | null;
 
     constructor(params: IAgency) {
         // Validate required fields
@@ -46,6 +47,7 @@ export class Agency implements IAgency {
         this.createdAt = params.createdAt ?? new Date();
         this.updatedAt = params.updatedAt ?? new Date();
         this.enabledAt = params.enabledAt ?? null;
+        this.disabledAt = params.disabledAt ?? null;
     }
 
     /**
@@ -67,7 +69,8 @@ export class Agency implements IAgency {
             routingRules: this.routingRules,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
-            enabledAt: this.enabledAt
+            enabledAt: this.enabledAt,
+            disabledAt: this.disabledAt
         };
     }
 
@@ -136,7 +139,8 @@ export class Agency implements IAgency {
             routingRules: this.routingRules,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
-            enabledAt: this.enabledAt
+            enabledAt: this.enabledAt,
+            disabledAt: this.disabledAt
             // secret is intentionally omitted
         };
     }

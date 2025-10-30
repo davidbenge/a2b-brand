@@ -56,6 +56,7 @@ export interface IAgency {
     createdAt: Date;
     updatedAt: Date;
     enabledAt: Date | null;
+    disabledAt?: Date | null;
 }
 
 export interface IApplicationRuntimeInfo {

@@ -14,6 +14,7 @@ import { EventCategory } from "../../shared/constants";
 // Import event body examples from docs/events
 const registrationReceivedBody = require('../../../docs/events/registration/com-adobe-a2b-registration-received.json');
 const registrationEnabledBody = require('../../../docs/events/registration/com-adobe-a2b-registration-enabled.json');
+const registrationDisabledBody = require('../../../docs/events/registration/com-adobe-a2b-registration-disabled.json');
 const assetsyncNewBody = require('../../../docs/events/agency/com-adobe-a2b-assetsync-new.json');
 const assetsyncUpdateBody = require('../../../docs/events/agency/com-adobe-a2b-assetsync-update.json');
 
@@ -52,6 +53,23 @@ export const DEFAULT_APP_EVENTS: Record<string, IAppEventDefinition> = {
         routingRules: [],
         requiredFields: ['brandId', 'secret', 'enabled','name', 'endPointUrl', 'enabledAt','app_runtime_info','agency_identification'],
         optionalFields: [],
+        injectedObjects: [],
+        ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_BRAND_REGISTRATION_PROVIDER_ID',
+        handlerActionName: 'a2b-brand/agency-registration-internal-handler',
+        callBlocking: true
+    },
+    'com.adobe.a2b.registration.disabled': {
+        code: 'com.adobe.a2b.registration.disabled',
+        category: EventCategory.REGISTRATION,
+        name: 'Brand Registration Disabled',
+        description: 'Emitted when a brand registration is disabled by the agency',
+        version: '1.0.0',
+        sendSecretHeader: false,
+        sendSignedKey: true,
+        eventBodyexample: registrationDisabledBody,
+        routingRules: [],
+        requiredFields: ['brandId', 'enabled', 'name', 'endPointUrl', 'disabledAt','app_runtime_info','agency_identification'],
+        optionalFields: ['agencyName'],
         injectedObjects: [],
         ioProviderIdEnvVariable: 'AIO_AGENCY_EVENTS_BRAND_REGISTRATION_PROVIDER_ID',
         handlerActionName: 'a2b-brand/agency-registration-internal-handler',

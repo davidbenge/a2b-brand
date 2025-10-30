@@ -3,7 +3,7 @@
     "source": "urn:uuid:5c3431a2-bd91-4eff-a356-26b747d0aad4",
     "type": "com.adobe.a2b.registration.disabled",
     "datacontenttype": "application/json",
-    "time": "2025-08-28T07:29:29.728Z",
+    "time": "2025-10-30T07:29:29.728Z",
     "specversion": "1.0",
     "data": {
       "app_runtime_info": {
@@ -17,8 +17,11 @@
           "agencyId": "2ff22120-d393-4743-afdd-0d4b2038d2be",
           "orgId": "33C1401053CF76370A490D4C@AdobeOrg"
         },
-        "brandId": "BRAND_A",
+        "brandId": "c6409c52-9295-4d15-94e6-7bd39d04360c",
+        "name": "Brand Name",
+        "endPointUrl": "https://example.com/webhook",
+        "agencyName": "ACME Agency",
         "enabled": false,
-        "endPointUrl": "https://example.com/webhook"
+        "disabledAt": "2025-10-30T07:29:29.728Z"
     }
 }

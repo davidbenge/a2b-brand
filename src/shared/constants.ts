@@ -12,8 +12,11 @@ export enum EventCategory {
     AGENCY = 'agency',
     BRAND = 'brand',
     PRODUCT = 'product',
-    REGISTRATION = 'registration'
+    REGISTRATION = 'registration',
+    ASSET_SYNC = 'asset_sync',
+    WORKFRONT = 'workfront'
 }
+
 
 /**
  * Type helper for event category values

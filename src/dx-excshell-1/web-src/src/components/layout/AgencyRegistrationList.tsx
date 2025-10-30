@@ -100,8 +100,10 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter(agency =>
                 agency.name.toLowerCase().includes(query) ||
+                (agency.agencyName ? agency.agencyName.toLowerCase().includes(query) : false) ||
                 agency.agencyId.toLowerCase().includes(query) ||
-                agency.endPointUrl.toLowerCase().includes(query)
+                agency.endPointUrl.toLowerCase().includes(query) ||
+                (agency.agencyEndPointUrl ? agency.agencyEndPointUrl.toLowerCase().includes(query) : false)
             );
         }
 
@@ -261,10 +263,12 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                         density="compact"
                     >
                         <TableHeader>
-                            <Column key="name" allowsSorting>Agency Name</Column>
+                            <Column key="agencyName" allowsSorting>Agency Name</Column>
+                            <Column key="name" allowsSorting>Brand Name</Column>
                             <Column key="agencyId">Agency ID</Column>
                             <Column key="brandId">Brand ID</Column>
                             <Column key="endpoint">Endpoint URL</Column>
+                            <Column key="agencyEndpoint">Agency Endpoint URL</Column>
                             <Column key="status" allowsSorting>Status</Column>
                             <Column key="enabledAt" allowsSorting>Enabled At</Column>
                             <Column key="actions">Actions</Column>
@@ -272,6 +276,7 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                         <TableBody>
                             {filteredAgencies.map((agency) => (
                                 <Row key={agency.agencyId}>
+                                    <Cell>{agency.agencyName || agency.agencyId}</Cell>
                                     <Cell>{agency.name}</Cell>
                                     <Cell>
                                         <Text 
@@ -303,6 +308,16 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                                             }}
                                         >
                                             {new URL(agency.endPointUrl).hostname}
+                                        </Text>
+                                    </Cell>
+                                    <Cell>
+                                        <Text 
+                                            UNSAFE_style={{ 
+                                                fontSize: '12px',
+                                                color: '#4B5563'
+                                            }}
+                                        >
+                                            {agency.agencyEndPointUrl ? new URL(agency.agencyEndPointUrl).hostname : '—'}
                                         </Text>
                                     </Cell>
                                     <Cell>

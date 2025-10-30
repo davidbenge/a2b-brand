@@ -7,9 +7,14 @@
 import { errorResponse, checkMissingRequestInputs, mergeRouterParams } from "../../../utils/common";
 import { fetchAssetFromPreassigned } from "../../../utils/aemOpenAPIUtils";
 import aioLogger from "@adobe/aio-lib-core-logging";
+import { sanitizeEventForLogging } from "../../../utils/eventSanitizer";
 
 export async function main(params: any): Promise<any> {
   const logger = aioLogger("agency-assetsync-internal-handler", { level: params.LOG_LEVEL || "info" });
+  
+  // Log sanitized incoming event (before merging router params)
+  logger.info(`agency-assetsync-internal-handler: Received event`, sanitizeEventForLogging(params));
+  
   params = mergeRouterParams(params);
   try {
     logger.debug(JSON.stringify(params, null, 2));

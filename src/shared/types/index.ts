@@ -58,6 +58,8 @@ export interface IAppEventDefinition {
     optionalFields?: string[];
     injectedObjects?: string[];
     ioProviderIdEnvVariable: string;
+    handlerActionName?: string;
+    callBlocking?: boolean;
 }
 
 /**

@@ -10,10 +10,12 @@ import { IAgency } from '../types';
 export class Agency implements IAgency {
     readonly agencyId: string; // Agency identifier (from agency_identification)
     readonly orgId: string; // Agency's organization ID (from agency_identification)
+    readonly agencyName?: string; // Agency's display name (from agency_identification)
     readonly brandId: string; // This brand's ID at the agency
     readonly secret: string; // Secret to use when calling this agency
     readonly name: string; // This brand's name as registered with the agency
-    readonly endPointUrl: string; // This brand's endpoint URL
+    readonly endPointUrl: string; // Agency endpoint URL (legacy field)
+    readonly agencyEndPointUrl?: string; // Explicit agency endpoint base URL for routing
     readonly enabled: boolean; // Whether this brand is enabled at the agency
     readonly logo?: string;
     readonly routingRules?: { [eventCode: string]: any[] };
@@ -32,10 +34,12 @@ export class Agency implements IAgency {
 
         this.agencyId = params.agencyId;
         this.orgId = params.orgId;
+        this.agencyName = params.agencyName;
         this.brandId = params.brandId;
         this.secret = params.secret || ''; // Empty until registration.enabled
         this.name = params.name;
         this.endPointUrl = params.endPointUrl;
+        this.agencyEndPointUrl = params.agencyEndPointUrl;
         this.enabled = params.enabled ?? false;
         this.logo = params.logo;
         this.routingRules = params.routingRules || {};
@@ -52,10 +56,12 @@ export class Agency implements IAgency {
         return {
             agencyId: this.agencyId,
             orgId: this.orgId,
+            agencyName: this.agencyName,
             brandId: this.brandId,
             secret: this.secret,
             name: this.name,
             endPointUrl: this.endPointUrl,
+            agencyEndPointUrl: this.agencyEndPointUrl,
             enabled: this.enabled,
             logo: this.logo,
             routingRules: this.routingRules,
@@ -83,7 +89,7 @@ export class Agency implements IAgency {
             this.orgId &&
             this.brandId &&
             this.name &&
-            this.endPointUrl
+            this.endPointUrl 
         );
     }
 
@@ -120,9 +126,11 @@ export class Agency implements IAgency {
         return {
             agencyId: this.agencyId,
             orgId: this.orgId,
+            agencyName: this.agencyName,
             brandId: this.brandId,
             name: this.name,
             endPointUrl: this.endPointUrl,
+            agencyEndPointUrl: this.agencyEndPointUrl,
             enabled: this.enabled,
             logo: this.logo,
             routingRules: this.routingRules,

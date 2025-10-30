@@ -7,9 +7,13 @@
 import { getProductEventDefinition } from "../../../classes/ProductEventRegistry";
 import { errorResponse, checkMissingRequestInputs } from "../../../utils/common";
 import aioLogger from "@adobe/aio-lib-core-logging";
+import { sanitizeEventForLogging } from "../../../utils/eventSanitizer";
 
 export async function main(params: any, openwhiskClient?: any): Promise<any> {
   const logger = aioLogger("adobe-product-event-handler", { level: params.LOG_LEVEL || "info" });
+
+  // Log sanitized incoming event
+  logger.info(`adobe-product-event-handler: Received event`, sanitizeEventForLogging(params));
 
   try {
     const requiredParams: string[] = [];

@@ -78,6 +78,8 @@ export async function main(params: any): Promise<any> {
             brandCallbackUrl: brandCallbackUrl,
             brandName: formData.name
         });
+        // Debug log of outgoing payload to agency
+        logger.debug('new-agency-registration payload', JSON.stringify(payload, null, 2));
 
         // Get IMS org from headers (for x-gw-ims-org-id header)
         const imsOrg = params.__ow_headers?.['x-gw-ims-org-id'] || params.imsOrg;

@@ -8,3 +8,34 @@ the source is in typescript and lives in src/actions_src and when we run build-a
 the actions are cncf cloud native functions built using Adobe App Builder which is built on the Apache OpenWhisk platform.
 
 The openwhisk services configuration lives at ./app.config.yaml and the openwhisk runtimeManifest is defined in that target yaml file under the section runtimeManifest:
+
+apache openwhisk actions live in src/actions and run in a node 22 flavored containder 
+and we have a standalone jam stack app at src/dx-excshell-1
+
+this whole project runs inside Adobe app builder and is built and deployed with the adobe aio cli with plugin app @https://github.com/adobe/aio-cli-plugin-app
+
+# App Builder engineering rules (actions + web)
+
+- TypeScript configs:
+  - Use separate configs: `tsconfig.actions.json` (Node/CommonJS) and `tsconfig.web.json` (browser/ESNext). Do not move compilerOptions back into the loader.
+- Actions webpack:
+  - `webpack-config.js` must reference `tsconfig.actions.json` via `ts-loader` `configFile`. Keep DefinePlugin limited to `AIO_*` envs only; do not bake secrets. Runtime inputs come from `app.config.yaml`.
+- Module interop:
+  - With `esModuleInterop` enabled, use default imports for CommonJS libs. Example: `import aioLogger from '@adobe/aio-lib-core-logging';` (not `import * as aioLogger`).
+- Strict typing:
+  - Avoid implicit `any`. Type arrays like `const requiredHeaders: string[] = []`. In `catch`, use `catch (error: unknown)` and cast as needed.
+- Actions and web boundaries:
+  - Do not import Node-only modules (e.g., `openwhisk`, `@adobe/aio-lib-*`) from `src/dx-excshell-1/**`.
+  - If code must be shared, place types/models under `src/shared/**` and ensure they are browser-safe.
+- JS utilities in actions:
+  - It is acceptable to import existing JS utils from `src/actions/utils/**` (JS is allowed by the actions tsconfig). Prefer adding minimal `.d.ts` shims when adding new utils.
+- Runtime isolation contract:
+  - Every action must accept `APPLICATION_RUNTIME_INFO` (JSON string). All emitted events must include `data.app_runtime_info` (consoleId, projectName, workspace, app_name, action_package_name) for isolation [[memory:5384692]].
+- Tests location:
+  - Place all tests under the root `test/` directory.
+- React Spectrum in web:
+  - Use Adobe React Spectrum components for UI work. Follow official patterns and accessibility guidance.
+- CLI run modes:
+  - Actions only: `aio app run -e application --no-serve`
+  - Web only: `aio app run -e dx/excshell/1 --no-actions`
+  - You must choose one `-e` extension when running.

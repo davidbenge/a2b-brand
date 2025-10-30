@@ -1,0 +1,11 @@
+{
+  "statusCode": 500,
+  "body": {
+    "success": false,
+    "error": "Error processing request",
+    "details": {
+      "message": "Internal server error details..."
+    }
+  }
+}
+

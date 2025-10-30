@@ -108,7 +108,7 @@ const SpectrumHeader: React.FC<SpectrumHeaderProps> = ({ viewProps }) => {
                         UNSAFE_style={{
                             '--spectrum-global-color-status-info': '#ffffff',
                             color: 'white'
-                        }}
+                        } as React.CSSProperties}
                     >
                         <Text UNSAFE_style={{ color: 'white', fontSize: '12px' }}>
                             Demo Mode Active

@@ -1,0 +1,49 @@
+{
+    "specversion": "1.0",
+    "id": "5c3efadc-23c4-4ef0-85d0-3e401f791f55",
+    "source": "acct:aem-p142461-e1463137@adobe.com",
+    "type": "aem.assets.asset.metadata_updated",
+    "datacontenttype": "application/json",
+    "time": "2025-09-19T16:59:29.185456239Z",
+    "eventid": "4a9fc595-13b6-420a-b324-6d0f67ad8a7e",
+    "event_id": "4a9fc595-13b6-420a-b324-6d0f67ad8a7e",
+    "recipient_client_id": "4ab33463139e4f96b851589286cd46e4",
+    "recipientclientid": "4ab33463139e4f96b851589286cd46e4",
+    "data": {
+        "user": {
+            "imsUserId": "ims-485329D5640C26D30A495FA0@4aab2722640c26d2495fca.e",
+            "principalId": "DBENGE@ADOBE.COM",
+            "displayName": "David Benge"
+        },
+        "repositoryMetadata": {
+            "repo:repositoryId": "author-p142461-e1463137.adobeaemcloud.com",
+            "dc:format": "application/pdf",
+            "repo:assetClass": "file",
+            "repo:assetId": "urn:aaid:aem:5b80c144-39c7-43d0-857a-562fbe22b4e4",
+            "repo:version": "oak:1.0::ci:a4480eb4835eae527e37764dd50ad818",
+            "repo:name": "heineken_brandplanner.pdf",
+            "repo:size": "10759203",
+            "repo:path": "/content/dam/benge/heineken_brandplanner.pdf",
+            "repo:createdBy": "DBENGE@ADOBE.COM",
+            "repo:ancestors": [
+                "urn:aaid:aem:33e65aa7-1368-4da1-8871-23919222bd3e",
+                "urn:aaid:aem:efe36f5c-ede2-4dc8-84ca-d3c69d32447a"
+            ],
+            "repo:state": "ACTIVE",
+            "repo:createDate": "2025-08-14T16:35:03.714Z",
+            "repo:modifyDate": "2025-08-14T16:35:32.981Z",
+            "repo:modifiedBy": "DBENGE@ADOBE.COM",
+            "dam:sha1": "667061d2abbcb3ebe36fdf9c32e017e0fef7591c",
+            "aem:assetState": "processed"
+        },
+        "assetMetadata": {
+            "dc:title": "hello Heineken ",
+            "event:created": [
+                "dc:description",
+                "dc:title"
+            ],
+            "dc:description": "Heineken banner"
+        },
+        "assetId": "urn:aaid:aem:5b80c144-39c7-43d0-857a-562fbe22b4e4"
+    }
+}

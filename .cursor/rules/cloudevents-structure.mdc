@@ -1,0 +1,380 @@
+# CloudEvents Structure and Event Examples
+
+## Overview
+
+All events in the A2B (Agency-to-Brand) system follow the **CloudEvents specification**, a CNCF project that provides a standardized way to describe event data.
+
+- **CloudEvents Website**: https://cloudevents.io/
+- **CloudEvents Specification**: https://github.com/cloudevents/spec
+- **Adobe I/O Events**: Adobe is a CloudEvents adopter (see https://cloudevents.io/)
+
+## CloudEvents Specification
+
+CloudEvents is a specification for describing event data in a common way. It provides:
+- **Consistency**: A common way of describing events
+- **Accessibility**: Common libraries, tooling, and infrastructure across environments
+- **Portability**: Event data that can be delivered across services, platforms, and beyond
+
+The CloudEvents specification is now under the Cloud Native Computing Foundation (CNCF) and has reached v1.0.2.
+
+## Event Structure
+
+All event examples in `docs/events/` follow the CloudEvents format:
+
+```json
+{
+  "source": "urn:uuid:...",           // CloudEvents: Event source URI
+  "type": "com.adobe.a2b.event.type", // CloudEvents: Event type identifier
+  "datacontenttype": "application/json", // CloudEvents: Content type of data
+  "id": "uuid",                       // CloudEvents: Unique event ID
+  "time": "2025-08-28T07:29:29.728Z", // CloudEvents: Timestamp (optional)
+  "specversion": "1.0",               // CloudEvents: Spec version (optional)
+  "data": {                           // Event payload: Your application data
+    "field1": "value1",
+    "field2": "value2"
+  }
+}
+```
+
+### CloudEvents Properties (Top Level)
+
+The **top-level properties** are part of the CloudEvents specification:
+
+| Property | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `source` | **Yes** | Identifies the context in which an event happened | `"urn:uuid:agency-id"` or `"https://console-project-workspace.adobeio-static.net"` |
+| `type` | **Yes** | Event type identifier (reverse DNS format) | `"com.adobe.a2b.assetsync.new"` |
+| `id` | **Yes** | Unique identifier for the event | `"75d44a0b-7c74-4892-b435-47dbd422eec5"` |
+| `datacontenttype` | No | Content type of the data value | `"application/json"` |
+| `time` | No | Timestamp of when the event occurred (RFC3339) | `"2025-08-28T07:29:29.728Z"` |
+| `specversion` | No | Version of the CloudEvents spec | `"1.0"` |
+| `data` | No | The event payload (application-specific) | `{ "brandId": "...", ... }` |
+
+### Event Payload (data property)
+
+The **`data` property** contains the actual event payload - the business data being sent from the event sender to the event receiver. This is **application-specific** and not part of the CloudEvents spec.
+
+**Example**:
+```json
+{
+  "type": "com.adobe.a2b.assetsync.new",
+  "source": "urn:uuid:agency-123",
+  "id": "event-456",
+  "data": {
+    // ↓ Everything inside "data" is application-specific ↓
+    "app_runtime_info": {
+      "consoleId": "27200",
+      "projectName": "a2b",
+      "workspace": "production"
+    },
+    "brandId": "c6409c52-9295-4d15-94e6-7bd39d04360c",
+    "asset_id": "8327388d-d9e3-47c5-9280-a426c5dcb3b1",
+    "asset_path": "/content/dam/...",
+    "metadata": {
+      "dc:title": "My Asset"
+    }
+  }
+}
+```
+
+## A2B Event Payload Standards
+
+While CloudEvents defines the **envelope** (top-level properties), the A2B system has standards for the **payload** (`data` property):
+
+### Required Fields in `data`
+
+All A2B events should include `app_runtime_info` in the `data` payload:
+
+```json
+{
+  "data": {
+    "app_runtime_info": {
+      "consoleId": "string",      // Adobe Console ID
+      "projectName": "string",    // Project name
+      "workspace": "string",      // Workspace (dev/stage/production)
+      "actionPackageName": "string", // Action package name (optional)
+      "appName": "string"         // App name (optional)
+    },
+    // ... other event-specific fields
+  }
+}
+```
+
+The `app_runtime_info` is used for:
+- **Event routing**: Determining which workspace the event came from
+- **Agency/Brand identification**: The `consoleId` serves as the agency ID or brand ID
+- **Isolation**: Ensuring events are processed in the correct context
+- **Tracing**: Tracking events across services
+
+## Event Examples in docs/events/
+
+### Example 1: Agency-to-Brand Registration Event
+
+File: `docs/events/registration/com-adobe-a2b-registration-received.json`
+
+```json
+{
+  "id": "urn:uuid:12345678-1234-1234-1234-123456789abc",
+  "source": "urn:uuid:5c3431a2-bd91-4eff-a356-26b747d0aad4",
+  "type": "com.adobe.a2b.registration.received",
+  "datacontenttype": "application/json",
+  "time": "2025-08-28T07:29:29.728Z",
+  "specversion": "1.0",
+  "data": {
+    "app_runtime_info": {
+      "actionPackageName": "a2b-agency",
+      "appName": "agency",
+      "consoleId": "27200",
+      "projectName": "a2b",
+      "workspace": "benge"
+    },
+    "brandId": "c6409c52-9295-4d15-94e6-7bd39d04360c",
+    "name": "Brand Name",
+    "endPointUrl": "https://example.com/webhook"
+  }
+}
+```
+
+**Breakdown**:
+- **CloudEvents properties**: `source`, `type`, `id`, `datacontenttype`, `time`, `specversion`
+- **Event payload**: Everything inside `data`
+- **Application-specific**: `brandId`, `name`, `endPointUrl`
+- **Agency identification**: `app_runtime_info.consoleId` identifies the agency
+
+### Example 2: Brand-to-Agency Registration Request
+
+File: `docs/events/custom/com_adobe_a2b_assetsync_new.json` (or similar)
+
+```json
+{
+  "type": "com.adobe.b2a.registration.new",
+  "source": "urn:uuid:brand-id",
+  "id": "event-uuid",
+  "datacontenttype": "application/json",
+  "data": {
+    "app_runtime_info": {
+      "consoleId": "brand-console-id",
+      "projectName": "brand-project",
+      "workspace": "production"
+    },
+    "name": "ACME Corporation Brand Portal",
+    "endPointUrl": "https://console-project-workspace.adobeio-static.net"
+  }
+}
+```
+
+**Breakdown**:
+- **CloudEvents properties**: `source`, `type`, `id`, `datacontenttype`
+- **Event payload**: Everything inside `data`
+- **Application-specific**: `name`, `endPointUrl`
+- **Brand identification**: `app_runtime_info.consoleId` identifies the brand
+
+## Working with CloudEvents in Code
+
+### Creating Events
+
+When creating events in code, use the CloudEvents SDK or our event classes:
+
+```typescript
+import { B2aEvent } from './classes/B2aEvent';
+import { BrandRegistrationRequestEvent } from './classes/b2a_events/BrandRegistrationRequestEvent';
+
+// Create a new event
+const event = new BrandRegistrationRequestEvent(
+  name,
+  endPointUrl
+);
+
+// Set the source (CloudEvents property)
+event.setSourceUri(applicationRuntimeInfo);
+
+// Convert to CloudEvent format
+const cloudEvent = event.toCloudEvent();
+```
+
+### Reading Events
+
+When receiving events, the structure is:
+
+```typescript
+async function handleEvent(params: any) {
+  // CloudEvents properties at the top level
+  const eventType = params.type;        // "com.adobe.a2b.assetsync.new"
+  const eventSource = params.source;    // "urn:uuid:..."
+  const eventId = params.id;            // "uuid"
+  
+  // Event payload is in the data property
+  const eventData = params.data;        // { app_runtime_info, brandId, ... }
+  const appRuntimeInfo = eventData.app_runtime_info;
+  const agencyId = appRuntimeInfo.consoleId; // Extract agency ID
+}
+```
+
+## Event Categories in docs/events/
+
+### Registration Events (`docs/events/registration/`)
+CloudEvents related to brand registration lifecycle:
+- `com.adobe.a2b.registration.received` - Agency acknowledges registration request
+- `com.adobe.a2b.registration.enabled` - Agency enables brand (sends secret)
+- `com.adobe.a2b.registration.disabled` - Agency disables brand
+
+### Custom Events (`docs/events/custom/`)
+Various event examples for testing and development:
+- Registration and asset sync examples
+- Test variants and scenarios
+
+### Product Events (`docs/events/product/`)
+CloudEvents from Adobe products (e.g., AEM):
+- AEM Assets events that trigger brand actions
+
+## Event Flow in Brand Application
+
+The brand application primarily **receives** events from agencies:
+
+```
+Agency → Brand (via agency-event-handler)
+```
+
+1. **Agency sends event** (e.g., `com.adobe.a2b.registration.received`)
+2. **Brand receives via `agency-event-handler`**
+3. **Handler validates** (secret check, except for registration events)
+4. **Handler routes** to appropriate internal handler
+5. **Internal handler processes** event (e.g., `agency-registration-internal-handler`)
+
+The brand application can also **send** events to agencies:
+
+```
+Brand → Agency (via event publishing)
+```
+
+1. **Brand creates event** (e.g., `com.adobe.b2a.registration.new`)
+2. **Brand publishes** to agency's endpoint
+3. **Agency receives via `brand-event-handler`**
+
+## Key Principles
+
+1. **Top-level properties** = CloudEvents specification
+   - `source`, `type`, `id`, `datacontenttype`, `time`, `specversion`
+   
+2. **`data` property** = Application-specific payload
+   - Contains `app_runtime_info` and event-specific fields
+   
+3. **Event examples are complete CloudEvents**
+   - Files in `docs/events/` show the full CloudEvent structure
+   - Use these as references for event structure
+   
+4. **CloudEvents provides the envelope, A2B provides the content**
+   - CloudEvents: How to wrap and deliver the event
+   - A2B: What data to include in the event
+
+5. **`app_runtime_info.consoleId` identifies the sender**
+   - For agency events: `consoleId` = agency ID
+   - For brand events: `consoleId` = brand ID
+
+## References
+
+- **CloudEvents Spec**: https://github.com/cloudevents/spec
+- **CloudEvents Website**: https://cloudevents.io/
+- **CloudEvents Primer**: https://github.com/cloudevents/spec/blob/main/cloudevents/primer.md
+- **Adobe I/O Events**: https://developer.adobe.com/events/ (Adobe's CloudEvents implementation)
+- **Event Naming Conventions**: See `.cursor/rules/event-naming-conventions.mdc` (if exists)
+
+## Additional Resources
+
+### CloudEvents SDKs
+CloudEvents provides SDKs in multiple languages:
+- Go, JavaScript, Java, C#, Ruby, PHP, Python, Rust, PowerShell
+
+### CloudEvents Adopters
+Major companies using CloudEvents:
+- **Adobe I/O Events** (our platform!)
+- Amazon EventBridge
+- Azure Event Grid
+- Google Cloud Eventarc
+- IBM Cloud Code Engine
+- SAP
+- And many more...
+
+## Best Practices
+
+1. **Always include required CloudEvents properties**: `source`, `type`, `id`
+2. **Always include `app_runtime_info`** in the `data` payload
+3. **Use reverse DNS notation** for event types:
+   - `com.adobe.a2b.*` for agency-to-brand events
+   - `com.adobe.b2a.*` for brand-to-agency events
+4. **Set `datacontenttype`** to `"application/json"` for JSON payloads
+5. **Generate unique IDs** for each event (use UUID v4)
+6. **Include timestamp** (`time`) when possible for event ordering
+7. **Use URN or HTTPS format** for `source` property
+8. **Keep event payload focused** - only include data relevant to the event
+9. **Extract agency ID from `app_runtime_info.consoleId`** in received events
+
+## Testing with CloudEvents
+
+When writing tests, mock both the CloudEvents envelope and the payload:
+
+```typescript
+const mockEvent = {
+  // CloudEvents properties
+  type: 'com.adobe.a2b.registration.received',
+  source: 'urn:uuid:test-agency',
+  id: 'test-event-123',
+  datacontenttype: 'application/json',
+  
+  // Event payload
+  data: {
+    app_runtime_info: {
+      consoleId: 'test-agency-id',
+      projectName: 'test-project',
+      workspace: 'test'
+    },
+    brandId: 'test-brand',
+    name: 'Test Brand'
+  }
+};
+```
+
+See `src/actions/test/` for examples of event testing.
+
+## Security Considerations
+
+### Secret-Based Authentication
+
+Brand applications validate incoming events using the `X-A2B-Brand-Secret` header:
+
+```typescript
+// In agency-event-handler
+const isRegistrationEvent = 
+  params.type === 'com.adobe.a2b.registration.received' ||
+  params.type === 'com.adobe.a2b.registration.enabled';
+
+if (!isRegistrationEvent) {
+  const headers = params.__ow_headers || {};
+  const brandSecret = headers['x-a2b-brand-secret'];
+  
+  if (!brandSecret) {
+    return errorResponse(401, 'Missing X-A2B-Brand-Secret header', logger);
+  }
+  
+  // Validate secret against stored agency configuration
+  const agency = await agencyManager.getAgency(agencyId);
+  if (!agency.validateSecret(brandSecret)) {
+    return errorResponse(401, 'Invalid brand secret', logger);
+  }
+}
+```
+
+**Exception**: Registration events (`registration.received`, `registration.enabled`) bypass secret validation because the brand doesn't have the secret yet during initial registration.
+
+### Agency Identification
+
+The agency ID is extracted from `app_runtime_info.consoleId`:
+
+```typescript
+const agencyId = eventData.app_runtime_info?.consoleId;
+if (!agencyId) {
+  return errorResponse(400, 'Missing agencyId in app_runtime_info', logger);
+}
+```
+
+This ensures events are properly attributed to the correct agency instance.

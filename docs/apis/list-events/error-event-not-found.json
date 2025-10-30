@@ -1,0 +1,21 @@
+{
+  "statusCode": 404,
+  "body": {
+    "success": false,
+    "error": "Event code 'com.adobe.a2b.invalid.event' not found in registry",
+    "details": {
+      "availableEventCodes": [
+        "com.adobe.a2b.registration.disabled",
+        "com.adobe.a2b.registration.received",
+        "com.adobe.a2b.registration.enabled",
+        "com.adobe.a2b.assetsync.new",
+        "com.adobe.a2b.assetsync.update",
+        "com.adobe.a2b.assetsync.delete",
+        "com.adobe.a2b.workfront.task.created",
+        "com.adobe.a2b.workfront.task.updated",
+        "com.adobe.a2b.workfront.task.completed"
+      ]
+    }
+  }
+}
+

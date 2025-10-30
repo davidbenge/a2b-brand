@@ -1,0 +1,116 @@
+{
+  "statusCode": 200,
+  "body": {
+    "success": true,
+    "data": {
+      "category": "agency",
+      "count": 6,
+      "events": [
+        {
+          "code": "com.adobe.a2b.assetsync.new",
+          "category": "agency",
+          "name": "Asset Sync New",
+          "description": "Emitted when a new asset is synced from AEM",
+          "eventClass": "AssetSyncNewEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "asset_id",
+            "asset_path",
+            "metadata",
+            "brandId",
+            "asset_presigned_url"
+          ],
+          "optionalFields": [
+            "app_runtime_info"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.assetsync.update",
+          "category": "agency",
+          "name": "Asset Sync Update",
+          "description": "Emitted when an asset is updated in AEM",
+          "eventClass": "AssetSyncUpdateEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "asset_id",
+            "brandId"
+          ],
+          "optionalFields": [
+            "asset_path",
+            "metadata",
+            "app_runtime_info"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.assetsync.delete",
+          "category": "agency",
+          "name": "Asset Sync Delete",
+          "description": "Emitted when an asset is deleted in AEM",
+          "eventClass": "AssetSyncDeleteEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "asset_id",
+            "brandId"
+          ],
+          "optionalFields": [
+            "asset_path",
+            "app_runtime_info"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.workfront.task.created",
+          "category": "agency",
+          "name": "Workfront Task Created",
+          "description": "Emitted when a task is created in Workfront",
+          "eventClass": "WorkfrontTaskCreatedEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "taskId"
+          ],
+          "optionalFields": [
+            "projectId",
+            "assigneeId",
+            "taskName",
+            "dueDate"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.workfront.task.updated",
+          "category": "agency",
+          "name": "Workfront Task Updated",
+          "description": "Emitted when a task is updated in Workfront",
+          "eventClass": "WorkfrontTaskUpdatedEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "taskId"
+          ],
+          "optionalFields": [
+            "projectId",
+            "assigneeId",
+            "taskName",
+            "dueDate",
+            "status"
+          ]
+        },
+        {
+          "code": "com.adobe.a2b.workfront.task.completed",
+          "category": "agency",
+          "name": "Workfront Task Completed",
+          "description": "Emitted when a task is completed in Workfront",
+          "eventClass": "WorkfrontTaskCompletedEvent",
+          "version": "1.0.0",
+          "requiredFields": [
+            "taskId"
+          ],
+          "optionalFields": [
+            "projectId",
+            "completedDate",
+            "completedBy"
+          ]
+        }
+      ],
+      "timestamp": "2024-10-14T17:58:23.456Z"
+    }
+  }
+}
+

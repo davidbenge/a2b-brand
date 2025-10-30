@@ -54,7 +54,7 @@ function bootstrapRaw () {
     tenant: 'demo-tenant',
     aioRuntimeNamespace: 'demo-namespace',
     aioAppName: 'a2b-brand-demo',
-    agencyBaseUrl: 'https://demo-agency.adobeioruntime.net',
+    agencyBaseUrl: 'https://demo-agency.adobeioruntime.net',  // Base domain only - paths appended in code
     aioEnableDemoMode: (process.env.AIO_ENABLE_DEMO_MODE === 'true')
   }
 

@@ -3,10 +3,18 @@ import { ENABLE_DEMO_MODE, simulateApiDelay, logDemoMode } from '../utils/demoMo
 
 /**
  * API configuration and endpoints
+ * Note: COMPANY_REGISTRATION endpoint is deprecated and not used.
+ * Agency registration is handled directly in AgencyRegistrationView component
+ * using agencyBaseUrl from environment configuration.
  */
 const API_CONFIG = {
     ENDPOINTS: {
-        COMPANY_REGISTRATION: '/api/v1/web/a2b-agency/new-brand-registration'
+        // DEPRECATED: Not used - AgencyRegistrationView handles registration directly
+        // COMPANY_REGISTRATION: '/api/v1/web/a2b-agency/new-brand-registration',
+        GET_AGENCIES: '/api/v1/web/a2b-brand/get-agencies',
+        GET_AGENCY: '/api/v1/web/a2b-brand/get-agency',
+        UPDATE_AGENCY: '/api/v1/web/a2b-brand/update-agency',
+        DELETE_AGENCY: '/api/v1/web/a2b-brand/delete-agency'
     }
 };
 
@@ -17,6 +25,31 @@ interface CompanyRegistrationForm {
     companyName: string;
     primaryContact: string;
     phoneNumber: string;
+}
+
+/**
+ * Agency interface (matches IAgency from types)
+ */
+export interface Agency {
+    agencyId: string;
+    brandId: string;
+    name: string;
+    endPointUrl: string;
+    enabled: boolean;
+    logo?: string;
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    enabledAt: Date | string | null;
+}
+
+/**
+ * Agency update data interface
+ */
+interface AgencyUpdateData {
+    name?: string;
+    endPointUrl?: string;
+    enabled?: boolean;
+    logo?: string;
 }
 
 /**
@@ -80,12 +113,16 @@ export class ApiService {
 
     /**
      * Register a new company
+     * @deprecated This method is not used. Agency registration is handled directly
+     * in AgencyRegistrationView component using agencyBaseUrl from environment.
      * @param formData - Company registration form data
      * @returns Promise<ApiResponse<any>>
      */
     public async registerCompany(formData: CompanyRegistrationForm): Promise<ApiResponse<any>> {
+        console.warn('ApiService.registerCompany is deprecated and should not be used.');
+        
         if (ENABLE_DEMO_MODE) {
-            logDemoMode('API Service: registerCompany (demo mode)', formData);
+            logDemoMode('API Service: registerCompany (demo mode - DEPRECATED)', formData);
             
             await simulateApiDelay(1500);
             
@@ -103,7 +140,122 @@ export class ApiService {
             };
         }
         
-        return this.callApi(API_CONFIG.ENDPOINTS.COMPANY_REGISTRATION, 'POST', formData);
+        // This would fail because COMPANY_REGISTRATION endpoint is removed
+        return {
+            statusCode: 500,
+            body: {
+                message: 'This method is deprecated',
+                error: 'Use AgencyRegistrationView component for brand registration'
+            }
+        };
+    }
+
+    /**
+     * Get all agencies
+     * @returns Promise<ApiResponse<Agency[]>>
+     */
+    public async getAgencies(): Promise<ApiResponse<Agency[]>> {
+        if (ENABLE_DEMO_MODE) {
+            logDemoMode('API Service: getAgencies (demo mode)');
+            await simulateApiDelay(500);
+            
+            return {
+                statusCode: 200,
+                body: {
+                    message: 'Retrieved agencies successfully (Demo Mode)',
+                    data: []
+                }
+            };
+        }
+        
+        return this.callApi<Agency[]>(API_CONFIG.ENDPOINTS.GET_AGENCIES, 'GET');
+    }
+
+    /**
+     * Get a specific agency by ID
+     * @param agencyId - The agency ID to retrieve
+     * @returns Promise<ApiResponse<Agency>>
+     */
+    public async getAgency(agencyId: string): Promise<ApiResponse<Agency>> {
+        if (ENABLE_DEMO_MODE) {
+            logDemoMode('API Service: getAgency (demo mode)', { agencyId });
+            await simulateApiDelay(300);
+            
+            return {
+                statusCode: 404,
+                body: {
+                    message: 'Agency not found (Demo Mode)',
+                    error: 'Demo mode - agency not found'
+                }
+            };
+        }
+        
+        return this.callApi<Agency>(`${API_CONFIG.ENDPOINTS.GET_AGENCY}?agencyId=${agencyId}`, 'GET');
+    }
+
+    /**
+     * Update an agency
+     * @param agencyId - The agency ID to update
+     * @param updateData - The data to update
+     * @returns Promise<ApiResponse<Agency>>
+     */
+    public async updateAgency(agencyId: string, updateData: AgencyUpdateData): Promise<ApiResponse<Agency>> {
+        if (ENABLE_DEMO_MODE) {
+            logDemoMode('API Service: updateAgency (demo mode)', { agencyId, updateData });
+            await simulateApiDelay(800);
+            
+            return {
+                statusCode: 200,
+                body: {
+                    message: 'Agency updated successfully (Demo Mode)',
+                    data: {
+                        agencyId,
+                        brandId: 'demo-brand-id',
+                        name: updateData.name || 'Demo Agency',
+                        endPointUrl: updateData.endPointUrl || 'https://demo.com',
+                        enabled: updateData.enabled !== undefined ? updateData.enabled : true,
+                        logo: updateData.logo,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        enabledAt: new Date().toISOString()
+                    } as Agency
+                }
+            };
+        }
+        
+        return this.callApi<Agency>(API_CONFIG.ENDPOINTS.UPDATE_AGENCY, 'POST', {
+            agencyId,
+            ...updateData
+        });
+    }
+
+    /**
+     * Delete an agency
+     * @param agencyId - The agency ID to delete
+     * @returns Promise<ApiResponse<{ agencyId: string; deleted: boolean }>>
+     */
+    public async deleteAgency(agencyId: string): Promise<ApiResponse<{ agencyId: string; deleted: boolean }>> {
+        if (ENABLE_DEMO_MODE) {
+            logDemoMode('API Service: deleteAgency (demo mode)', { agencyId });
+            await simulateApiDelay(600);
+            
+            return {
+                statusCode: 200,
+                body: {
+                    message: 'Agency deleted successfully (Demo Mode)',
+                    data: {
+                        agencyId,
+                        deleted: true
+                    }
+                }
+            };
+        }
+        
+        return this.callApi<{ agencyId: string; deleted: boolean }>(
+            API_CONFIG.ENDPOINTS.DELETE_AGENCY,
+            'POST',
+            { agencyId }
+        );
     }
 
     /**

@@ -1,0 +1,175 @@
+---
+description: Event naming conventions and directional flow in A2B system
+globs:
+  - "src/actions/classes/a2b_events/**"
+  - "src/shared/classes/EventRegistry.ts"
+  - "docs/events/**"
+alwaysApply: true
+---
+
+# Event Naming Conventions
+
+## Event Code Naming Pattern
+
+Event codes follow a directional naming pattern that indicates the publisher and flow direction:
+
+### Pattern: `com.adobe.{direction}.{domain}.{action}`
+
+#### Direction Prefixes
+
+- **`com.adobe.a2b.*`** = **Agency-published events** (Agency-to-Brand direction)
+  - Events emitted BY the agency application
+  - Consumed by brand applications
+  - Examples:
+    - `com.adobe.a2b.assetsync.new` - Agency publishes when syncing new asset to brand
+    - `com.adobe.a2b.registration.enabled` - Agency publishes when enabling a brand
+    - `com.adobe.a2b.workfront.task.created` - Agency publishes Workfront task events
+
+- **`com.adobe.b2a.*`** = **Brand-published events** (Brand-to-Agency direction)
+  - Events emitted BY brand applications
+  - Consumed by the agency application
+  - Examples:
+    - `com.adobe.b2a.registration.request` - Brand requests registration with agency
+    - `com.adobe.b2a.asset.updated` - Brand notifies agency of asset updates
+
+## Directory Structure
+
+Event body examples should be organized by publisher and domain:
+
+```
+docs/events/
+├── agency/           # Events published BY agency (com.adobe.a2b.*)
+│   ├── com-adobe-a2b-assetsync-new.json
+│   ├── com-adobe-a2b-assetsync-update.json
+│   └── com-adobe-a2b-assetsync-delete.json
+├── brand/            # Events published BY brand (com.adobe.b2a.*)
+│   └── (brand-published event examples)
+├── registration/     # Registration events (bidirectional)
+│   ├── com-adobe-a2b-registration-disabled.json
+│   ├── com-adobe-a2b-registration-enabled.json
+│   └── com-adobe-a2b-registration-received.json
+└── product/          # Events from Adobe products (consumed by agency)
+    ├── aem/          # Adobe Experience Manager events
+    │   └── aem-assets-*.json
+    └── com-adobe-a2b-workfront-*.json  # Workfront events (agency-published)
+```
+
+## File Naming Convention
+
+Event body example files follow this pattern:
+
+**Pattern**: `[event-code-with-dashes].json`
+
+- Replace `.` (dots) with `-` (dashes)
+- Keep lowercase
+- Examples:
+  - `com.adobe.a2b.assetsync.new` → `com-adobe-a2b-assetsync-new.json`
+  - `com.adobe.b2a.registration.request` → `com-adobe-b2a-registration-request.json`
+
+**Test Variants**: Use underscore `_` for test modifiers:
+- `com-adobe-a2b-assetsync-new.json` (base example)
+- `com-adobe-a2b-assetsync-new_with-metadata.json` (test variant)
+- `com-adobe-a2b-assetsync-new_minimal.json` (test variant)
+
+## Event Class Naming
+
+Event classes should indicate the action and domain:
+
+```typescript
+// Agency-published events
+class AssetSyncNewEvent extends A2bEvent { }      // com.adobe.a2b.assetsync.new
+class WorkfrontTaskCreatedEvent extends A2bEvent { } // com.adobe.a2b.workfront.task.created
+
+// Brand-published events  
+class BrandRegistrationRequestEvent extends B2aEvent { } // com.adobe.b2a.registration.request
+```
+
+## EventCategory Mapping
+
+The `EventCategory` enum aligns with the event direction prefix:
+
+```typescript
+EventCategory.REGISTRATION  // 'registration' - Brand registration lifecycle (both directions)
+EventCategory.AGENCY        // 'agency' - Agency-published events (com.adobe.a2b.*)
+EventCategory.BRAND         // 'brand' - Brand-published events (com.adobe.b2a.*)
+EventCategory.PRODUCT       // 'product' - Reserved for future use (direct Adobe product events)
+```
+
+**Mapping Rules:**
+- `com.adobe.a2b.*` events → `EventCategory.AGENCY` (agency-published: asset sync, workfront, etc.)
+- `com.adobe.b2a.*` events → `EventCategory.BRAND` (brand-published events)
+- Registration events (`*.registration.*`) → `EventCategory.REGISTRATION` (regardless of direction)
+- `EventCategory.PRODUCT` is reserved for future direct Adobe product event subscriptions
+
+**Examples:**
+- `com.adobe.a2b.assetsync.new` → Category: `AGENCY`, Direction: `a2b`
+- `com.adobe.a2b.workfront.task.created` → Category: `AGENCY`, Direction: `a2b`
+- `com.adobe.b2a.asset.updated` → Category: `BRAND`, Direction: `b2a`
+- `com.adobe.a2b.registration.enabled` → Category: `REGISTRATION`, Direction: `a2b`
+- `com.adobe.b2a.registration.request` → Category: `REGISTRATION`, Direction: `b2a`
+
+## Adding New Events
+
+When adding a new event:
+
+1. **Choose the correct direction prefix**:
+   - Use `com.adobe.a2b.*` if the agency publishes it
+   - Use `com.adobe.b2a.*` if the brand publishes it
+
+2. **Create the event body example** in the correct directory:
+   ```bash
+   # Agency-published event
+   docs/events/agency/com-adobe-a2b-[domain]-[action].json
+   
+   # Brand-published event
+   docs/events/brand/com-adobe-b2a-[domain]-[action].json
+   ```
+
+3. **Create the event class** with proper naming:
+   ```typescript
+   // In src/actions/classes/a2b_events/ for agency events
+   export class MyDomainActionEvent extends A2bEvent { }
+   
+   // In src/actions/classes/b2a_events/ for brand events
+   export class MyDomainActionEvent extends B2aEvent { }
+   ```
+
+4. **Register in EventRegistry** with correct category and metadata
+
+## Examples
+
+### Agency-Published Events (a2b)
+
+```typescript
+// Event code: com.adobe.a2b.assetsync.new
+{
+  code: 'com.adobe.a2b.assetsync.new',
+  category: EventCategory.AGENCY,
+  name: 'Asset Sync New',
+  description: 'Emitted BY agency when syncing a new asset TO brand',
+  eventClass: 'AssetSyncNewEvent',
+  eventBodyexample: require('docs/events/agency/com-adobe-a2b-assetsync-new.json')
+}
+```
+
+### Brand-Published Events (b2a)
+
+```typescript
+// Event code: com.adobe.b2a.registration.request
+{
+  code: 'com.adobe.b2a.registration.request',
+  category: EventCategory.REGISTRATION,
+  name: 'Brand Registration Request',
+  description: 'Emitted BY brand when requesting registration WITH agency',
+  eventClass: 'BrandRegistrationRequestEvent',
+  eventBodyexample: require('docs/events/brand/com-adobe-b2a-registration-request.json')
+}
+```
+
+## Key Principles
+
+1. **Direction indicates publisher**: `a2b` = agency publishes, `b2a` = brand publishes
+2. **Category indicates domain**: What functional area the event belongs to
+3. **File location matches publisher**: Agency events in `agency/`, brand events in `brand/`
+4. **Naming is consistent**: Code → filename conversion is always dots to dashes
+5. **Test variants use underscores**: Base name + `_variant-description.json`

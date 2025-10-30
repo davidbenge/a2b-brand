@@ -1,0 +1,18 @@
+---
+description: Enforce environment variable usage patterns for actions and web
+globs:
+  - "src/**/*"
+  - "webpack-config.js"
+alwaysApply: true
+---
+- Actions (src/actions/**):
+  - Do not read process.env directly. All runtime values must be passed via `app.config.yaml` inputs and received as action params.
+  - Node-only modules are allowed.
+
+- Web (src/dx-excshell-1/web-src/**):
+  - Do not read arbitrary `process.env.*`. Only `AIO_*` prefixed variables are exposed (via DefinePlugin) and may be referenced (e.g., `process.env.AIO_ENABLE_DEMO_MODE`).
+  - Do not import Node-only modules.
+
+- Build config:
+  - Keep `webpack-config.js` DefinePlugin restricted to `AIO_*` variables.
+  - Do not bake secrets into the bundle.

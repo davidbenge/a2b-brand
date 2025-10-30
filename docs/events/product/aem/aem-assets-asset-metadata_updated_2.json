@@ -1,0 +1,99 @@
+{
+    "specversion": "1.0",
+    "id": "b4305772-7cd2-4c5c-881a-de8486988b3c",
+    "source": "acct:aem-p142461-e1504092@adobe.com",
+    "type": "aem.assets.asset.metadata_updated",
+    "datacontenttype": "application/json",
+    "time": "2025-09-21T20:45:06.976638Z",
+    "eventid": "1ce00993-1892-49c3-b011-f21753da8c1f",
+    "event_id": "1ce00993-1892-49c3-b011-f21753da8c1f",
+    "recipient_client_id": "4ab33463139e4f96b851589286cd46e4",
+    "recipientclientid": "4ab33463139e4f96b851589286cd46e4",
+    "data": {
+        "user": {
+            "imsUserId": "485329D5640C26D30A495FA0@4aab2722640c26d2495fca.e",
+            "principalId": "DBENGE@ADOBE.COM",
+            "displayName": "David Benge"
+        },
+        "repositoryMetadata": {
+            "repo:repositoryId": "author-p142461-e1504092.adobeaemcloud.com",
+            "dc:format": "image/png",
+            "repo:assetClass": "file",
+            "repo:assetId": "urn:aaid:aem:4be43531-6e30-4a10-9983-445ed29cd6cf",
+            "repo:version": "oak:1.0::ci:a6dfa325c325c068f8952ae338402998",
+            "repo:name": "image (2).png",
+            "repo:size": "2744944",
+            "repo:path": "/content/dam/benge/image (2).png",
+            "repo:createdBy": "DBENGE@ADOBE.COM",
+            "repo:ancestors": [
+                "urn:aaid:aem:0378c241-897a-41ff-8906-8b149f5072b7",
+                "urn:aaid:aem:3b69d56c-2617-440d-bcfc-1cbde424191c"
+            ],
+            "repo:state": "ACTIVE",
+            "repo:createDate": "2025-09-21T05:53:16.097Z",
+            "repo:modifyDate": "2025-09-21T05:53:41.789Z",
+            "repo:modifiedBy": "DBENGE@ADOBE.COM",
+            "dam:sha1": "66ff09483234febbc2c4ecefc77c510f22fd330d",
+            "tiff:imageWidth": 1200,
+            "tiff:imageLength": 1600,
+            "aem:assetState": "processed"
+        },
+        "assetMetadata": {
+            "xcm:machineKeywords": [
+                {
+                    "value": "person",
+                    "confidence": 1.0
+                },
+                {
+                    "value": "man",
+                    "confidence": 1.0
+                },
+                {
+                    "value": "social group",
+                    "confidence": 1.0
+                },
+                {
+                    "value": "commercial photography",
+                    "confidence": 0.905
+                },
+                {
+                    "value": "roundtable",
+                    "confidence": 0.885
+                },
+                {
+                    "value": "group",
+                    "confidence": 0.877
+                },
+                {
+                    "value": "dining",
+                    "confidence": 0.866
+                },
+                {
+                    "value": "banquet",
+                    "confidence": 0.854
+                },
+                {
+                    "value": "meeting",
+                    "confidence": 0.825
+                },
+                {
+                    "value": "team",
+                    "confidence": 0.824
+                },
+                {
+                    "value": "serving",
+                    "confidence": 0.806
+                },
+                {
+                    "value": "party",
+                    "confidence": 0.753
+                }
+            ],
+            "event:created": [
+                "dam:status"
+            ],
+            "dam:status": "approved"
+        },
+        "assetId": "urn:aaid:aem:4be43531-6e30-4a10-9983-445ed29cd6cf"
+    }
+}

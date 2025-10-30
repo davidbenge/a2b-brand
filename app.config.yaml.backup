@@ -1,0 +1,174 @@
+application:
+  actions: src/actions
+  runtimeManifest:
+    packages:
+      a2b-brand:
+        license: Apache-2.0
+        actions:
+          agency-event-handler:
+            function: src/actions/event-handlers/agency-event-handler/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              ORG_ID: $ORG_ID
+              S2S_API_KEY: $SERVICE_API_KEY
+              S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
+              S2S_SCOPES: $S2S_SCOPES
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"brand","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+              AIO_runtime_apihost: $AIO_runtime_apihost
+              AIO_runtime_auth: $AIO_runtime_auth
+              AIO_runtime_namespace: $AIO_runtime_namespace
+              AIO_ASSET_SYNCH_TARGET_PROGRAM_ENVIRONMENT: $AIO_ASSET_SYNCH_TARGET_PROGRAM_ENVIRONMENT
+              CONTENT_TYPE: $CONTENT_TYPE
+              DESTINATION_FOLDER_ID: $DESTINATION_FOLDER_ID
+            annotations:
+              require-adobe-auth: false
+              final: true
+          list-events:
+            function: src/actions/list-events/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: false
+              final: true
+          adobe-product-event-handler:
+            function: src/actions/event-handlers/product/adobe-product-event-handler/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              ORG_ID: $ORG_ID
+              S2S_API_KEY: $SERVICE_API_KEY
+              S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
+              S2S_SCOPES: $S2S_SCOPES
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+              AIO_runtime_apihost: $AIO_runtime_apihost
+              AIO_runtime_auth: $AIO_runtime_auth
+              AIO_runtime_namespace: $AIO_runtime_namespace
+            annotations:
+              require-adobe-auth: true
+              final: true
+          agency-assetsync-internal-handler:
+            function: src/actions/event-handlers/product/agency-assetsync-internal-handler/index.ts
+            web: 'no'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              ORG_ID: $ORG_ID
+              S2S_API_KEY: $S2S_API_KEY
+              S2S_CLIENT_ID: $S2S_CLIENT_ID
+              S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
+              S2S_SCOPES: $S2S_SCOPES 
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+            annotations:
+              require-adobe-auth: false
+              final: true
+          agency-registration-internal-handler:
+            function: src/actions/event-handlers/agency-registration-internal-handler/index.ts
+            web: 'no'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"${AIO_APP_NAME}"}'
+            annotations:
+              require-adobe-auth: false
+              final: true
+          get-agencies:
+            function: src/actions/services/agency/get-agencies/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"brand","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
+          get-agency:
+            function: src/actions/services/agency/get-agency/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"agency","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
+          new-agency-registration:
+            function: src/actions/services/agency/new-agency-registration/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"agency","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+              AIO_runtime_namespace: $AIO_runtime_namespace
+              AIO_ACTION_PACKAGE_NAME: $AIO_ACTION_PACKAGE_NAME
+              AGENCY_BASE_URL: $AGENCY_BASE_URL
+            annotations:
+              require-adobe-auth: true
+              final: true
+          update-agency:
+            function: src/actions/services/agency/update-agency/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"agency","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
+          delete-agency:
+            function: src/actions/services/agency/delete-agency/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"agency","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
+          # ============================================================================
+          # Event Registry Management APIs
+          # ============================================================================
+          # Agency-Specific App Event Definitions
+          list-agency-app-events:
+            function: src/actions/services/agency/list-agency-app-events/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          create-agency-app-event:
+            function: src/actions/services/agency/create-agency-app-event/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          update-agency-app-event:
+            function: src/actions/services/agency/update-agency-app-event/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+          delete-agency-app-event:
+            function: src/actions/services/agency/delete-agency-app-event/index.ts
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              require-adobe-auth: true
+              final: true
+extensions:
+  dx/excshell/1:
+    $include: src/dx-excshell-1/ext.config.yaml

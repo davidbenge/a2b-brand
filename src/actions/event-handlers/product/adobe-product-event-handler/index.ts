@@ -1,10 +1,15 @@
 /**
  * Adobe Product Event Handler
  *
- * This action handles events from Adobe products (AEM, Creative Cloud, etc.)
+ * This action handles events from Adobe products (AEM, Creative Cloud, Workfront, etc.)
  * and routes them to the appropriate internal event handlers based on event type.
+ * 
+ * Supports:
+ * - AEM and other Adobe products (using "type" field)
+ * - Workfront events (using "objCode" and "eventType" fields)
  */
 import { getProductEventDefinition } from "../../../classes/ProductEventRegistry";
+import { getWorkfrontEventByObjCodeAndType } from "../../../classes/WorkfrontEventRegistry";
 import { errorResponse, checkMissingRequestInputs } from "../../../utils/common";
 import aioLogger from "@adobe/aio-lib-core-logging";
 import { sanitizeEventForLogging } from "../../../utils/eventSanitizer";
@@ -31,35 +36,97 @@ export async function main(params: any, openwhiskClient?: any): Promise<any> {
       };
     }
 
-    // Validate event type
-    if (!params.type) {
-      logger.warn("No event type provided, cannot route event");
+    // Detect event type: Workfront vs other Adobe products
+    let eventDefinition: any;
+    let isWorkfrontEvent = false;
+    let eventCode = '';
+
+    if (params.objCode && params.eventType) {
+      // This is a Workfront event
+      isWorkfrontEvent = true;
+      eventCode = `workfront.${params.objCode.toLowerCase()}.${params.eventType.toLowerCase()}`;
+      
+      logger.info(`Processing Workfront event: ${eventCode}`, {
+        objCode: params.objCode,
+        eventType: params.eventType,
+        objectId: params.ID
+      });
+
+      // Get event definition from Workfront registry
+      eventDefinition = getWorkfrontEventByObjCodeAndType(params.objCode, params.eventType);
+      
+      if (!eventDefinition) {
+        logger.warn(`Workfront event not registered: ${eventCode}`, {
+          objCode: params.objCode,
+          eventType: params.eventType
+        });
+        
+        // Return 200 to acknowledge receipt even if not registered
+        return {
+          statusCode: 200,
+          body: {
+            message: `Workfront event acknowledged but not registered: ${eventCode}`,
+            objCode: params.objCode,
+            eventType: params.eventType
+          }
+        };
+      }
+    } else if (params.type) {
+      // This is a standard Adobe product event (AEM, etc.)
+      eventCode = params.type;
+      
+      logger.info(`Processing Adobe product event: ${params.type}`);
+
+      // Get event definition from Product registry
+      eventDefinition = getProductEventDefinition(params.type);
+      
+      if (!eventDefinition) {
+        logger.warn(`Event type not found in registry: ${params.type}`);
+        return {
+          statusCode: 200,
+          body: {
+            message: 'Adobe product event processed - unhandled type',
+            eventType: params.type,
+            note: 'Event type not configured for routing'
+          }
+        };
+      }
+    } else {
+      logger.warn("No event type or objCode provided, cannot route event");
       return {
         statusCode: 400,
         body: {
-          message: 'No event type provided',
-          error: 'Event type is required for routing'
+          message: 'No event type or objCode provided',
+          error: 'Event type or objCode is required for routing'
         }
       };
     }
 
-    logger.info(`Processing Adobe product event: ${params.type}`);
+    // For Workfront events, log and acknowledge (internal processing can be added later)
+    if (isWorkfrontEvent) {
+      logger.info('Workfront event received and acknowledged', {
+        eventCode,
+        objCode: params.objCode,
+        eventType: params.eventType,
+        objectId: params.ID,
+        objectName: params.name
+      });
 
-    // Get event definition from registry
-    const eventDefinition = getProductEventDefinition(params.type);
-    if (!eventDefinition) {
-      logger.warn(`Event type not found in registry: ${params.type}`);
+      // TODO: Add internal processing for Workfront events
+      // For now, just acknowledge receipt
       return {
         statusCode: 200,
         body: {
-          message: 'Adobe product event processed - unhandled type',
-          eventType: params.type,
-          note: 'Event type not configured for routing'
+          message: 'Workfront event processed successfully',
+          eventCode,
+          objCode: params.objCode,
+          eventType: params.eventType,
+          objectId: params.ID
         }
       };
     }
 
-    // Initialize OpenWhisk client for routing
+    // Initialize OpenWhisk client for routing (non-Workfront events)
     const ow = openwhiskClient || require("openwhisk")();
 
     logger.info(`Routing event to handler: ${eventDefinition.handlerActionName}`);

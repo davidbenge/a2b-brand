@@ -26,8 +26,10 @@ import {
 import Edit from '@spectrum-icons/workflow/Edit';
 import Delete from '@spectrum-icons/workflow/Delete';
 import Refresh from '@spectrum-icons/workflow/Refresh';
+import Settings from '@spectrum-icons/workflow/Settings';
 import { ENABLE_DEMO_MODE, logDemoMode } from '../../utils/demoMode';
 import { apiService, Agency } from '../../services/api';
+import { WorkfrontConfigModal } from '../modals/WorkfrontConfigModal';
 
 interface AgencyRegistrationListProps {
     viewProps?: any;
@@ -40,14 +42,17 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [selectedAgencyForWF, setSelectedAgencyForWF] = useState<Agency | null>(null);
 
     // Initialize API service on mount
     useEffect(() => {
         if (viewProps && !ENABLE_DEMO_MODE) {
+            // Construct the base URL from runtime namespace
+            const apiBaseUrl = `https://${viewProps.aioRuntimeNamespace}.adobeio-static.net`;
             apiService.initialize(
-                viewProps.runtime.apiHost,
-                viewProps.ims.token,
-                viewProps.ims.org
+                apiBaseUrl,
+                viewProps.imsToken,
+                viewProps.imsOrg
             );
         }
     }, [viewProps]);
@@ -165,6 +170,27 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Unknown error deleting agency');
         }
+    };
+
+    const handleWorkfrontConfigSave = async () => {
+        if (!selectedAgencyForWF) return;
+        
+        try {
+            setSuccess('Workfront configuration saved successfully');
+            
+            // Refresh the agencies list to show updated Workfront info
+            await loadAgencies();
+        } catch (err) {
+            console.error('Error refreshing agencies after Workfront config:', err);
+        }
+        
+        // Close the modal
+        setSelectedAgencyForWF(null);
+        
+        // Clear messages after 3 seconds
+        setTimeout(() => {
+            setSuccess(null);
+        }, 3000);
     };
 
     const getStatusVariant = (enabled: boolean): 'positive' | 'negative' => {
@@ -342,6 +368,37 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                                                     {agency.enabled ? 'Disable' : 'Enable'}
                                                 </Text>
                                             </ActionButton>
+                                            
+                                            <DialogTrigger type="modal" isDismissable>
+                                                <ActionButton 
+                                                    isQuiet 
+                                                    aria-label="Configure Workfront"
+                                                    onPress={() => setSelectedAgencyForWF(agency)}
+                                                >
+                                                    <Settings />
+                                                </ActionButton>
+                                                {(close) => (
+                                                    <WorkfrontConfigModal
+                                                        agencyId={agency.agencyId}
+                                                        imsToken={viewProps?.imsToken || ''}
+                                                        imsOrgId={viewProps?.imsOrg || ''}
+                                                        existingConfig={{
+                                                            workfrontServerUrl: agency.workfrontServerUrl,
+                                                            workfrontCompanyId: agency.workfrontCompanyId,
+                                                            workfrontCompanyName: agency.workfrontCompanyName,
+                                                            workfrontGroupId: agency.workfrontGroupId,
+                                                            workfrontGroupName: agency.workfrontGroupName
+                                                        }}
+                                                        onSave={async (config) => {
+                                                            await handleWorkfrontConfigSave();
+                                                        }}
+                                                        onClose={() => {
+                                                            close();
+                                                            setSelectedAgencyForWF(null);
+                                                        }}
+                                                    />
+                                                )}
+                                            </DialogTrigger>
                                             
                                             <DialogTrigger type="modal">
                                                 <ActionButton isQuiet aria-label="Delete agency">

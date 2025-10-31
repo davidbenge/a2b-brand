@@ -29,6 +29,40 @@ export async function main(params: any): Promise<any> {
       return errorResponse(404, `Agency ${params.agencyId} not found`, logger);
     }
 
+    // Clean up Workfront event subscriptions if configured
+    if (existingAgency.workfrontServerUrl && existingAgency.workfrontEventSubscriptions && existingAgency.workfrontEventSubscriptions.length > 0) {
+      logger.info(`Cleaning up ${existingAgency.workfrontEventSubscriptions.length} Workfront event subscriptions before deletion`);
+      
+      try {
+        // Call manage-workfront-subscriptions to unregister
+        const ow = require("openwhisk")();
+        await ow.actions.invoke({
+          name: 'a2b-brand/manage-workfront-subscriptions',
+          params: {
+            agencyId: existingAgency.agencyId,
+            action: 'unregister',
+            S2S_CLIENT_ID: params.S2S_CLIENT_ID,
+            S2S_CLIENT_SECRET: params.S2S_CLIENT_SECRET,
+            S2S_SCOPES: params.S2S_SCOPES,
+            ORG_ID: params.ORG_ID,
+            APPLICATION_RUNTIME_INFO: params.APPLICATION_RUNTIME_INFO,
+            LOG_LEVEL: params.LOG_LEVEL
+          },
+          blocking: true,
+          result: true
+        });
+        
+        logger.info('Successfully cleaned up Workfront subscriptions before deletion');
+      } catch (wfError: unknown) {
+        const err = wfError as Error;
+        logger.error('Failed to cleanup Workfront subscriptions before deletion', { 
+          error: err.message, 
+          stack: err.stack 
+        });
+        // Don't fail the deletion if Workfront cleanup fails - log and continue
+      }
+    }
+
     // Delete the agency
     await agencyManager.deleteAgency(params.agencyId);
     logger.info(`Deleted agency ${params.agencyId}`);

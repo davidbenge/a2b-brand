@@ -23,6 +23,14 @@ export class Agency implements IAgency {
     readonly updatedAt: Date;
     readonly enabledAt: Date | null;
     readonly disabledAt?: Date | null;
+    
+    // Workfront Integration Fields
+    readonly workfrontServerUrl?: string;
+    readonly workfrontCompanyId?: string;
+    readonly workfrontCompanyName?: string;
+    readonly workfrontGroupId?: string;
+    readonly workfrontGroupName?: string;
+    readonly workfrontEventSubscriptions?: string[];
 
     constructor(params: IAgency) {
         // Validate required fields
@@ -48,6 +56,14 @@ export class Agency implements IAgency {
         this.updatedAt = params.updatedAt ?? new Date();
         this.enabledAt = params.enabledAt ?? null;
         this.disabledAt = params.disabledAt ?? null;
+        
+        // Workfront fields
+        this.workfrontServerUrl = params.workfrontServerUrl;
+        this.workfrontCompanyId = params.workfrontCompanyId;
+        this.workfrontCompanyName = params.workfrontCompanyName;
+        this.workfrontGroupId = params.workfrontGroupId;
+        this.workfrontGroupName = params.workfrontGroupName;
+        this.workfrontEventSubscriptions = params.workfrontEventSubscriptions || [];
     }
 
     /**
@@ -70,7 +86,13 @@ export class Agency implements IAgency {
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
             enabledAt: this.enabledAt,
-            disabledAt: this.disabledAt
+            disabledAt: this.disabledAt,
+            workfrontServerUrl: this.workfrontServerUrl,
+            workfrontCompanyId: this.workfrontCompanyId,
+            workfrontCompanyName: this.workfrontCompanyName,
+            workfrontGroupId: this.workfrontGroupId,
+            workfrontGroupName: this.workfrontGroupName,
+            workfrontEventSubscriptions: this.workfrontEventSubscriptions
         };
     }
 
@@ -140,7 +162,13 @@ export class Agency implements IAgency {
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
             enabledAt: this.enabledAt,
-            disabledAt: this.disabledAt
+            disabledAt: this.disabledAt,
+            workfrontServerUrl: this.workfrontServerUrl,
+            workfrontCompanyId: this.workfrontCompanyId,
+            workfrontCompanyName: this.workfrontCompanyName,
+            workfrontGroupId: this.workfrontGroupId,
+            workfrontGroupName: this.workfrontGroupName,
+            workfrontEventSubscriptions: this.workfrontEventSubscriptions
             // secret is intentionally omitted
         };
     }

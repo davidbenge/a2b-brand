@@ -27,7 +27,7 @@ application:
               final: true
           adobe-product-event-handler:
             function: src/actions/event-handlers/product/adobe-product-event-handler/index.ts
-            web: 'yes'
+            web: 'no'
             runtime: nodejs:20
             inputs:
               LOG_LEVEL: debug
@@ -40,7 +40,7 @@ application:
               AIO_runtime_auth: $AIO_runtime_auth
               AIO_runtime_namespace: $AIO_runtime_namespace
             annotations:
-              require-adobe-auth: true
+              require-adobe-auth: false
               final: true
           agency-assetsync-internal-handler:
             function: src/actions/event-handlers/product/agency-assetsync-internal-handler/index.ts
@@ -116,7 +116,61 @@ application:
             runtime: nodejs:20
             inputs:
               LOG_LEVEL: debug
+              S2S_CLIENT_ID: $SERVICE_API_KEY
+              S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
+              S2S_SCOPES: $S2S_SCOPES
+              ORG_ID: $ORG_ID
               APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"agency","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
+          list-workfront-companies:
+            function: src/actions/services/workfront/list-workfront-companies/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+              S2S_CLIENT_ID: $SERVICE_API_KEY
+              S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
+              S2S_SCOPES: $S2S_SCOPES
+              ORG_ID: $ORG_ID
+            annotations:
+              require-adobe-auth: true
+              final: true
+          list-workfront-groups:
+            function: src/actions/services/workfront/list-workfront-groups/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+              S2S_CLIENT_ID: $SERVICE_API_KEY
+              S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
+              S2S_SCOPES: $S2S_SCOPES
+              ORG_ID: $ORG_ID
+            annotations:
+              require-adobe-auth: true
+              final: true
+          configure-workfront:
+            function: src/actions/services/workfront/configure-workfront/index.ts
+            web: 'yes'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"brand","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
+            annotations:
+              require-adobe-auth: true
+              final: true
+          manage-workfront-subscriptions:
+            function: src/actions/services/workfront/manage-workfront-subscriptions/index.ts
+            web: 'no'
+            runtime: nodejs:22
+            inputs:
+              LOG_LEVEL: debug
+              S2S_CLIENT_ID: $SERVICE_API_KEY
+              S2S_CLIENT_SECRET: $S2S_CLIENT_SECRET
+              S2S_SCOPES: $S2S_SCOPES
+              ORG_ID: $ORG_ID
+              APPLICATION_RUNTIME_INFO: '{"namespace":"${AIO_runtime_namespace}","app_name":"brand","action_package_name":"${AIO_ACTION_PACKAGE_NAME}"}'
             annotations:
               require-adobe-auth: true
               final: true

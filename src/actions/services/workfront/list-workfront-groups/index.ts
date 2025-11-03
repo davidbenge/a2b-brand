@@ -58,8 +58,47 @@ export async function main(params: ActionParams): Promise<any> {
         }
 
         // Prepare S2S credentials
-        const scopesCleaned = JSON.parse(params.S2S_SCOPES);
+        // Debug logging for S2S_SCOPES
+        logger.info('=== S2S_SCOPES DEBUG ===');
+        logger.info(`Raw value type: ${typeof params.S2S_SCOPES}`);
+        logger.info(`Raw value: ${params.S2S_SCOPES}`);
+        logger.info(`First 100 chars: ${String(params.S2S_SCOPES).substring(0, 100)}`);
+        
+        let scopesCleaned: string[];
+        try {
+            // Check if it's already an array (shouldn't be, but let's handle it)
+            if (Array.isArray(params.S2S_SCOPES)) {
+                logger.info('S2S_SCOPES is already an array');
+                scopesCleaned = params.S2S_SCOPES;
+            } else if (typeof params.S2S_SCOPES === 'string') {
+                logger.info('Attempting to parse S2S_SCOPES as JSON string');
+                scopesCleaned = JSON.parse(params.S2S_SCOPES);
+                logger.info(`Successfully parsed. Result: ${JSON.stringify(scopesCleaned)}`);
+            } else {
+                throw new Error(`Unexpected S2S_SCOPES type: ${typeof params.S2S_SCOPES}`);
+            }
+        } catch (parseError) {
+            logger.error('Failed to parse S2S_SCOPES', {
+                error: parseError instanceof Error ? parseError.message : String(parseError),
+                rawValue: params.S2S_SCOPES,
+                valueType: typeof params.S2S_SCOPES,
+                first200Chars: String(params.S2S_SCOPES).substring(0, 200)
+            });
+            
+            return {
+                statusCode: 400,
+                body: {
+                    error: 'Invalid S2S_SCOPES format',
+                    message: 'S2S_SCOPES must be a valid JSON array string (e.g., \'["AdobeID","openid"]\')',
+                    receivedType: typeof params.S2S_SCOPES,
+                    receivedValue: String(params.S2S_SCOPES).substring(0, 200),
+                    parseError: parseError instanceof Error ? parseError.message : String(parseError)
+                }
+            };
+        }
+        
         const scopes = scopesCleaned.join(',');
+        logger.info(`Joined scopes: ${scopes}`);
         
         const s2sCredentials = {
             clientId: params.S2S_CLIENT_ID,

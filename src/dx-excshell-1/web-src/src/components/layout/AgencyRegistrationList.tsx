@@ -26,10 +26,12 @@ import {
 import Edit from '@spectrum-icons/workflow/Edit';
 import Delete from '@spectrum-icons/workflow/Delete';
 import Refresh from '@spectrum-icons/workflow/Refresh';
-import Settings from '@spectrum-icons/workflow/Settings';
+import ViewDetail from '@spectrum-icons/workflow/ViewDetail';
 import { ENABLE_DEMO_MODE, logDemoMode } from '../../utils/demoMode';
 import { apiService, Agency } from '../../services/api';
-import { WorkfrontConfigModal } from '../modals/WorkfrontConfigModal';
+import AgencyForm from './AgencyForm';
+
+type ViewMode = 'list' | 'edit' | 'view';
 
 interface AgencyRegistrationListProps {
     viewProps?: any;
@@ -42,7 +44,9 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    const [selectedAgencyForWF, setSelectedAgencyForWF] = useState<Agency | null>(null);
+    const [viewMode, setViewMode] = useState<ViewMode>('list');
+    const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
+    const [formLoading, setFormLoading] = useState(false);
 
     // Initialize API service on mount
     useEffect(() => {
@@ -172,25 +176,47 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
         }
     };
 
-    const handleWorkfrontConfigSave = async () => {
-        if (!selectedAgencyForWF) return;
-        
+    const handleEditAgency = (agency: Agency) => {
+        setSelectedAgency(agency);
+        setViewMode('edit');
+    };
+
+    const handleViewAgency = (agency: Agency) => {
+        setSelectedAgency(agency);
+        setViewMode('view');
+    };
+
+    const handleCancel = () => {
+        setViewMode('list');
+        setSelectedAgency(null);
+    };
+
+    const handleFormSubmit = async (agencyData: Partial<Agency>) => {
         try {
-            setSuccess('Workfront configuration saved successfully');
-            
-            // Refresh the agencies list to show updated Workfront info
-            await loadAgencies();
-        } catch (err) {
-            console.error('Error refreshing agencies after Workfront config:', err);
+            setFormLoading(true);
+            setError(null);
+
+            if (viewMode === 'edit' && selectedAgency) {
+                // Update agency
+                const response = await apiService.updateAgency(selectedAgency.agencyId, agencyData);
+
+                if (response.statusCode === 200) {
+                    setSuccess('Agency updated successfully');
+                    // Reload agencies to get updated data
+                    await loadAgencies();
+                } else {
+                    throw new Error(response.body.message || 'Failed to update agency');
+                }
+            }
+
+            setViewMode('list');
+            setSelectedAgency(null);
+        } catch (error) {
+            console.error('Error saving agency:', error);
+            setError(error instanceof Error ? error.message : 'Error saving agency');
+        } finally {
+            setFormLoading(false);
         }
-        
-        // Close the modal
-        setSelectedAgencyForWF(null);
-        
-        // Clear messages after 3 seconds
-        setTimeout(() => {
-            setSuccess(null);
-        }, 3000);
     };
 
     const getStatusVariant = (enabled: boolean): 'positive' | 'negative' => {
@@ -214,7 +240,7 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
         );
     }
 
-    return (
+    const renderListView = () => (
         <View padding="size-200">
             <Content>
                 <Header>
@@ -295,6 +321,7 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                             <Column key="brandId">Brand ID</Column>
                             <Column key="endpoint">Endpoint URL</Column>
                             <Column key="agencyEndpoint">Agency Endpoint URL</Column>
+                            <Column key="workfrontCompany" allowsSorting>Workfront Company</Column>
                             <Column key="status" allowsSorting>Status</Column>
                             <Column key="enabledAt" allowsSorting>Enabled At</Column>
                             <Column key="actions">Actions</Column>
@@ -347,6 +374,16 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                                         </Text>
                                     </Cell>
                                     <Cell>
+                                        <Text 
+                                            UNSAFE_style={{ 
+                                                fontSize: '12px',
+                                                color: '#4B5563'
+                                            }}
+                                        >
+                                            {agency.workfrontCompanyName || '—'}
+                                        </Text>
+                                    </Cell>
+                                    <Cell>
                                         <StatusLight variant={getStatusVariant(agency.enabled)}>
                                             {getStatusText(agency.enabled)}
                                         </StatusLight>
@@ -360,6 +397,22 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                                     <Cell>
                                         <Flex gap="size-100">
                                             <ActionButton
+                                                onPress={() => handleViewAgency(agency)}
+                                                isQuiet
+                                                aria-label="View agency details"
+                                            >
+                                                <ViewDetail />
+                                            </ActionButton>
+                                            
+                                            <ActionButton
+                                                onPress={() => handleEditAgency(agency)}
+                                                isQuiet
+                                                aria-label="Edit agency"
+                                            >
+                                                <Edit />
+                                            </ActionButton>
+                                            
+                                            <ActionButton
                                                 onPress={() => handleToggleEnabled(agency.agencyId, agency.enabled)}
                                                 isQuiet
                                                 aria-label={agency.enabled ? "Disable agency" : "Enable agency"}
@@ -368,37 +421,6 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                                                     {agency.enabled ? 'Disable' : 'Enable'}
                                                 </Text>
                                             </ActionButton>
-                                            
-                                            <DialogTrigger type="modal" isDismissable>
-                                                <ActionButton 
-                                                    isQuiet 
-                                                    aria-label="Configure Workfront"
-                                                    onPress={() => setSelectedAgencyForWF(agency)}
-                                                >
-                                                    <Settings />
-                                                </ActionButton>
-                                                {(close) => (
-                                                    <WorkfrontConfigModal
-                                                        agencyId={agency.agencyId}
-                                                        imsToken={viewProps?.imsToken || ''}
-                                                        imsOrgId={viewProps?.imsOrg || ''}
-                                                        existingConfig={{
-                                                            workfrontServerUrl: agency.workfrontServerUrl,
-                                                            workfrontCompanyId: agency.workfrontCompanyId,
-                                                            workfrontCompanyName: agency.workfrontCompanyName,
-                                                            workfrontGroupId: agency.workfrontGroupId,
-                                                            workfrontGroupName: agency.workfrontGroupName
-                                                        }}
-                                                        onSave={async (config) => {
-                                                            await handleWorkfrontConfigSave();
-                                                        }}
-                                                        onClose={() => {
-                                                            close();
-                                                            setSelectedAgencyForWF(null);
-                                                        }}
-                                                    />
-                                                )}
-                                            </DialogTrigger>
                                             
                                             <DialogTrigger type="modal">
                                                 <ActionButton isQuiet aria-label="Delete agency">
@@ -424,6 +446,24 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                     </TableView>
                 )}
             </Content>
+        </View>
+    );
+
+    const renderFormView = () => (
+        <AgencyForm
+            agency={selectedAgency}
+            mode={viewMode as 'edit' | 'view'}
+            onSubmit={handleFormSubmit}
+            onCancel={handleCancel}
+            loading={formLoading}
+            imsToken={viewProps?.imsToken || ''}
+            imsOrgId={viewProps?.imsOrg || ''}
+        />
+    );
+
+    return (
+        <View>
+            {viewMode === 'list' ? renderListView() : renderFormView()}
         </View>
     );
 };

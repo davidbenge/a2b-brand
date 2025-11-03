@@ -58,6 +58,11 @@ interface AgencyUpdateData {
     endPointUrl?: string;
     enabled?: boolean;
     logo?: string;
+    workfrontServerUrl?: string;
+    workfrontCompanyId?: string;
+    workfrontCompanyName?: string;
+    workfrontGroupId?: string;
+    workfrontGroupName?: string;
 }
 
 /**

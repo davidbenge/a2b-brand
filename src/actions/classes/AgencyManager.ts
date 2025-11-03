@@ -49,10 +49,17 @@ export class AgencyManager {
             agencyEndPointUrl: json.agencyEndPointUrl,
             enabled: json.enabled ?? false,
             logo: json.logo,
+            routingRules: json.routingRules,
             createdAt: json.createdAt ? new Date(json.createdAt) : new Date(),
             updatedAt: json.updatedAt ? new Date(json.updatedAt) : new Date(),
             enabledAt: json.enabledAt ? new Date(json.enabledAt) : null,
-            disabledAt: json.disabledAt ? new Date(json.disabledAt) : null
+            disabledAt: json.disabledAt ? new Date(json.disabledAt) : null,
+            workfrontServerUrl: json.workfrontServerUrl,
+            workfrontCompanyId: json.workfrontCompanyId,
+            workfrontCompanyName: json.workfrontCompanyName,
+            workfrontGroupId: json.workfrontGroupId,
+            workfrontGroupName: json.workfrontGroupName,
+            workfrontEventSubscriptions: json.workfrontEventSubscriptions
         });
     }
 
@@ -74,9 +81,17 @@ export class AgencyManager {
             agencyEndPointUrl: data.agencyEndPointUrl,
             enabled: data.enabled ?? false,
             logo: data.logo,
+            routingRules: data.routingRules,
             createdAt: data.createdAt ?? now,
             updatedAt: data.updatedAt ?? now,
-            enabledAt: data.enabledAt ?? null
+            enabledAt: data.enabledAt ?? null,
+            disabledAt: data.disabledAt ?? null,
+            workfrontServerUrl: data.workfrontServerUrl,
+            workfrontCompanyId: data.workfrontCompanyId,
+            workfrontCompanyName: data.workfrontCompanyName,
+            workfrontGroupId: data.workfrontGroupId,
+            workfrontGroupName: data.workfrontGroupName,
+            workfrontEventSubscriptions: data.workfrontEventSubscriptions
         });
     }
 

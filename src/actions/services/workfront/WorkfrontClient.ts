@@ -167,7 +167,8 @@ export class WorkfrontClient {
             const response = await this.axiosClient.get('/attask/api/v15.0/company/search', {
                 headers,
                 params: {
-                    fields: 'ID,name,description'
+                    // Note: 'description' field is not supported by Workfront API v15.0 for Company objects
+                    fields: 'ID,name'
                 }
             });
 

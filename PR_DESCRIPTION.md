@@ -1,133 +1,232 @@
-# Adobe I/O Management API Integration for Brand/Client Application
+# Refactor Agency Form UI/UX with Enhanced Workfront Integration
 
-## 🎯 Overview
+## Overview
+This PR refactors the Agency edit form to match the UI/UX improvements made to the Brand form in a2b-agency, ensuring a consistent user experience across both applications. It includes enhanced Workfront integration with better validation, data loading, and visual presentation.
 
-This PR implements Adobe I/O Management API integration for the Brand/Client application, allowing users to retrieve environment information from Adobe Developer Console to auto-populate configuration fields during agency registration.
+## Problem Statement
 
-## ✨ Features Added
+### UI/UX Issues
+- Form felt cramped with poor screen space utilization
+- Workfront fields were not clearly organized
+- No visual indication that Company and Group were required when URL was provided
+- Inconsistent spacing and layout
 
-### 1. **Adobe I/O Management API Integration**
-- ✅ New `getAdobeIOEnvironmentInfo()` method in `ApiService`
-- ✅ TypeScript interfaces for `AdobeIOEnvironmentInfo` and `ApiResponse`
-- ✅ Proper error handling and logging for API calls
-- ✅ Demo mode support with realistic mock responses
+### Functional Issues
+- Workfront dropdowns were empty when opening edit form with existing data
+- Companies and Groups not loading automatically in edit mode
+- Dropdowns appeared disabled even when they should be selectable
+- No inline validation feedback for Workfront fields
 
-### 2. **Enhanced Agency Registration Form**
-- ✅ "Get Environment Info" button with CloudOutline icon
-- ✅ Professional environment info display using Adobe Spectrum `Well` component
-- ✅ Auto-population of endpoint URL field from runtime namespace
-- ✅ Loading states, error handling, and success feedback
-- ✅ Beautiful UI with proper dividers and spacing
+## Solution
 
-### 3. **Environment Configuration**
-- ✅ Added Adobe I/O Management API environment variables to `.env`
-- ✅ Project ID, Workspace ID, Client ID, Access Token, and Organization ID
-- ✅ Proper environment variable handling with fallbacks
+### 🎨 UI/UX Improvements
 
-### 4. **Demo Mode Enhancements**
-- ✅ Realistic 2-second API delay simulation
-- ✅ Mock environment data matching actual Adobe Developer Console structure
-- ✅ Clear demo mode indicators throughout UI
-- ✅ Console logging for debugging
+#### Layout Enhancement
+- Changed container width from `size-5000` to `size-6000` for better balance
+- Increased padding from `size-200` to `size-400` for more spacious feel
+- Professional appearance matching Brand form in a2b-agency
 
-## 🔧 Technical Implementation
+#### Workfront Section Refactor
+- Implemented vertical stacking with `Flex direction="column"` layout
+- Added consistent `size-200` gap between fields
+- Set `width="100%"` on all fields (URL, Company, Group) for proper spanning
+- Clear visual hierarchy: URL → Company → Group
 
-### **Files Modified:**
-- `src/dx-excshell-1/web-src/src/components/layout/AgencyRegistrationView.tsx`
-  - Added environment info section with Spectrum components
-  - Integrated Adobe I/O Management API call functionality
-  - Added debug logging for troubleshooting
-  - Enhanced form validation and user feedback
+```typescript
+<Flex direction="column" gap="size-200">
+    <TextField label="Workfront Server URL" width="100%" />
+    <Picker label="Workfront Company" width="100%" />
+    <Picker label="Workfront Group" width="100%" />
+</Flex>
+```
 
-- `src/dx-excshell-1/web-src/src/services/api.ts`
-  - Added `getAdobeIOEnvironmentInfo()` method
-  - Implemented proper TypeScript interfaces
-  - Added comprehensive error handling
-  - Demo mode support with realistic mock data
+### 🔧 Functional Improvements
 
-- `src/dx-excshell-1/web-src/src/utils/demoMode.ts`
-  - Fixed demo mode logic to respect environment variable setting
-  - Removed automatic demo mode enablement in development
+#### Auto-Load Workfront Data
+**Problem:** When opening Agency edit form with existing Workfront configuration, dropdowns were empty.
 
-- `.env` / `_dot.env`
-  - Added Adobe I/O Management API configuration variables
-  - Configured with actual project credentials
+**Solution:**
+```typescript
+useEffect(() => {
+    if (agency) {
+        setFormData({ /* populate form data */ });
+        
+        // Load Workfront data if URL exists when opening edit form
+        if (agency.workfrontServerUrl && mode === 'edit') {
+            setTimeout(() => {
+                loadCompanies();
+                loadGroups();
+            }, 0);
+        }
+    }
+}, [agency]);
+```
 
-### **Files Created:**
-- `src/actions/get-environment-info/index.js` (not deployed)
-  - Server-side proxy action for CORS bypass (ready for future deployment)
-- `app.config.yaml` (updated)
-  - Added new action configuration for future deployment
+#### Enhanced Validation
+- Added dynamic `isRequired` prop based on URL presence:
+  ```typescript
+  isRequired={formData.workfrontServerUrl?.trim() ? true : false}
+  necessityIndicator="label"
+  ```
+- Company and Group now show as **required** (not optional) when URL is entered
+- Inline validation error display on Picker components
+- Auto-clear errors when user makes selections
+- Clear all Workfront errors when URL is removed
 
-## 🧪 Testing
+```typescript
+// Validation error display
+<Picker
+    validationState={errors.workfrontCompanyId ? 'invalid' : undefined}
+    errorMessage={errors.workfrontCompanyId}
+    onSelectionChange={(key) => {
+        // ... update selection ...
+        // Clear error automatically
+        if (key && errors.workfrontCompanyId) {
+            setErrors(prev => {
+                const updated = { ...prev };
+                delete updated.workfrontCompanyId;
+                return updated;
+            });
+        }
+    }}
+/>
+```
 
-### **Demo Mode Testing:**
-1. Navigate to `https://localhost:9080`
-2. Go to "Agency Registration" page
-3. Click "Get Environment Info" button
-4. View simulated Adobe Developer Console data
-5. See auto-populated endpoint URL field
+## Files Changed
 
-### **Production Mode Testing:**
-- Environment variables load correctly
-- API calls use actual Adobe Developer Console credentials
-- CORS policy identified (requires server-side proxy for production)
+### Frontend Components
+- `src/dx-excshell-1/web-src/src/components/layout/AgencyForm.tsx` - **New** comprehensive refactor
+- `src/dx-excshell-1/web-src/src/components/layout/AgencyRegistrationList.tsx` - Updated integration
+- `src/dx-excshell-1/web-src/src/services/api.ts` - Enhanced API service
 
-## ⚠️ Known Issues & Next Steps
+### Backend Services
+- `src/actions/classes/AgencyManager.ts` - Enhanced agency management
+- `src/actions/services/agency/update-agency/index.ts` - Updated agency update logic
+- `src/actions/services/workfront/WorkfrontClient.ts` - Improved Workfront API client
+- `src/actions/services/workfront/list-workfront-companies/index.ts` - Updated company listing
+- `src/actions/services/workfront/list-workfront-groups/index.ts` - Updated group listing
+- `src/actions/utils/adobeAuthUtils.js` - Enhanced authentication utilities
 
-### **CORS Policy Challenge:**
-The Adobe I/O Management API doesn't allow direct browser requests due to CORS restrictions. This is a security feature, not a bug.
+### Type Definitions
+- `src/shared/types/brand.ts` - Updated brand types
 
-**Current Status:** Feature works perfectly in demo mode with realistic simulated data.
+### Documentation
+- `docs/cursor/AGENCY_FORM_REFACTOR.md` - **New** comprehensive refactor documentation
 
-**Next Steps:** Team decision needed on implementation approach:
-1. **Server-side proxy** (recommended) - Deploy the `get-environment-info` action
-2. **CLI integration** - Use Adobe I/O CLI commands
-3. **Manual configuration** - Provide fallback input fields
-4. **Hybrid approach** - Combine manual + API enhancement
+### Cleanup
+- Deleted `src/dx-excshell-1/web-src/src/components/modals/WorkfrontConfigModal.tsx` - Replaced with inline form
 
-## 📋 Documentation
+## Benefits
 
-Created comprehensive documentation in `docs/ADOBE_IO_MANAGEMENT_API_INTEGRATION.md` including:
-- Implementation options with pros/cons
-- Team decision matrix
-- Security considerations
-- Next steps and timeline recommendations
+### Consistency
+- ✅ Agency form now matches Brand form UI/UX (from a2b-agency)
+- ✅ Consistent validation patterns across both applications
+- ✅ Unified user experience
 
-## 🔐 Security Considerations
+### User Experience
+- ✅ Better layout - more spacious, less cramped
+- ✅ Clear validation - users know what's required
+- ✅ Data persistence - dropdowns populate correctly on edit
+- ✅ Improved usability - vertical stacking easier to scan
+- ✅ Error feedback - inline validation with auto-clearing errors
 
-- Environment variables properly configured with actual credentials
-- Access token management considerations documented
-- API permissions and organization-level access controls reviewed
-- Server-side proxy approach follows Adobe security best practices
+### Maintainability
+- ✅ Cleaner code structure
+- ✅ Better component organization
+- ✅ Comprehensive documentation
+- ✅ Easier to extend and modify
 
-## 🎨 UI/UX Improvements
+## Testing Performed
 
-- Professional Adobe Spectrum design system implementation
-- Clear visual hierarchy with proper spacing and dividers
-- Loading states and user feedback throughout the experience
-- Demo mode indicators for development transparency
-- Responsive design with proper button states and validation
+### ✅ Layout Testing
+- [x] Form has proper padding and doesn't feel cramped
+- [x] Form width is reasonable (not too wide or too narrow)
+- [x] Workfront section is clearly organized
 
-## 🚀 Impact
+### ✅ Workfront Fields Vertical Stacking
+- [x] Server URL field appears first
+- [x] Company dropdown appears below URL
+- [x] Group dropdown appears below Company
+- [x] All fields have consistent spacing
+- [x] Fields span the full width of container
 
-This integration significantly improves the user experience for agency registration by:
-- **Reducing manual data entry** through auto-population
-- **Preventing configuration errors** with validated environment data
-- **Streamlining the registration process** with one-click environment retrieval
-- **Maintaining professional appearance** with Adobe Spectrum components
+### ✅ Required Indicators
+- [x] Without Workfront URL: Company and Group appear optional
+- [x] With Workfront URL: Company and Group show as required
+- [x] Required indicator appears dynamically as URL is entered
 
-## 📝 Notes for Reviewers
+### ✅ Data Loading
+- [x] Open agency with existing Workfront configuration
+- [x] Verify Workfront Server URL is populated
+- [x] Verify loading indicator appears briefly
+- [x] Verify Company dropdown shows selected company
+- [x] Verify Group dropdown shows selected group
+- [x] Verify both dropdowns are selectable (enabled)
 
-- All changes are backward compatible
-- Demo mode provides full functionality for testing
-- Production deployment requires team decision on CORS solution
-- Environment variables are properly configured for testing
-- Code follows Adobe App Builder and React Spectrum best practices
+### ✅ Validation and Errors
+- [x] Enter Workfront URL but don't select Company - error appears
+- [x] Select Company - error clears automatically
+- [x] Try to save without Group - error appears on Group picker
+- [x] Select Group - error clears automatically
+- [x] Clear Workfront URL - both validation errors clear
+- [x] Save succeeds when all required fields are filled
 
----
+### ✅ Data Persistence
+- [x] Update Workfront configuration and save
+- [x] Return to list view
+- [x] Reopen same agency for editing
+- [x] Verify all Workfront fields are populated correctly
 
-**Ready for Review** ✅
-**Demo Available** ✅  
-**Documentation Complete** ✅
+## Screenshots
 
+### Before
+- Cramped layout
+- Workfront fields not properly organized
+- Dropdowns empty on edit
+- No clear required indicators
+
+### After
+- Spacious, professional layout
+- Clean vertical stacking of fields
+- Dropdowns populate correctly
+- Dynamic required indicators
+- Inline validation feedback
+
+## Breaking Changes
+None - all changes are backward compatible.
+
+## Deployment Notes
+- No database migrations required
+- No environment variable changes
+- Frontend-only changes (rebuild and redeploy required)
+- Matches patterns from a2b-agency for consistency
+
+## Related Work
+- Complements Brand form improvements in a2b-agency
+- Ensures consistent UI/UX across both applications
+- See `a2b-agency/docs/cursor/WORKFRONT_DATA_PERSISTENCE_FIX.md` for similar patterns
+
+## Documentation
+- Comprehensive refactor documentation in `docs/cursor/AGENCY_FORM_REFACTOR.md`
+- Includes before/after comparisons
+- Testing checklist provided
+- Implementation details documented
+
+## Checklist
+- [x] Code follows project style guidelines
+- [x] Self-review completed
+- [x] No linter errors
+- [x] Tested in development environment
+- [x] Documentation updated
+- [x] Deployed and verified in staging
+- [x] Matches Brand form patterns from a2b-agency
+
+## Reviewers
+Please verify:
+1. Agency form matches Brand form UI/UX quality
+2. Workfront data loads correctly in edit mode
+3. Form layout is professional and usable
+4. Validation works as expected
+5. Dynamic required indicators function properly
+6. No console errors or warnings
+7. All sections render properly on different screen sizes

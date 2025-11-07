@@ -42,6 +42,12 @@ export interface Agency {
     createdAt: Date | string;
     updatedAt: Date | string;
     enabledAt: Date | string | null;
+    workfrontServerUrl?: string;
+    workfrontCompanyId?: string;
+    workfrontCompanyName?: string;
+    workfrontGroupId?: string;
+    workfrontGroupName?: string;
+    workfrontEventSubscriptions?: string[];
 }
 
 /**
@@ -52,6 +58,11 @@ interface AgencyUpdateData {
     endPointUrl?: string;
     enabled?: boolean;
     logo?: string;
+    workfrontServerUrl?: string;
+    workfrontCompanyId?: string;
+    workfrontCompanyName?: string;
+    workfrontGroupId?: string;
+    workfrontGroupName?: string;
 }
 
 /**

@@ -152,7 +152,6 @@ export async function main(params: any, openwhiskClient?: any): Promise<any> {
       }
     }
     
-
     logger.info(`${ACTION_NAME}: Routing ${params.type} to ${handlerName}`);
 
     // Invoke the handler with routerParams

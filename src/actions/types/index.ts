@@ -56,6 +56,15 @@ export interface IAgency {
     createdAt: Date;
     updatedAt: Date;
     enabledAt: Date | null;
+    disabledAt?: Date | null;
+    
+    // Workfront Integration Fields
+    workfrontServerUrl?: string; // Base URL of the Workfront server instance
+    workfrontCompanyId?: string; // Workfront Company ID selected for this agency
+    workfrontCompanyName?: string; // Workfront Company name for display
+    workfrontGroupId?: string; // Workfront Group ID selected for this agency
+    workfrontGroupName?: string; // Workfront Group name for display
+    workfrontEventSubscriptions?: string[]; // Array of Workfront event subscription IDs
 }
 
 export interface IApplicationRuntimeInfo {

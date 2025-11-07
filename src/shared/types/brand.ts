@@ -57,6 +57,28 @@ export interface IBrand {
      * Supports both Date object (backend) and string (JSON/API)
      */
     enabledAt: Date | string | null;
+    
+    // ============================================================================
+    // Workfront Integration Fields
+    // ============================================================================
+    
+    /** Base URL of the Workfront server instance */
+    workfrontServerUrl?: string;
+    
+    /** Workfront Company ID selected for this brand */
+    workfrontCompanyId?: string;
+    
+    /** Workfront Company name for display */
+    workfrontCompanyName?: string;
+    
+    /** Workfront Group ID selected for this brand */
+    workfrontGroupId?: string;
+    
+    /** Workfront Group name for display */
+    workfrontGroupName?: string;
+    
+    /** Array of Workfront event subscription IDs (for cleanup on delete) */
+    workfrontEventSubscriptions?: string[];
 }
 
 /**
@@ -91,6 +113,12 @@ export interface IBrandUpdateData {
     secret?: string;
     enabled?: boolean;
     logo?: string;
+    workfrontServerUrl?: string;
+    workfrontCompanyId?: string;
+    workfrontCompanyName?: string;
+    workfrontGroupId?: string;
+    workfrontGroupName?: string;
+    workfrontEventSubscriptions?: string[];
 }
 
 /**
@@ -104,5 +132,8 @@ export interface IBrandListItem {
     createdAt: Date | string;
     updatedAt: Date | string;
     enabledAt: Date | string | null;
+    workfrontServerUrl?: string;
+    workfrontCompanyName?: string;
+    workfrontGroupName?: string;
 }
 

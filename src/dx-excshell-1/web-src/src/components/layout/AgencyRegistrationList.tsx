@@ -26,8 +26,12 @@ import {
 import Edit from '@spectrum-icons/workflow/Edit';
 import Delete from '@spectrum-icons/workflow/Delete';
 import Refresh from '@spectrum-icons/workflow/Refresh';
+import ViewDetail from '@spectrum-icons/workflow/ViewDetail';
 import { ENABLE_DEMO_MODE, logDemoMode } from '../../utils/demoMode';
 import { apiService, Agency } from '../../services/api';
+import AgencyForm from './AgencyForm';
+
+type ViewMode = 'list' | 'edit' | 'view';
 
 interface AgencyRegistrationListProps {
     viewProps?: any;
@@ -40,14 +44,19 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [viewMode, setViewMode] = useState<ViewMode>('list');
+    const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
+    const [formLoading, setFormLoading] = useState(false);
 
     // Initialize API service on mount
     useEffect(() => {
         if (viewProps && !ENABLE_DEMO_MODE) {
+            // Construct the base URL from runtime namespace
+            const apiBaseUrl = `https://${viewProps.aioRuntimeNamespace}.adobeio-static.net`;
             apiService.initialize(
-                viewProps.runtime.apiHost,
-                viewProps.ims.token,
-                viewProps.ims.org
+                apiBaseUrl,
+                viewProps.imsToken,
+                viewProps.imsOrg
             );
         }
     }, [viewProps]);
@@ -167,6 +176,49 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
         }
     };
 
+    const handleEditAgency = (agency: Agency) => {
+        setSelectedAgency(agency);
+        setViewMode('edit');
+    };
+
+    const handleViewAgency = (agency: Agency) => {
+        setSelectedAgency(agency);
+        setViewMode('view');
+    };
+
+    const handleCancel = () => {
+        setViewMode('list');
+        setSelectedAgency(null);
+    };
+
+    const handleFormSubmit = async (agencyData: Partial<Agency>) => {
+        try {
+            setFormLoading(true);
+            setError(null);
+
+            if (viewMode === 'edit' && selectedAgency) {
+                // Update agency
+                const response = await apiService.updateAgency(selectedAgency.agencyId, agencyData);
+
+                if (response.statusCode === 200) {
+                    setSuccess('Agency updated successfully');
+                    // Reload agencies to get updated data
+                    await loadAgencies();
+                } else {
+                    throw new Error(response.body.message || 'Failed to update agency');
+                }
+            }
+
+            setViewMode('list');
+            setSelectedAgency(null);
+        } catch (error) {
+            console.error('Error saving agency:', error);
+            setError(error instanceof Error ? error.message : 'Error saving agency');
+        } finally {
+            setFormLoading(false);
+        }
+    };
+
     const getStatusVariant = (enabled: boolean): 'positive' | 'negative' => {
         return enabled ? 'positive' : 'negative';
     };
@@ -188,7 +240,7 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
         );
     }
 
-    return (
+    const renderListView = () => (
         <View padding="size-200">
             <Content>
                 <Header>
@@ -269,6 +321,7 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                             <Column key="brandId">Brand ID</Column>
                             <Column key="endpoint">Endpoint URL</Column>
                             <Column key="agencyEndpoint">Agency Endpoint URL</Column>
+                            <Column key="workfrontCompany" allowsSorting>Workfront Company</Column>
                             <Column key="status" allowsSorting>Status</Column>
                             <Column key="enabledAt" allowsSorting>Enabled At</Column>
                             <Column key="actions">Actions</Column>
@@ -321,6 +374,16 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                                         </Text>
                                     </Cell>
                                     <Cell>
+                                        <Text 
+                                            UNSAFE_style={{ 
+                                                fontSize: '12px',
+                                                color: '#4B5563'
+                                            }}
+                                        >
+                                            {agency.workfrontCompanyName || '—'}
+                                        </Text>
+                                    </Cell>
+                                    <Cell>
                                         <StatusLight variant={getStatusVariant(agency.enabled)}>
                                             {getStatusText(agency.enabled)}
                                         </StatusLight>
@@ -333,6 +396,22 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                                     </Cell>
                                     <Cell>
                                         <Flex gap="size-100">
+                                            <ActionButton
+                                                onPress={() => handleViewAgency(agency)}
+                                                isQuiet
+                                                aria-label="View agency details"
+                                            >
+                                                <ViewDetail />
+                                            </ActionButton>
+                                            
+                                            <ActionButton
+                                                onPress={() => handleEditAgency(agency)}
+                                                isQuiet
+                                                aria-label="Edit agency"
+                                            >
+                                                <Edit />
+                                            </ActionButton>
+                                            
                                             <ActionButton
                                                 onPress={() => handleToggleEnabled(agency.agencyId, agency.enabled)}
                                                 isQuiet
@@ -367,6 +446,24 @@ const AgencyRegistrationList: React.FC<AgencyRegistrationListProps> = ({ viewPro
                     </TableView>
                 )}
             </Content>
+        </View>
+    );
+
+    const renderFormView = () => (
+        <AgencyForm
+            agency={selectedAgency}
+            mode={viewMode as 'edit' | 'view'}
+            onSubmit={handleFormSubmit}
+            onCancel={handleCancel}
+            loading={formLoading}
+            imsToken={viewProps?.imsToken || ''}
+            imsOrgId={viewProps?.imsOrg || ''}
+        />
+    );
+
+    return (
+        <View>
+            {viewMode === 'list' ? renderListView() : renderFormView()}
         </View>
     );
 };

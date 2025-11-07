@@ -35,3 +35,7 @@ export const BRAND_FILE_STORE_DIR = 'brand';
 export const AGENCY_STATE_PREFIX = 'AGENCY_';
 export const AGENCY_FILE_STORE_DIR = 'agency';
 export const AGENCY_SECRET_INDEX_PREFIX = 'AGENCY_SECRET_INDEX_';
+
+// Workfront Integration Constants
+export const WORKFRONT_EVENT_SUBSCRIPTION_PREFIX = 'WF_EVENT_SUB_';
+export const WORKFRONT_CONFIG_PREFIX = 'WF_CONFIG_';

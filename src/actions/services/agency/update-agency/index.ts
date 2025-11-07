@@ -29,13 +29,28 @@ export async function main(params: any): Promise<any> {
       return errorResponse(404, `Agency ${params.agencyId} not found`, logger);
     }
 
+    // Validate Workfront fields if provided
+    if (params.workfrontServerUrl) {
+      if (!params.workfrontCompanyId) {
+        return errorResponse(400, 'workfrontCompanyId is required when workfrontServerUrl is specified', logger);
+      }
+      if (!params.workfrontGroupId) {
+        return errorResponse(400, 'workfrontGroupId is required when workfrontServerUrl is specified', logger);
+      }
+    }
+
     // Update the agency with new data
     // Note: agencyId cannot be changed
     const updatedAgency = await agencyManager.updateAgency(params.agencyId, {
       name: params.name,
       endPointUrl: params.endPointUrl,
       enabled: params.enabled,
-      logo: params.logo
+      logo: params.logo,
+      workfrontServerUrl: params.workfrontServerUrl,
+      workfrontCompanyId: params.workfrontCompanyId,
+      workfrontCompanyName: params.workfrontCompanyName,
+      workfrontGroupId: params.workfrontGroupId,
+      workfrontGroupName: params.workfrontGroupName
       // secret and brandId are not updateable through this API
     });
 

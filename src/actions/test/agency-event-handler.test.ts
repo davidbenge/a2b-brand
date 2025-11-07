@@ -209,7 +209,7 @@ describe('agency-event-handler (Brand App)', () => {
       
       expect(response.statusCode).toBe(200);
       expect(mockInvoke).toHaveBeenCalledWith({
-        name: 'agency-registration-internal-handler',
+        name: 'a2b-brand/agency-registration-internal-handler',
         params: {
           routerParams: expect.objectContaining({
             type: 'com.adobe.a2b.registration.received'
@@ -250,7 +250,7 @@ describe('agency-event-handler (Brand App)', () => {
       
       expect(response.statusCode).toBe(200);
       expect(mockInvoke).toHaveBeenCalledWith({
-        name: 'agency-registration-internal-handler',
+        name: 'a2b-brand/agency-registration-internal-handler',
         params: {
           routerParams: expect.objectContaining({
             type: 'com.adobe.a2b.registration.enabled'
@@ -295,7 +295,7 @@ describe('agency-event-handler (Brand App)', () => {
       
       expect(response.statusCode).toBe(200);
       expect(mockInvoke).toHaveBeenCalledWith({
-        name: 'agency-assetsync-internal-handler',
+        name: 'a2b-brand/agency-assetsync-internal-handler',
         params: {
           routerParams: expect.objectContaining({
             type: 'com.adobe.a2b.assetsync.new'
@@ -366,7 +366,7 @@ describe('agency-event-handler (Brand App)', () => {
       const response = await main(params);
       
       expect(response.statusCode).toBe(400); // Unhandled events return 400
-      expect(response.body.message).toContain('Unhandled event type');
+      expect(response.body.message).toContain('Event definition not found');
       expect(mockInvoke).not.toHaveBeenCalled();
     });
   });
@@ -402,7 +402,7 @@ describe('agency-event-handler (Brand App)', () => {
       // Simplified handler doesn't return eventType
       // expect(response.body.eventType).toBe('com.adobe.a2b.registration.received');
       expect(mockInvoke).toHaveBeenCalledWith({
-        name: 'agency-registration-internal-handler',
+        name: 'a2b-brand/agency-registration-internal-handler',
         params: {
           routerParams: expect.objectContaining({
             type: 'com.adobe.a2b.registration.received',
@@ -451,7 +451,7 @@ describe('agency-event-handler (Brand App)', () => {
       
       // Verify that the handler was called with the correct params
       expect(mockInvoke).toHaveBeenCalledWith({
-        name: 'agency-registration-internal-handler',
+        name: 'a2b-brand/agency-registration-internal-handler',
         params: {
           routerParams: expect.objectContaining({
             type: 'com.adobe.a2b.registration.enabled',

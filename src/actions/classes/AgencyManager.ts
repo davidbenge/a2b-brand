@@ -41,10 +41,12 @@ export class AgencyManager {
         return new Agency({
             agencyId: json.agencyId,
             orgId: json.orgId || '', // May not be present in older data
+            agencyName: json.agencyName,
             brandId: json.brandId,
             secret: json.secret || '',
             name: json.name,
             endPointUrl: json.endPointUrl,
+            agencyEndPointUrl: json.agencyEndPointUrl,
             enabled: json.enabled ?? false,
             logo: json.logo,
             createdAt: json.createdAt ? new Date(json.createdAt) : new Date(),
@@ -63,10 +65,12 @@ export class AgencyManager {
         return new Agency({
             agencyId: data.agencyId || this.generateAgencyId(),
             orgId: data.orgId || '', // Will be populated from agency_identification
+            agencyName: data.agencyName,
             brandId: data.brandId || this.generateBrandId(),
             secret: data.secret || '', // Empty until registration.enabled
             name: data.name || '',
             endPointUrl: data.endPointUrl || '',
+            agencyEndPointUrl: data.agencyEndPointUrl,
             enabled: data.enabled ?? false,
             logo: data.logo,
             createdAt: data.createdAt ?? now,

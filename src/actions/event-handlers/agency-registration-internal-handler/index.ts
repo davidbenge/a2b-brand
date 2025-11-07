@@ -9,9 +9,13 @@ import aioLogger from "@adobe/aio-lib-core-logging";
 import { AgencyManager } from "../../classes/AgencyManager";
 import { Agency } from "../../classes/Agency";
 import { ApplicationRuntimeInfo } from "../../classes/ApplicationRuntimeInfo";
+import { sanitizeEventForLogging } from "../../utils/eventSanitizer";
 
 export async function main(params: any): Promise<any> {
   const logger = aioLogger("agency-registration-internal-handler", { level: params.LOG_LEVEL || "info" });
+
+  // Log sanitized incoming event
+  logger.info(`agency-registration-internal-handler: Received event`, sanitizeEventForLogging(params));
 
   try {
     logger.debug(JSON.stringify(params, null, 2));
@@ -43,9 +47,9 @@ export async function main(params: any): Promise<any> {
 
     logger.info(`Processing registration event: ${eventType}`);
     
-    // Build agency endpoint URL from app_runtime_info
+    // Build agency endpoint URL from app_runtime_info, prefer payload-provided URL when present
     const agencyRuntimeInfo = new ApplicationRuntimeInfo(eventData.app_runtime_info);
-    const agencyEndpointUrl = agencyRuntimeInfo.buildEndpointUrl();
+    const agencyEndpointUrl = eventData.agencyEndPointUrl || agencyRuntimeInfo.buildEndpointUrl();
 
     // Handle registration.received event
     if (eventType === 'com.adobe.a2b.registration.received') {
@@ -84,30 +88,36 @@ export async function main(params: any): Promise<any> {
           logger.info(`Agency ${agencyId} already exists, updating with registration.received data`);
           // Extract agency identification
           const orgIdFromEvent = eventData.agency_identification?.orgId;
+          const agencyNameFromEvent = eventData.agencyName; // From event body
           
           // Update existing agency
           agency = await agencyManager.updateAgency(agencyId, {
             brandId: eventData.brandId,
-            name: agencyId,
+            name: eventData.name,
             endPointUrl: agencyEndpointUrl, // Derived from app_runtime_info
+            agencyEndPointUrl: agencyEndpointUrl,
             enabled: false,
             enabledAt: null,
-            ...(orgIdFromEvent && { orgId: orgIdFromEvent }) // Update orgId if provided
+            ...(orgIdFromEvent && { orgId: orgIdFromEvent }), // Update orgId if provided
+            ...(agencyNameFromEvent && { agencyName: agencyNameFromEvent }) // Update agencyName if provided
           });
         } else {
           logger.info(`Creating new agency registration for ${agencyId}`);
           // Extract agency identification
           const agencyIdFromEvent = eventData.agency_identification?.agencyId;
           const orgIdFromEvent = eventData.agency_identification?.orgId;
+          const agencyNameFromEvent = eventData.agencyName; // From event body, not agency_identification
           
           // Create new agency record
           agency = new Agency({
             agencyId: agencyIdFromEvent || agencyId,
             orgId: orgIdFromEvent || '', // From agency_identification
+            agencyName: agencyNameFromEvent,
             brandId: eventData.brandId,
             secret: '', // No secret yet
-            name: agencyId,
+            name: eventData.name,
             endPointUrl: agencyEndpointUrl, // Derived from app_runtime_info
+            agencyEndPointUrl: agencyEndpointUrl,
             enabled: false,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -151,11 +161,12 @@ export async function main(params: any): Promise<any> {
       }
 
       // Extract agency identification from event data
-      // Build agency endpoint URL from app_runtime_info
+      // Build agency endpoint URL from app_runtime_info, prefer payload-provided URL when present
       const agencyRuntimeInfo = new ApplicationRuntimeInfo(eventData.app_runtime_info);
-      const agencyEndpointUrl = agencyRuntimeInfo.buildEndpointUrl();
+      const agencyEndpointUrl = eventData.agencyEndPointUrl || agencyRuntimeInfo.buildEndpointUrl();
       const agencyId = eventData.agency_identification?.agencyId;
       const orgId = eventData.agency_identification?.orgId;
+      const agencyName = eventData.agencyName; // From event body, not agency_identification
       
       if (!agencyId || !orgId) {
         logger.error('Missing agency_identification (agencyId or orgId) in event data');
@@ -187,10 +198,12 @@ export async function main(params: any): Promise<any> {
           agency = new Agency({
             agencyId: agencyId,
             orgId: orgId, // From agency_identification
+            agencyName: agencyName,
             brandId: eventData.brandId,
             secret: eventData.secret,
-            name: agencyId,
+            name: eventData.name,
             endPointUrl: agencyEndpointUrl,
+            agencyEndPointUrl: agencyEndpointUrl,
             enabled: eventData.enabled,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -205,8 +218,10 @@ export async function main(params: any): Promise<any> {
             secret: eventData.secret,
             enabled: eventData.enabled,
             enabledAt: eventData.enabledAt ? new Date(eventData.enabledAt) : new Date(),
-            name: agencyId,
-            endPointUrl: agencyEndpointUrl
+            name: eventData.name,
+            endPointUrl: agencyEndpointUrl,
+            agencyEndPointUrl: agencyEndpointUrl,
+            agencyName: agencyName
           });
         }
 

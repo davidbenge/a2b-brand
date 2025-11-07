@@ -62,7 +62,7 @@ Examples:
 - `brand/com-adobe-b2a-registration-new.json`
 
 ### Product Events (AEM)
-- `product/aem/aem-assets-asset-metadata.json`
+- `../apis/aem/asset_metadata/aem-assets-asset-metadata_with-sync-on.json`
 - `product/aem/aem-assets-asset-processing-complete.json`
 - `product/aem/aem-assets-metadata-change.json`
 - `product/aem/com-adobe-a2b-assetsync-update_metadata-only.json` (test variant)

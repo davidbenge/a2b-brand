@@ -23,6 +23,7 @@ jest.mock('openwhisk', () => {
 });
 
 const registrationReceivedEvent = require('../../../docs/events/registration/com-adobe-a2b-registration-received.json');
+const registrationEnabledEvent = require('../../../docs/events/registration/com-adobe-a2b-registration-enabled_from_agency.json');
 
 describe('agency-event-handler (Brand App)', () => {
   let agencyManager: AgencyManager;
@@ -411,6 +412,68 @@ describe('agency-event-handler (Brand App)', () => {
               // Secret is only sent on registration.enabled event
               name: registrationReceivedEvent.data.name,
               endPointUrl: registrationReceivedEvent.data.endPointUrl
+            })
+          })
+        },
+        blocking: true,
+        result: true
+      });
+    });
+
+    it('should successfully process registration.enabled event with demo data', async () => {
+      const params = {
+        APPLICATION_RUNTIME_INFO: JSON.stringify({
+          namespace: 'brand-namespace',
+          app_name: 'brand',
+          action_package_name: 'a2b-brand',
+          workspace: 'production'
+        }),
+        ...registrationEnabledEvent,
+        __ow_headers: {},
+        LOG_LEVEL: 'debug'
+      };
+
+      // Mock the internal handler to return the created agency
+      mockInvoke.mockResolvedValue({
+        statusCode: 200,
+        body: {
+          message: 'Registration enabled successfully',
+          brandId: '3b4afd64-7e11-4342-8fc4-bb75cc624dc5',
+          agencyId: '2ff22120-d393-4743-afdd-0d4b2038d2be',
+          enabled: true
+        }
+      });
+
+      const response = await main(params);
+      
+      expect(response.statusCode).toBe(200);
+      expect(response.body.message).toContain('processed successfully');
+      
+      // Verify that the handler was called with the correct params
+      expect(mockInvoke).toHaveBeenCalledWith({
+        name: 'agency-registration-internal-handler',
+        params: {
+          routerParams: expect.objectContaining({
+            type: 'com.adobe.a2b.registration.enabled',
+            data: expect.objectContaining({
+              // Verify key fields from the demo event
+              brandId: '3b4afd64-7e11-4342-8fc4-bb75cc624dc5',
+              name: 'benge-10-20-2025',
+              enabled: true,
+              agency_identification: expect.objectContaining({
+                agencyId: '2ff22120-d393-4743-afdd-0d4b2038d2be',
+                orgId: '33C1401053CF76370A490D4C@AdobeOrg'
+              }),
+              app_runtime_info: expect.objectContaining({
+                consoleId: '27200',
+                projectName: 'a2b',
+                workspace: 'benge',
+                action_package_name: 'a2b-agency',
+                app_name: 'agency'
+              }),
+              agencyName: 'Benge Agency',
+              agencyEndPointUrl: 'https://27200-a2b-benge.adobeio-static.net/',
+              secret: expect.any(String) // Secret should be present but redacted in logs
             })
           })
         },

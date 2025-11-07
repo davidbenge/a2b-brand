@@ -35,25 +35,3 @@ export const BRAND_FILE_STORE_DIR = 'brand';
 export const AGENCY_STATE_PREFIX = 'AGENCY_';
 export const AGENCY_FILE_STORE_DIR = 'agency';
 export const AGENCY_SECRET_INDEX_PREFIX = 'AGENCY_SECRET_INDEX_';
-
-/**
- * Event codes - maintained for backward compatibility
- * Source of truth is now in src/shared/event-registry.ts
- */
-export const AGENCY_BRAND_REGISTRATION_EVENT_CODE = {
-    DISABLED: 'com.adobe.a2b.registration.disabled',
-    RECEIVED: 'com.adobe.a2b.registration.received',
-    ENABLED: 'com.adobe.a2b.registration.enabled'
-} as const;
-
-export const AEM_ASSET_SYNC_EVENT_CODE = {
-    NEW: 'com.adobe.a2b.assetsync.new',
-    UPDATE: 'com.adobe.a2b.assetsync.update',
-    DELETE: 'com.adobe.a2b.assetsync.delete'
-} as const;
-
-export const WORKFRONT_EVENT_CODE = {
-    TASK_CREATED: 'com.adobe.a2b.workfront.task.created',
-    TASK_UPDATED: 'com.adobe.a2b.workfront.task.updated',
-    TASK_COMPLETED: 'com.adobe.a2b.workfront.task.completed'
-} as const;

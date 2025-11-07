@@ -31,9 +31,11 @@ import Close from '@spectrum-icons/workflow/Close';
 interface Agency {
     agencyId: string;
     orgId: string;
+    agencyName?: string;
     brandId: string;
     name: string;
     endPointUrl: string;
+    agencyEndPointUrl?: string;
     enabled: boolean;
     logo?: string;
     createdAt: Date | string;
@@ -131,7 +133,9 @@ const AgencyListView: React.FC<AgencyListViewProps> = ({ viewProps }) => {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter(agency =>
                 agency.name.toLowerCase().includes(query) ||
+                (agency.agencyName ? agency.agencyName.toLowerCase().includes(query) : false) ||
                 agency.endPointUrl.toLowerCase().includes(query) ||
+                (agency.agencyEndPointUrl ? agency.agencyEndPointUrl.toLowerCase().includes(query) : false) ||
                 agency.agencyId.toLowerCase().includes(query)
             );
         }
@@ -156,6 +160,10 @@ const AgencyListView: React.FC<AgencyListViewProps> = ({ viewProps }) => {
                     case 'endPointUrl':
                         aValue = a.endPointUrl.toLowerCase();
                         bValue = b.endPointUrl.toLowerCase();
+                        break;
+                    case 'agencyEndPointUrl':
+                        aValue = (a.agencyEndPointUrl || '').toLowerCase();
+                        bValue = (b.agencyEndPointUrl || '').toLowerCase();
                         break;
                     case 'enabled':
                         aValue = a.enabled;
@@ -265,9 +273,11 @@ const AgencyListView: React.FC<AgencyListViewProps> = ({ viewProps }) => {
                     >
                         <TableHeader>
                             <Column key="logo" width={80}>Logo</Column>
-                            <Column key="name" allowsSorting minWidth={150}>Agency Name</Column>
+                            <Column key="agencyName" allowsSorting minWidth={180}>Agency Name</Column>
+                            <Column key="name" allowsSorting minWidth={150}>Brand Name</Column>
                             <Column key="agencyId" allowsSorting minWidth={120}>Agency ID</Column>
                             <Column key="endPointUrl" allowsSorting minWidth={200}>Endpoint URL</Column>
+                            <Column key="agencyEndPointUrl" allowsSorting minWidth={220}>Agency Endpoint URL</Column>
                             <Column key="enabled" allowsSorting width={120}>Status</Column>
                             <Column key="createdAt" allowsSorting width={120}>Created</Column>
                             <Column key="actions" align="center" width={150}>Actions</Column>
@@ -288,6 +298,7 @@ const AgencyListView: React.FC<AgencyListViewProps> = ({ viewProps }) => {
                                             <Text>No Logo</Text>
                                         )}
                                     </Cell>
+                                    <Cell>{agency.agencyName || agency.agencyId}</Cell>
                                     <Cell>{agency.name}</Cell>
                                     <Cell>
                                         <TooltipTrigger>
@@ -325,6 +336,22 @@ const AgencyListView: React.FC<AgencyListViewProps> = ({ viewProps }) => {
                                                 {agency.endPointUrl}
                                             </Text>
                                             <Tooltip>{agency.endPointUrl}</Tooltip>
+                                        </TooltipTrigger>
+                                    </Cell>
+                                    <Cell>
+                                        <TooltipTrigger>
+                                            <Text
+                                                UNSAFE_style={{
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                    display: 'block',
+                                                    cursor: 'help'
+                                                }}
+                                            >
+                                                {agency.agencyEndPointUrl || '—'}
+                                            </Text>
+                                            <Tooltip>{agency.agencyEndPointUrl || ''}</Tooltip>
                                         </TooltipTrigger>
                                     </Cell>
                                     <Cell>

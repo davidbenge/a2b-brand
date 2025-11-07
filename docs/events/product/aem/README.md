@@ -7,7 +7,7 @@ This directory contains Adobe Experience Manager (AEM) Assets event examples tha
 ### 1. AEM Assets Events (from AEM)
 These are events emitted BY AEM Assets that the agency consumes:
 
-- **`aem-assets-asset-metadata.json`** - Base AEM asset metadata event
+- **`../../../apis/aem/asset_metadata/aem-assets-asset-metadata_with-sync-on.json`** - Base AEM asset metadata event with sync enabled
 - **`aem-assets-asset-metadata-updated-event.json`** - AEM asset metadata update event
 - **`aem-assets-asset-metadata_updated_2.json`** - Alternative AEM metadata update format
 - **`aem-assets-asset-processing-complete.json`** - AEM asset processing completion event
@@ -24,7 +24,7 @@ Test variants showing different scenarios:
 
 ### AEM Product Events
 - Pattern: `aem-assets-[event-type].json`
-- Example: `aem-assets-asset-metadata.json`
+- Example: `../../../apis/aem/asset_metadata/aem-assets-asset-metadata_with-sync-on.json`
 
 ### Test Variants
 - Pattern: `[base-event-name]_[variant-description].json`
@@ -50,7 +50,7 @@ These event examples are used for:
 
 Example test usage:
 ```typescript
-const aemMetadataEvent = require('../../../docs/events/product/aem/aem-assets-asset-metadata.json');
+const aemMetadataEvent = require('../../../docs/apis/aem/asset_metadata/aem-assets-asset-metadata_with-sync-on.json');
 // Use in test to simulate AEM sending an event
 ```
 

@@ -30,7 +30,7 @@ export const DEFAULT_PRODUCT_EVENTS: Record<string, IProductEventDefinition> = {
         eventBodyexample: aemAssetsMetadataUpdatedBody,
         routingRules: [],
         requiredFields: ['assetId,repositoryMetadata'],
-        handlerActionName: 'a2b-agency/agency-assetsync-internal-handler-metadata-updated',
+        handlerActionName: 'a2b-brand/agency-assetsync-internal-handler-metadata-updated',
         callBlocking: true
     },
     'aem.assets.asset.processing_completed': {
@@ -42,7 +42,7 @@ export const DEFAULT_PRODUCT_EVENTS: Record<string, IProductEventDefinition> = {
         eventBodyexample: aemAssetsProcessingCompletedBody,
         routingRules: [],
         requiredFields: ['assetId,repositoryMetadata'],
-        handlerActionName: 'a2b-agency/agency-assetsync-internal-handler-process-complete',
+        handlerActionName: 'a2b-brand/agency-assetsync-internal-handler-process-complete',
         callBlocking: true
     }
 };

@@ -11,54 +11,71 @@
  */
 
 import aioLogger from "@adobe/aio-lib-core-logging";
-import { checkMissingRequestInputs } from "../../utils/common";
-import { getApplicationRuntimeInfo } from "../../utils/applicationRuntimeInfo";
+import { checkMissingRequestInputs } from '../../utils/common';
 import { AgencyManager } from "../../classes/AgencyManager";
+import { sanitizeEventForLogging } from "../../utils/eventSanitizer";
+import { getEventDefinition } from "../../classes/AppEventRegistry";
 
 export async function main(params: any, openwhiskClient?: any): Promise<any> {
   const ACTION_NAME = 'brand:agency-event-handler';
   const logger = aioLogger(ACTION_NAME, { level: params.LOG_LEVEL || "info" });
 
-  // Handle IO webhook challenge
-  if (params.challenge) {
-    return {
-      statusCode: 200,
-      body: { challenge: params.challenge }
-    };
-  }
+  // Log sanitized incoming event
+  logger.info(`${ACTION_NAME}: Received event`, sanitizeEventForLogging(params));
 
+  // handle IO webhook challenge
+  if(params.challenge){
+    const response = {
+      statusCode: 200,
+      body: {challenge: params.challenge}
+    }
+    return response
+  }
+  
   // Check for required params
-  const requiredParams: string[] = ['type', 'data'];
-  const requiredHeaders: string[] = [];
-  const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders);
+  const requiredParams: string[] = ['type', 'data']
+  const requiredHeaders: string[] = []
+  const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
   if (errorMessage) {
+    // return and log client errors
+    logger.error(`${ACTION_NAME}: ${errorMessage}`);
     return {
       statusCode: 400,
       body: errorMessage
     };
   }
 
-  // Extract agency ID from app_runtime_info
-  const agencyId = params.data?.app_runtime_info?.consoleId;
-  if (!agencyId) {
-    logger.error('Missing agencyId in app_runtime_info');
+  // Check for required data structure
+  if (!params.data || !params.data.app_runtime_info) {
+    logger.error(`${ACTION_NAME}: Missing required data.app_runtime_info in event`);
     return {
       statusCode: 400,
-      body: 'Missing agencyId in app_runtime_info'
+      body: 'Missing required data.app_runtime_info in event'
     };
   }
 
-  // Determine if this is a registration event (no secret validation needed)
+  // Extract agency ID from app_runtime_info
+  const agencyId = params.data.app_runtime_info?.consoleId;
+  if (!agencyId) {
+    logger.error(`${ACTION_NAME}: Missing consoleId in app_runtime_info`);
+    return {
+      statusCode: 400,
+      body: 'Missing consoleId in app_runtime_info'
+    };
+  }
+
+  // Validate secret header for all events EXCEPT registration events
+  // Registration events (a2b.registration.*) don't require secret validation
+  // because the brand doesn't have the secret yet during registration
   const isRegistrationEvent = params.type?.startsWith('com.adobe.a2b.registration.');
   
   let agency;
   if (!isRegistrationEvent) {
-    // For non-registration events, validate the secret
     const headers = params.__ow_headers || {};
     const brandSecret = headers['x-a2b-brand-secret'];
     
     if (!brandSecret) {
-      logger.error(`Missing X-A2B-Brand-Secret header for event type ${params.type}`);
+      logger.error(`${ACTION_NAME}: Missing X-A2B-Brand-Secret header for event type ${params.type}`);
       return {
         statusCode: 401,
         body: 'Missing X-A2B-Brand-Secret header'
@@ -71,7 +88,7 @@ export async function main(params: any, openwhiskClient?: any): Promise<any> {
       agency = await agencyManager.getAgency(agencyId);
       
       if (!agency) {
-        logger.error(`Agency not found: ${agencyId}`);
+        logger.error(`${ACTION_NAME}: Agency not found: ${agencyId}`);
         return {
           statusCode: 401,
           body: 'Agency not found or not registered'
@@ -79,79 +96,76 @@ export async function main(params: any, openwhiskClient?: any): Promise<any> {
       }
 
       if (!agency.validateSecret(brandSecret)) {
-        logger.error(`Invalid brand secret for agency: ${agencyId}`);
+        logger.error(`${ACTION_NAME}: Invalid brand secret for agency: ${agencyId}`);
         return {
           statusCode: 401,
           body: 'Invalid brand secret'
         };
       }
 
-      logger.info(`Secret validated successfully for agency: ${agencyId}`);
+      logger.info(`${ACTION_NAME}: Secret validated successfully for agency: ${agencyId}`);
     } catch (error: unknown) {
-      logger.error('Error validating agency secret', error as any);
+      logger.error(`${ACTION_NAME}: Error validating agency secret`, error as any);
       return {
         statusCode: 500,
         body: 'Error validating agency credentials'
       };
     }
   } else {
-    logger.info(`Skipping secret validation for registration event: ${params.type}`);
+    logger.info(`${ACTION_NAME}: Skipping secret validation for registration event: ${params.type}`);
   }
 
   try {
-    logger.info(`Agency Event Handler called with type: ${params.type}`);
+    logger.info(`${ACTION_NAME}: Agency Event Handler called with type: ${params.type} from agency: ${agencyId}`);
 
     // Initialize OpenWhisk client for routing
-    const ow = openwhiskClient || require("openwhisk")();
 
-    // Route based on event type (simple hardcoded routing)
+    // No params needed - we're already running in OpenWhisk context
+    const openwhisk = require('openwhisk');
+    const ow = openwhisk();
+
+    // Route events based on type
     let handlerName: string;
-    switch (params.type) {
-      case 'com.adobe.a2b.registration.received':
-      case 'com.adobe.a2b.registration.enabled':
-      case 'com.adobe.a2b.registration.disabled':
-        handlerName = 'agency-registration-internal-handler';
-        break;
-      
-      case 'com.adobe.a2b.assetsync.new':
-      case 'com.adobe.a2b.assetsync.updated':
-      case 'com.adobe.a2b.assetsync.deleted':
-        handlerName = 'agency-assetsync-internal-handler';
-        break;
-      
-      default:
-        logger.warn(`Unhandled event type: ${params.type}`);
-        return {
-          statusCode: 400,
-          body: {
-            message: `Unhandled event type: ${params.type}`,
-            error: 'Event type not supported'
-          }
-        };
+    let eventDefinition = getEventDefinition(params.type);
+
+    if (!eventDefinition) {
+      logger.warn(`${ACTION_NAME}: Event definition not found for type: ${params.type}`);
+      return {
+        statusCode: 400,
+        body: {
+          message: `Event definition not found for type: ${params.type}`,
+          error: 'Event type not supported'
+        }
+      }
     }
 
-    logger.info(`Routing event to handler: ${handlerName}`);
+    if (eventDefinition.handlerActionName) {
+      handlerName = eventDefinition.handlerActionName;
+    } else {
+      logger.warn(`${ACTION_NAME}: Event definition not found for type: ${params.type}`);
+      return {
+        statusCode: 400,
+        body: {
+          message: `Event definition not implemented for type: ${params.type}`,
+          error: 'Event type not implemented'
+        }
+      }
+    }
+    
 
-    // Prepare the parameters for the handler
-    const handlerParams = !isRegistrationEvent && agency ? {
-      ...params,
-      validatedAgency: agency.toSafeJSON()
-    } : params;
+    logger.info(`${ACTION_NAME}: Routing ${params.type} to ${handlerName}`);
 
-    // Invoke the handler (blocking)
+    // Invoke the handler with routerParams
     const result = await ow.actions.invoke({
       name: handlerName,
       params: {
-        routerParams: handlerParams
+        routerParams: params
       },
       blocking: true,
       result: true
     });
-    
-    logger.info('Handler invocation successful', {
-      handler: handlerName,
-      result: result
-    });
+
+    logger.info(`${ACTION_NAME}: Handler invocation successful`);
 
     return {
       statusCode: 200,
@@ -162,13 +176,13 @@ export async function main(params: any, openwhiskClient?: any): Promise<any> {
     };
 
   } catch (error: unknown) {
-    logger.error('Error processing agency event', error as any);
+    logger.error(`${ACTION_NAME}: Error processing event`, error as any);
     return {
       statusCode: 500,
       body: {
         message: 'Error processing agency event',
         error: error instanceof Error ? error.message : 'Unknown error'
       }
-    };
+    }
   }
 }

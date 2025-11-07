@@ -1,0 +1,266 @@
+# Event Handler Routing Architecture
+
+## Overview
+
+Event routing in the A2B system follows a two-tier architecture:
+1. **Entry Point Handlers**: `brand-event-handler` and `agency-event-handler` receive inbound events
+2. **Internal Handlers**: Specialized OpenWhisk actions that process specific event types
+
+## Event Registration
+
+All events must be defined in one of two registries:
+
+### AppEventRegistry (`src/actions/classes/AppEventRegistry.ts`)
+- Application-level events (brand registration, asset sync, workfront)
+- Events with categories: `REGISTRATION`, `AGENCY`, `BRAND`
+
+### ProductEventRegistry (`src/actions/classes/ProductEventRegistry.ts`)
+- Adobe product events (AEM Assets, etc.)
+- Events with category: `PRODUCT`
+
+## Handler Action Routing
+
+### handlerActionName Property
+
+Event definitions **MAY** include a `handlerActionName` property:
+
+```typescript
+{
+  code: 'aem.assets.asset.metadata_updated',
+  category: EventCategory.PRODUCT,
+  name: 'AEM Asset Metadata Updated',
+  handlerActionName: 'a2b-agency/agency-assetsync-internal-handler-metadata-updated',
+  // ... other properties
+}
+```
+
+**Routing Rules:**
+- ✅ If `handlerActionName` is defined → Route to the specified internal handler
+- ❌ If `handlerActionName` is NOT defined → Return `400 Bad Request` (no handler available)
+
+### Entry Point Handlers
+
+#### brand-event-handler (`src/actions/event-handlers/brand-event-handler/index.ts`)
+- Receives inbound events from brands (b2a events)
+- Validates event type is registered in AppEventRegistry
+- Routes to internal handler if `handlerActionName` is defined
+- Returns 400 if no handler is configured
+
+#### agency-event-handler (`src/actions/event-handlers/agency-event-handler/index.ts`)
+- Receives inbound events from agency (a2b events)
+- Validates event type is registered in AppEventRegistry
+- Routes to internal handler if `handlerActionName` is defined
+- Returns 400 if no handler is configured
+
+#### adobe-product-event-handler (`src/actions/event-handlers/adobe-product-event-handler/index.ts`)
+- Receives inbound events from Adobe products (AEM, etc.)
+- Validates event type is registered in ProductEventRegistry
+- Routes to internal handler if `handlerActionName` is defined
+- Returns 400 if no handler is configured
+
+## Internal Handler Naming Convention
+
+Internal handlers follow a strict naming pattern:
+
+### Pattern: `[EventCategory]-[EventFamily]-internal-handler-[EventAction]`
+
+**Components:**
+- **EventCategory**: Lowercase category (e.g., `agency`, `brand`, `registration`, `product`)
+- **EventFamily**: Event domain (e.g., `assetsync`, `registration`, `workfront`)
+- **EventAction**: Specific action (e.g., `metadata-updated`, `process-complete`, `new`)
+
+### Examples
+
+#### Asset Sync Handlers (Agency Category)
+```
+agency-assetsync-internal-handler-metadata-updated
+agency-assetsync-internal-handler-process-complete
+agency-assetsync-internal-handler-new
+```
+
+#### Registration Handlers (Registration Category)
+```
+agency-registration-internal-handler-received
+agency-registration-internal-handler-enabled
+agency-registration-internal-handler-disabled
+```
+
+#### Brand Handlers (Brand Category)
+```
+brand-registration-internal-handler-request
+```
+
+### Handler Action Location
+
+Internal handlers are OpenWhisk actions located in:
+```
+src/actions/event-handlers/[handler-name]/
+└── index.ts
+```
+
+Examples:
+```
+src/actions/event-handlers/agency-assetsync-internal-handler-metadata-updated/
+src/actions/event-handlers/agency-assetsync-internal-handler-process-complete/
+src/actions/event-handlers/agency-registration-internal-handler/
+```
+
+## handlerActionName Format
+
+The `handlerActionName` property MUST use the **full OpenWhisk package/action name format**:
+
+### Format: `{package-name}/{action-name}`
+
+**Package Names:**
+- `a2b-agency` (agency project)
+- `a2b-brand` (brand project)
+
+### Examples
+
+#### Agency Project Handlers
+```typescript
+handlerActionName: 'a2b-agency/agency-assetsync-internal-handler-metadata-updated'
+handlerActionName: 'a2b-agency/agency-assetsync-internal-handler-process-complete'
+handlerActionName: 'a2b-agency/agency-registration-internal-handler'
+```
+
+#### Brand Project Handlers
+```typescript
+handlerActionName: 'a2b-brand/brand-registration-internal-handler'
+handlerActionName: 'a2b-brand/brand-assetsync-internal-handler-received'
+```
+
+## Event Flow Example
+
+### Inbound AEM Asset Event
+
+1. **Entry**: `adobe-product-event-handler` receives event
+   ```json
+   {
+     "type": "aem.assets.asset.metadata_updated",
+     "data": { ... }
+   }
+   ```
+
+2. **Lookup**: Check ProductEventRegistry for event definition
+   ```typescript
+   {
+     code: 'aem.assets.asset.metadata_updated',
+     handlerActionName: 'a2b-agency/agency-assetsync-internal-handler-metadata-updated'
+   }
+   ```
+
+3. **Route**: Invoke internal handler via OpenWhisk
+   ```typescript
+   await openwhisk.actions.invoke({
+     name: 'a2b-agency/agency-assetsync-internal-handler-metadata-updated',
+     params: { routerParams: params }
+   });
+   ```
+
+4. **Process**: Internal handler processes the event
+   - Fetches asset data from AEM
+   - Notifies relevant brands
+   - Publishes to Adobe I/O Events
+
+## Validation Rules
+
+### Event Definition Requirements
+
+1. **Event code** must be unique across AppEventRegistry and ProductEventRegistry
+2. **Category** must be one of: `REGISTRATION`, `AGENCY`, `BRAND`, `PRODUCT`
+3. **handlerActionName** (optional):
+   - If provided: Must match format `{package}/{action-name}`
+   - If omitted: Event cannot be processed by entry handlers (returns 400)
+
+### Handler Implementation Requirements
+
+1. **File location** must match handler name:
+   ```
+   src/actions/event-handlers/{handler-name}/index.ts
+   ```
+
+2. **Export signature**:
+   ```typescript
+   export async function main(params: any): Promise<any>
+   ```
+
+3. **OpenWhisk configuration** in `app.config.yaml`:
+   ```yaml
+   runtimeManifest:
+     packages:
+       a2b-brand:
+         actions:
+           brand-registration-internal-handler:
+             function: actions/event-handlers/brand-registration-internal-handler/index.js
+   ```
+
+### Naming Pattern Requirements
+
+Handler names MUST follow the pattern:
+```
+[category]-[family]-internal-handler-[action]
+```
+
+**Valid Examples:**
+- ✅ `agency-assetsync-internal-handler-metadata-updated`
+- ✅ `agency-registration-internal-handler`
+- ✅ `brand-registration-internal-handler-request`
+
+**Invalid Examples:**
+- ❌ `assetSyncHandler` (doesn't follow pattern)
+- ❌ `agency-assetsync-handler` (missing "internal")
+- ❌ `metadata-updated-handler` (missing category and family)
+
+## Error Handling
+
+### No Handler Configured (400)
+
+When an event arrives but has no `handlerActionName`:
+
+```typescript
+if (!eventDefinition.handlerActionName) {
+  return {
+    statusCode: 400,
+    body: {
+      error: `No internal handler configured for event type: ${eventType}`
+    }
+  };
+}
+```
+
+### Handler Invocation Failure (500)
+
+When internal handler invocation fails:
+
+```typescript
+try {
+  await openwhisk.actions.invoke({ ... });
+} catch (error) {
+  return {
+    statusCode: 500,
+    body: {
+      error: 'Failed to invoke internal handler',
+      details: error.message
+    }
+  };
+}
+```
+
+## Best Practices
+
+1. **Always define handlerActionName** for events that need processing
+2. **Use consistent naming** following the established pattern
+3. **Create dedicated handlers** for each event type (avoid generic handlers)
+4. **Keep entry handlers thin** - they should only route, not process
+5. **Document handler purpose** in the handler's index.ts file
+6. **Test both entry and internal handlers** separately
+7. **Use package prefix** in handlerActionName for proper OpenWhisk routing
+
+## Related Documentation
+
+- `src/actions/classes/AppEventRegistry.ts` - Application event definitions
+- `src/actions/classes/ProductEventRegistry.ts` - Product event definitions
+- `src/actions/event-handlers/` - All event handler implementations
+- `app.config.yaml` - OpenWhisk action configuration
+- `.cursor/rules/event-naming-conventions.mdc` - Event naming standards

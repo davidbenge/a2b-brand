@@ -1,0 +1,31 @@
+{
+    "CONTENT_TYPE": "",
+    "source": "https://27200-a2b-benge.adobeio-static.net",
+    "S2S_API_KEY": "[REDACTED]",
+    "S2S_CLIENT_SECRET": "[REDACTED]",
+    "data": {
+        "agencyEndPointUrl": "https://27200-a2b-benge.adobeio-static.net/",
+        "agencyName": "Benge Agency",
+        "agency_identification": {
+            "agencyId": "2ff22120-d393-4743-afdd-0d4b2038d2be",
+            "orgId": "33C1401053CF76370A490D4C@AdobeOrg"
+        },
+        "app_runtime_info": {
+            "action_package_name": "a2b-agency",
+            "app_name": "agency",
+            "consoleId": "27200",
+            "projectName": "a2b",
+            "workspace": "benge"
+        },
+        "brandId": "3b4afd64-7e11-4342-8fc4-bb75cc624dc5",
+        "enabled": true,
+        "enabledAt": "2025-10-30T05:24:33.221Z",
+        "endPointUrl": "https://27200-brand2agency-benge.adobeio-static.net/api/v1/web/a2b-brand/agency-event-handler",
+        "name": "benge-10-20-2025",
+        "secret": "[REDACTED]"
+    },
+    "id": "027a0096-5d44-41f0-a07d-9ad572b5a60f",
+    "datacontenttype": "application/json",
+    "type": "com.adobe.a2b.registration.enabled",
+    "specversion": "1.0"
+}

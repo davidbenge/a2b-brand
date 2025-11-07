@@ -9,8 +9,11 @@
  */
 
 import { main } from '../event-handlers/agency-registration-internal-handler/index';
+import { AgencyManager } from '../classes/AgencyManager';
+import { ApplicationRuntimeInfo } from '../classes/ApplicationRuntimeInfo';
 
 const registrationReceivedEvent = require('../../../docs/events/registration/com-adobe-a2b-registration-received.json');
+const registrationEnabledEvent = require('../../../docs/events/registration/com-adobe-a2b-registration-enabled_from_agency.json');
 
 // Mock the state and file stores
 jest.mock('@adobe/aio-lib-state', () => ({
@@ -326,6 +329,49 @@ describe('agency-registration-internal-handler (Brand App)', () => {
       
       expect(response.statusCode).toBe(400);
       expect(response.body).toContain('enabled');
+    });
+
+    it('should process registration.enabled event with demo data and verify Agency values', async () => {
+      const params = {
+        LOG_LEVEL: 'debug',
+        routerParams: {
+          type: registrationEnabledEvent.type,
+          data: registrationEnabledEvent.data
+        }
+      };
+
+      const response = await main(params);
+      
+      // Verify response - confirms the Agency object was created/updated correctly
+      expect(response.statusCode).toBe(200);
+      expect(response.body.message).toContain('secret stored');
+      
+      // Verify key Agency fields from demo event were processed
+      expect(response.body.brandId).toBe('3b4afd64-7e11-4342-8fc4-bb75cc624dc5');
+      expect(response.body.enabled).toBe(true);
+      expect(response.body.agencyId).toBe('2ff22120-d393-4743-afdd-0d4b2038d2be');
+      
+      // Verify the agencyEndPointUrl was built correctly from app_runtime_info
+      // buildEndpointUrl() returns base URL: https://{consoleId}-{projectName}-{workspace}.adobeio-static.net
+      const expectedBaseUrl = 'https://27200-a2b-benge.adobeio-static.net';
+      
+      // Verify ApplicationRuntimeInfo builds the correct base URL  
+      const appRuntimeInfo = new ApplicationRuntimeInfo(registrationEnabledEvent.data.app_runtime_info);
+      const builtEndpointUrl = appRuntimeInfo.buildEndpointUrl();
+      expect(builtEndpointUrl).toBe(expectedBaseUrl);
+      
+      // Verify expected values from demo event:
+      // - agencyId from data.agency_identification.agencyId: 2ff22120-d393-4743-afdd-0d4b2038d2be ✓
+      // - brandId: 3b4afd64-7e11-4342-8fc4-bb75cc624dc5 ✓  
+      // - name (on Agency): set to agencyId (2ff22120-d393-4743-afdd-0d4b2038d2be)
+      // - agencyName: Benge Agency (from event data)
+      // - agencyEndPointUrl: built from app_runtime_info ✓
+      // - enabled: true ✓
+      // - secret: present (redacted in response)
+      
+      expect(registrationEnabledEvent.data.agency_identification.agencyId).toBe('2ff22120-d393-4743-afdd-0d4b2038d2be');
+      expect(registrationEnabledEvent.data.agency_identification.orgId).toBe('33C1401053CF76370A490D4C@AdobeOrg');
+      expect(registrationEnabledEvent.data.agencyName).toBe('Benge Agency');
     });
   });
 

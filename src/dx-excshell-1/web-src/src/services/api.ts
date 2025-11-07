@@ -32,9 +32,11 @@ interface CompanyRegistrationForm {
  */
 export interface Agency {
     agencyId: string;
+    agencyName?: string;
     brandId: string;
     name: string;
     endPointUrl: string;
+    agencyEndPointUrl?: string;
     enabled: boolean;
     logo?: string;
     createdAt: Date | string;
